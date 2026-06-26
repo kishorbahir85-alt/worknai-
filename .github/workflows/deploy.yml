@@ -124,35 +124,34 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,GOOGLE_CLIENT_ID
           script: |
             set -e
             mkdir -p /var/www/worknai_v2
             cd /var/www/worknai_v2
 
-            cat > docker-compose.yml <<'EOF'
-            version: '3.8'
-
+            cat > docker-compose.yml <<EOF
             services:
               backend:
-                image: ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
+                image: ${DOCKER_USERNAME}/worknai-backend:latest
                 container_name: worknai_v2_backend
                 ports:
                   - "5001:5000"
                 environment:
                   NODE_ENV: production
                   PORT: 5000
-                  MONGO_URI: ${{ secrets.MONGODB_URI }}
-                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
-                  SMTP_USER: ${{ secrets.SMTP_USER }}
-                  SMTP_PASS: ${{ secrets.SMTP_PASS }}
+                  MONGO_URI: ${MONGODB_URI}
+                  JWT_SECRET: ${JWT_SECRET}
+                  SMTP_USER: ${SMTP_USER}
+                  SMTP_PASS: ${SMTP_PASS}
                   FRONTEND_URL: https://worknai.online
-                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
                 restart: always
                 networks:
                   - worknai_v2_network
 
               frontend:
-                image: ${{ secrets.DOCKER_USERNAME }}/worknai-frontend:latest
+                image: ${DOCKER_USERNAME}/worknai-frontend:latest
                 container_name: worknai_v2_frontend
                 ports:
                   - "3000:80"
@@ -163,7 +162,7 @@ jobs:
                   - backend
 
               admin:
-                image: ${{ secrets.DOCKER_USERNAME }}/worknai-admin:latest
+                image: ${DOCKER_USERNAME}/worknai-admin:latest
                 container_name: worknai_v2_admin
                 ports:
                   - "3003:80"
@@ -174,7 +173,7 @@ jobs:
                   - backend
 
               manager:
-                image: ${{ secrets.DOCKER_USERNAME }}/worknai-manager:latest
+                image: ${DOCKER_USERNAME}/worknai-manager:latest
                 container_name: worknai_v2_manager
                 ports:
                   - "3002:80"
@@ -189,9 +188,16 @@ jobs:
                 driver: bridge
             EOF
 
-            docker rm -f worknai_v2_backend worknai_v2_frontend worknai_v2_admin worknai_v2_manager >/dev/null 2>&1 || true
-            docker compose down --remove-orphans >/dev/null 2>&1 || true
+            docker compose down --remove-orphans
             docker compose pull
-            docker compose up -d --force-recreate --remove-orphans
+            docker compose up -d
             docker image prune -f
+            echo "✅ Deploy complete!"
             docker compose ps
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
