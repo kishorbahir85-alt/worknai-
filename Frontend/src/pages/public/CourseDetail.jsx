@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, BookOpen, Clock, Tag, CheckCircle, AlertCircle,
   Loader2, PlayCircle, User, Phone, GraduationCap, MapPin,
-  Copy, Key, X, Calendar, Users, IndianRupee, Smartphone,
+  Copy, Key, X, Calendar, Users, IndianRupee, Smartphone, Mail,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
@@ -16,6 +16,28 @@ const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediat
 const modeColor  = { online: 'text-sky-400 bg-sky-500/10', offline: 'text-violet-400 bg-violet-500/10', hybrid: 'text-pink-400 bg-pink-500/10' };
 const inp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-2.5 px-4 text-sm text-white placeholder-ink-dim focus:outline-none focus:border-violet-400/60 transition-all';
 const lbl = 'block text-xs font-medium text-ink-dim mb-1.5';
+const formatStartDate = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(text)
+    ? text
+    : text.replace(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/, (_, day, month, year) => `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+  const date = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
+const getCourseStartDate = (course) => {
+  if (!course) return '';
+  if (course.startDate) return course.startDate;
+
+  const batchDates = (course.batches || [])
+    .map((batch) => batch.startDate)
+    .filter(Boolean)
+    .sort((a, b) => new Date(`${a}T00:00:00`) - new Date(`${b}T00:00:00`));
+
+  return batchDates[0] || '';
+};
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -31,7 +53,7 @@ export default function CourseDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied]         = useState(false);
 
-  const [form, setForm] = useState({ name: '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
   const f = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
 
   useEffect(() => {
@@ -50,7 +72,7 @@ export default function CourseDetail() {
 
   const openModal = () => {
     if (!user) { navigate('/login', { state: { from: { pathname: `/courses/${slug}` } } }); return; }
-    setForm({ name: user.name || '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
+    setForm({ name: user.name || '', email: user.email || '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
     setStep(1);
     setShowModal(true);
   };
@@ -60,10 +82,11 @@ export default function CourseDetail() {
   const isOffline = course && (course.mode === 'offline' || course.mode === 'hybrid');
   const hasBatches = course?.batches?.length > 0;
   const isPaid = price > 0;
+  const courseStartDate = formatStartDate(getCourseStartDate(course));
 
   // Step 1 → proceed to payment (online+paid) or submit directly (offline or free)
   const proceedFromStep1 = () => {
-    if (!form.name || !form.phone) return toast.error('Name and phone are required');
+    if (!form.name || !form.email || !form.phone) return toast.error('Name, email, and phone are required');
     if (isOffline && hasBatches && !form.batchId) return toast.error('Please select a batch');
     if (isOnline && isPaid) { setStep(2); return; }
     submitEnrollment();
@@ -77,7 +100,7 @@ export default function CourseDetail() {
         courseId: course._id,
         batchId: form.batchId || undefined,
         transactionRef: form.transactionRef || '',
-        studentDetails: { name: form.name, phone: form.phone, qualification: form.qualification, address: form.address },
+        studentDetails: { name: form.name, email: form.email, phone: form.phone, qualification: form.qualification, address: form.address },
       });
       setEnrollment(res.data.data);
       setShowModal(false);
@@ -99,7 +122,7 @@ export default function CourseDetail() {
   if (notFound || !course) return (
     <section className="py-20 text-center px-4">
       <AlertCircle className="w-14 h-14 text-red-400 mx-auto mb-4" />
-      <h1 className="text-2xl font-bold text-white mb-2">Course not found</h1>
+      <h1 className="text-2xl font-bold text-ink mb-2">Course not found</h1>
       <Link to="/courses" className="btn-primary mt-4"><ArrowLeft className="w-4 h-4" /> Back to Courses</Link>
     </section>
   );
@@ -107,7 +130,7 @@ export default function CourseDetail() {
   return (
     <>
       <section className="py-12 px-4 max-w-4xl mx-auto">
-        <Link to="/courses" className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-white transition-colors mb-8">
+        <Link to="/courses" className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-ink transition-colors mb-8">
           <ArrowLeft className="w-4 h-4" /> Back to Courses
         </Link>
 
@@ -122,6 +145,9 @@ export default function CourseDetail() {
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium capitalize ${modeColor[course.mode]}`}>{course.mode}</span>
                   {course.category && <span className="inline-flex items-center gap-1 text-xs text-ink-dim px-2.5 py-1 bg-white/5 rounded-full"><Tag size={10}/>{course.category}</span>}
                   {course.duration && <span className="inline-flex items-center gap-1 text-xs text-ink-dim px-2.5 py-1 bg-white/5 rounded-full"><Clock size={10}/>{course.duration}</span>}
+                  <span className="inline-flex items-center gap-1 text-xs text-ink-dim px-2.5 py-1 bg-white/5 rounded-full">
+                    <Calendar size={10}/>{courseStartDate ? `Starts ${courseStartDate}` : 'Start date TBA'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -132,6 +158,31 @@ export default function CourseDetail() {
                 <p className="text-2xl font-bold text-white">{course.price > 0 ? `₹${course.price.toLocaleString()}` : <span className="text-emerald-400">Free</span>}</p>
               )}
             </div>
+          </div>
+
+          <div className="mb-6 grid sm:grid-cols-3 gap-3">
+            <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-4 py-3">
+              <p className="text-xs uppercase tracking-wide text-violet-300 font-semibold flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5"/>Course Starts
+              </p>
+              <p className="text-white font-semibold mt-1">{courseStartDate || 'Date to be announced'}</p>
+            </div>
+            {course.duration && (
+              <div className="rounded-xl border border-violet-500/20 bg-white/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-wide text-ink-dim font-semibold flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5"/>Duration
+                </p>
+                <p className="text-white font-semibold mt-1">{course.duration}</p>
+              </div>
+            )}
+            {course.mode && (
+              <div className="rounded-xl border border-violet-500/20 bg-white/5 px-4 py-3">
+                <p className="text-xs uppercase tracking-wide text-ink-dim font-semibold flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5"/>Mode
+                </p>
+                <p className="text-white font-semibold mt-1 capitalize">{course.mode}</p>
+              </div>
+            )}
           </div>
 
           {/* Batches display */}
@@ -146,7 +197,7 @@ export default function CourseDetail() {
                       <p className="text-white font-semibold text-sm">{b.name}</p>
                       {b.timing && <p className="text-ink-dim text-xs mt-1"><Clock size={10} className="inline mr-1"/>{b.timing}</p>}
                       {b.days   && <p className="text-ink-dim text-xs"><Calendar size={10} className="inline mr-1"/>{b.days}</p>}
-                      {b.startDate && <p className="text-ink-dim text-xs">Starts: {b.startDate}</p>}
+                      {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
                       {b.totalSeats > 0 && <p className={`text-xs mt-1 font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}><Users size={10} className="inline mr-1"/>{full ? 'Batch Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
                     </div>
                   );
@@ -179,17 +230,19 @@ export default function CourseDetail() {
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2 className="text-lg font-bold text-white">
-                  {step === 1 ? (course.mode === 'offline' ? 'Course Application' : 'Your Details') : 'Complete Payment'}
+                  {step === 1 ? 'Student Details' : 'Complete Payment'}
                 </h2>
                 <p className="text-xs text-ink-dim mt-0.5">{course.title}</p>
               </div>
-              <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-white hover:bg-violet-500/10 transition-colors"><X className="w-4 h-4"/></button>
+              <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors"><X className="w-4 h-4"/></button>
             </div>
 
             {step === 1 && (
               <div className="flex flex-col gap-4">
                 <div><label className={lbl}><User className="w-3 h-3 inline mr-1"/>Full Name <span className="text-red-400">*</span></label>
                   <input type="text" value={form.name} onChange={f('name')} placeholder="Your full name" className={inp}/></div>
+                <div><label className={lbl}><Mail className="w-3 h-3 inline mr-1"/>Email <span className="text-red-400">*</span></label>
+                  <input type="email" value={form.email} onChange={f('email')} placeholder="you@example.com" className={inp}/></div>
                 <div><label className={lbl}><Phone className="w-3 h-3 inline mr-1"/>Phone Number <span className="text-red-400">*</span></label>
                   <input type="tel" value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" className={inp}/></div>
                 <div><label className={lbl}><GraduationCap className="w-3 h-3 inline mr-1"/>Highest Qualification</label>
@@ -212,7 +265,7 @@ export default function CourseDetail() {
                             <div>
                               <p className="text-white text-sm font-medium">{b.name}</p>
                               {b.timing && <p className="text-ink-dim text-xs">{b.timing}{b.days ? ` · ${b.days}` : ''}</p>}
-                              {b.startDate && <p className="text-ink-dim text-xs">Starts: {b.startDate}</p>}
+                              {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
                               {b.totalSeats > 0 && <p className={`text-xs font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}>{full ? 'Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
                             </div>
                           </label>
@@ -263,7 +316,7 @@ export default function CourseDetail() {
                 <button onClick={submitEnrollment} disabled={submitting} className="btn-primary justify-center disabled:opacity-50">
                   {submitting ? <><Loader2 className="w-4 h-4 animate-spin"/>Submitting...</> : <><CheckCircle className="w-4 h-4"/>I've Paid — Submit</>}
                 </button>
-                <button onClick={() => setStep(1)} className="text-xs text-ink-dim hover:text-white text-center transition-colors">← Back to details</button>
+                <button onClick={() => setStep(1)} className="text-xs text-ink-dim hover:text-ink text-center transition-colors">← Back to details</button>
               </div>
             )}
           </div>

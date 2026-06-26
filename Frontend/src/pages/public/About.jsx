@@ -53,7 +53,7 @@ const locations = [
 
 export default function About() {
   return (
-    <div className="text-white">
+    <div className="about-page text-ink">
 
       {/* Hero */}
       <section className="relative min-h-[100vh] flex items-center justify-center px-6 text-center overflow-hidden">
@@ -61,11 +61,11 @@ export default function About() {
           <img
             src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&auto=format&fit=crop&q=80"
             alt="team"
-            className="w-full h-full object-cover object-center opacity-40"
+            className="media-clean-img w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-[#06030f]" />
+          <div className="media-clean-overlay absolute inset-0" />
         </div>
-        <div className="relative z-10">
+        <div className="relative z-10 text-white">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,7 +86,7 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-300 max-w-2xl mx-auto text-lg leading-relaxed"
+            className="text-white/80 max-w-2xl mx-auto text-lg leading-relaxed"
           >
             WorknAi Technologies India Pvt Ltd bridges the gap between digital corporate solutions
             and IT academic training — empowering businesses and individuals across Pune and beyond.
@@ -104,11 +104,11 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-gradient-to-br from-purple-900/40 to-white/5 border border-white/10 rounded-2xl p-6 text-center hover:border-purple-500/50 transition"
+              className="about-card rounded-2xl p-6 text-center transition"
             >
               <stat.icon className="mx-auto mb-3 text-purple-400" size={28} />
-              <p className="text-3xl font-bold text-white">{stat.value}</p>
-              <p className="text-slate-400 text-sm mt-1">{stat.label}</p>
+              <p className="text-3xl font-bold text-ink">{stat.value}</p>
+              <p className="text-ink-dim text-sm mt-1">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -125,12 +125,12 @@ export default function About() {
             <h2 className="text-4xl font-bold mb-6">
               Our <span className="text-purple-400">Mission</span>
             </h2>
-            <p className="text-slate-300 text-lg leading-relaxed mb-6">
+            <p className="text-ink-dim text-lg leading-relaxed mb-6">
               To empower students, professionals, and businesses through cutting-edge technology
               education, innovative software solutions, and AI-powered enterprise tools — making
               quality tech accessible to everyone in India and beyond.
             </p>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-ink-dim leading-relaxed">
               Since our incorporation in October 2025, we have been on a mission to transform how
               businesses operate and how individuals build their tech careers — one line of code,
               one student, one solution at a time.
@@ -145,7 +145,7 @@ export default function About() {
             <img
               src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop"
               alt="mission"
-              className="w-full h-80 object-cover"
+              className="media-clean-img w-full h-80 object-cover"
             />
           </motion.div>
         </div>
@@ -165,22 +165,22 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/50 transition group"
+                className="about-card rounded-3xl overflow-hidden transition group"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={s.img}
                     alt={s.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    className="media-clean-img w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                  <div className="media-clean-overlay absolute inset-0" />
                   <div className="absolute bottom-4 left-4 flex items-center gap-2">
                     <s.icon className="text-purple-400" size={20} />
-                    <h3 className="text-lg font-semibold">{s.title}</h3>
+                    <h3 className="text-lg font-semibold text-white">{s.title}</h3>
                   </div>
                 </div>
                 <div className="p-6">
-                  <p className="text-slate-300">{s.desc}</p>
+                  <p className="text-ink-dim">{s.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -202,15 +202,15 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="relative group bg-gradient-to-br from-purple-900/30 to-slate-900/60 border border-purple-500/20 rounded-3xl p-8 text-center hover:border-purple-500/60 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300"
+                className="about-card relative group rounded-3xl p-8 text-center transition-all duration-300"
               >
                 <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center mx-auto mb-5 text-2xl font-bold text-white shadow-lg shadow-purple-500/30">
                   {f.name.charAt(0)}
                 </div>
-                <h3 className="text-xl font-bold text-white">{f.name}</h3>
+                <h3 className="text-xl font-bold text-ink">{f.name}</h3>
                 <p className="text-purple-400 text-sm font-medium mt-1 mb-4">{f.role}</p>
                 <div className="w-12 h-0.5 bg-purple-500/40 mx-auto mb-4" />
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-ink-dim text-sm leading-relaxed">
                   Co-founder of WorknAi Technologies India Pvt Ltd, driving innovation
                   in IT education and enterprise software solutions from Pune.
                 </p>
@@ -234,13 +234,13 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-gradient-to-br from-purple-900/20 to-slate-900/60 border border-purple-500/20 rounded-3xl p-8 hover:border-purple-500/60 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300"
+                className="about-card rounded-3xl p-8 transition-all duration-300"
               >
                 <div className="w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center mb-5">
                   <MapPin className="text-purple-400" size={22} />
                 </div>
-                <h3 className="font-bold text-lg text-white mb-2">{loc.name}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{loc.address}</p>
+                <h3 className="font-bold text-lg text-ink mb-2">{loc.name}</h3>
+                <p className="text-ink-dim text-sm leading-relaxed">{loc.address}</p>
               </motion.div>
             ))}
           </div>
@@ -253,7 +253,7 @@ export default function About() {
           <h2 className="text-4xl font-bold mb-4">
             Get In <span className="text-purple-400">Touch</span>
           </h2>
-          <p className="text-slate-400 mb-10">
+          <p className="text-ink-dim mb-10">
             We would love to hear from you. Reach out to us anytime.
           </p>
           <div className="flex flex-col md:flex-row gap-6 justify-center">

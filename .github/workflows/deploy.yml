@@ -1,141 +1,195 @@
-name: Deploy WorknAi_V2
+name: CI/CD Deploy WorknAi
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
+
+concurrency:
+  group: worknai-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  API_BASE_URL: https://api.worknai.online/api
 
 jobs:
-  build-and-deploy:
+  build-check:
+    name: Build check
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.backend
+          push: false
 
-    - name: Build and push Backend
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile.backend
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
-        no-cache: true
+      - name: Build Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.frontend
+          push: false
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
-    - name: Build and push Frontend
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile.frontend
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/worknai-frontend:latest
-        no-cache: true
-        build-args: |
-          VITE_API_BASE_URL=https://api.worknai.online/api
-          VITE_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+      - name: Build Admin
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.admin
+          push: false
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
 
-    - name: Build and push Admin
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile.admin
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/worknai-admin:latest
-        no-cache: true
-        build-args: |
-          VITE_API_BASE_URL=https://api.worknai.online/api
+      - name: Build Manager
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.manager
+          push: false
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
 
-    - name: Build and push Manager
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile.manager
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/worknai-manager:latest
-        no-cache: true
-        build-args: |
-          VITE_API_BASE_URL=https://api.worknai.online/api
+  deploy:
+    name: Build, push, and deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
 
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        script: |
-          mkdir -p /var/www/worknai_v2
-          cd /var/www/worknai_v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-          cat > docker-compose.yml <<'EOF'
-          version: '3.8'
-          services:
-            frontend:
-              image: worknai009/worknai-frontend:latest
-              container_name: worknai_v2_frontend
-              ports:
-                - "3000:80"
-              restart: always
-              networks:
-                - worknai_v2_network
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-            admin:
-              image: worknai009/worknai-admin:latest
-              container_name: worknai_v2_admin
-              ports:
-                - "3003:80"
-              restart: always
-              networks:
-                - worknai_v2_network
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-            manager:
-              image: worknai009/worknai-manager:latest
-              container_name: worknai_v2_manager
-              ports:
-                - "3002:80"
-              restart: always
-              networks:
-                - worknai_v2_network
+      - name: Build and push Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
 
-          networks:
-            worknai_v2_network:
-              driver: bridge
-          EOF
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/worknai-frontend:latest
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
 
-          docker network create worknai_v2_network || true
+      - name: Build and push Admin
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.admin
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/worknai-admin:latest
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
 
-          docker rm -f worknai_v2_backend || true
-          docker pull ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
-          docker run -d \
-            --name worknai_v2_backend \
-            --network worknai_v2_network \
-            -p 5001:5000 \
-            -e "MONGO_URI=${{ secrets.MONGODB_URI }}" \
-            -e "JWT_SECRET=${{ secrets.JWT_SECRET }}" \
-            -e "SMTP_USER=${{ secrets.SMTP_USER }}" \
-            -e "SMTP_PASS=${{ secrets.SMTP_PASS }}" \
-            -e "FRONTEND_URL=https://worknai.online" \
-            -e "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" \
-            -e NODE_ENV=production \
-            -e PORT=5000 \
-            --restart always \
-            ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
+      - name: Build and push Manager
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.manager
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/worknai-manager:latest
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_BASE_URL }}
 
-          docker pull ${{ secrets.DOCKER_USERNAME }}/worknai-frontend:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/worknai-admin:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/worknai-manager:latest
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            mkdir -p /var/www/worknai_v2
+            cd /var/www/worknai_v2
 
-          docker compose down || true
-          docker compose up -d
+            cat > docker-compose.yml <<'EOF'
+            version: '3.8'
 
-          sleep 3
-          docker compose ps
-          docker ps | grep backend
+            services:
+              backend:
+                image: ${{ secrets.DOCKER_USERNAME }}/worknai-backend:latest
+                container_name: worknai_v2_backend
+                ports:
+                  - "5001:5000"
+                environment:
+                  NODE_ENV: production
+                  PORT: 5000
+                  MONGO_URI: ${{ secrets.MONGODB_URI }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+                  SMTP_USER: ${{ secrets.SMTP_USER }}
+                  SMTP_PASS: ${{ secrets.SMTP_PASS }}
+                  FRONTEND_URL: https://worknai.online
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                restart: always
+                networks:
+                  - worknai_v2_network
+
+              frontend:
+                image: ${{ secrets.DOCKER_USERNAME }}/worknai-frontend:latest
+                container_name: worknai_v2_frontend
+                ports:
+                  - "3000:80"
+                restart: always
+                networks:
+                  - worknai_v2_network
+                depends_on:
+                  - backend
+
+              admin:
+                image: ${{ secrets.DOCKER_USERNAME }}/worknai-admin:latest
+                container_name: worknai_v2_admin
+                ports:
+                  - "3003:80"
+                restart: always
+                networks:
+                  - worknai_v2_network
+                depends_on:
+                  - backend
+
+              manager:
+                image: ${{ secrets.DOCKER_USERNAME }}/worknai-manager:latest
+                container_name: worknai_v2_manager
+                ports:
+                  - "3002:80"
+                restart: always
+                networks:
+                  - worknai_v2_network
+                depends_on:
+                  - backend
+
+            networks:
+              worknai_v2_network:
+                driver: bridge
+            EOF
+
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
+            docker compose ps
