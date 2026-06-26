@@ -189,6 +189,7 @@ jobs:
                 driver: bridge
             EOF
 
+            docker rm -f worknai_v2_backend worknai_v2_frontend worknai_v2_admin worknai_v2_manager >/dev/null 2>&1 || true
             docker compose pull
             docker compose up -d --remove-orphans
             docker image prune -f
