@@ -124,6 +124,9 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 20m
           envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,GOOGLE_CLIENT_ID
           script: |
             set -e
