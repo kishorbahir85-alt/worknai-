@@ -190,7 +190,8 @@ jobs:
             EOF
 
             docker rm -f worknai_v2_backend worknai_v2_frontend worknai_v2_admin worknai_v2_manager >/dev/null 2>&1 || true
+            docker compose down --remove-orphans >/dev/null 2>&1 || true
             docker compose pull
-            docker compose up -d --remove-orphans
+            docker compose up -d --force-recreate --remove-orphans
             docker image prune -f
             docker compose ps
