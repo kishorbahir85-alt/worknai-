@@ -16,11 +16,12 @@ import otpRoutes from './routes/otpRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
-dotenv.config();
-
-const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,7 +46,7 @@ app.use(cors({
 
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
 
-connectDB();
+await connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);

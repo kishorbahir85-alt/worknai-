@@ -25,7 +25,7 @@ export default function Products() {
       <div className="container-x">
         <div className="text-center mb-12">
           <span className="chip mb-4">What We Build</span>
-          <h1 className="display-h text-4xl md:text-5xl text-white mb-4">Our Products</h1>
+          <h1 className="display-h text-4xl md:text-5xl text-ink mb-4">Our Products</h1>
           <p className="text-ink-dim max-w-xl mx-auto">Software solutions, HRMS, CRM and digital products built by the WorknAi team.</p>
         </div>
 

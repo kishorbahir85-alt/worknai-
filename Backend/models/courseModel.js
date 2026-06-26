@@ -18,6 +18,7 @@ const courseSchema = mongoose.Schema(
     icon:             { type: String, default: '📚' },
     category:         { type: String, default: '' },
     duration:         { type: String, default: '' },
+    startDate:        { type: String, default: '' },
     price:            { type: Number, default: 0 },
     discountPrice:    { type: Number, default: 0 },
     level:            { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },

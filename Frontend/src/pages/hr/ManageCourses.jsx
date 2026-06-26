@@ -7,7 +7,20 @@ const inp = 'w-full px-4 py-2.5 rounded-xl bg-slate-800/60 border border-slate-7
 const lbl = 'block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider';
 
 const emptyBatch = { name: '', timing: '', days: '', startDate: '', totalSeats: '' };
-const empty = { title: '', shortDescription: '', description: '', icon: '📚', category: '', duration: '', price: '', discountPrice: '', level: 'beginner', mode: 'offline', videoUrl: '', batches: [] };
+const empty = { title: '', shortDescription: '', description: '', icon: '📚', category: '', duration: '', startDate: '', price: '', discountPrice: '', level: 'beginner', mode: 'offline', videoUrl: '', batches: [] };
+const toDateInputValue = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+  const match = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (match) return `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+  return '';
+};
+const formatDate = (value) => {
+  const normalized = toDateInputValue(value);
+  if (!normalized) return '—';
+  return new Date(`${normalized}T00:00:00`).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 export default function HRManageCourses() {
   const [courses, setCourses]     = useState([]);
@@ -52,9 +65,10 @@ export default function HRManageCourses() {
     setForm({
       title: c.title, shortDescription: c.shortDescription || '', description: c.description,
       icon: c.icon || '📚', category: c.category, duration: c.duration,
+      startDate: toDateInputValue(c.startDate),
       price: c.price, discountPrice: c.discountPrice || '',
       level: c.level, mode: c.mode, videoUrl: c.videoUrl || '',
-      batches: c.batches || [],
+      batches: (c.batches || []).map((batch) => ({ ...batch, startDate: toDateInputValue(batch.startDate) })),
     });
     setEditing(c._id); setShowForm(true); window.scrollTo(0, 0);
   };
@@ -108,6 +122,10 @@ export default function HRManageCourses() {
             <div>
               <label className={lbl}>Duration</label>
               <input className={inp} value={form.duration} onChange={f('duration')} placeholder="3 Months" />
+            </div>
+            <div>
+              <label className={lbl}>Start Date</label>
+              <input type="date" className={inp} value={form.startDate} onChange={f('startDate')} />
             </div>
             <div>
               <label className={lbl}>Level</label>
@@ -206,6 +224,7 @@ export default function HRManageCourses() {
                 <th className="text-left py-3 px-4">Category</th>
                 <th className="text-left py-3 px-4">Level</th>
                 <th className="text-left py-3 px-4">Mode</th>
+                <th className="text-left py-3 px-4">Start Date</th>
                 <th className="text-left py-3 px-4">Price</th>
                 <th className="text-left py-3 px-4">Batches</th>
                 <th className="py-3 px-4" />
@@ -222,6 +241,7 @@ export default function HRManageCourses() {
                       {c.mode}
                     </span>
                   </td>
+                  <td className="py-3 px-4 text-slate-400">{formatDate(c.startDate)}</td>
                   <td className="py-3 px-4 text-slate-400">
                     {c.discountPrice > 0 ? (
                       <><span className="text-white font-medium">₹{c.discountPrice}</span> <span className="line-through text-xs">₹{c.price}</span></>
@@ -238,7 +258,7 @@ export default function HRManageCourses() {
                   </td>
                 </tr>
               ))}
-              {!courses.length && <tr><td colSpan={7} className="py-12 text-center text-slate-500">No courses yet</td></tr>}
+              {!courses.length && <tr><td colSpan={8} className="py-12 text-center text-slate-500">No courses yet</td></tr>}
             </tbody>
           </table>
         </div>

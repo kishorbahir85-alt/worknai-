@@ -5,16 +5,27 @@ import {
   ArrowRight, Sparkles, GraduationCap, Rocket, Briefcase, Users,
   Code2, Brain, Cloud, Palette, ArrowUpRight, Star, Zap,
   Globe, Smartphone, Database, Layers, Plug, TrendingUp,
-  Monitor, Phone, Mail, ShieldCheck, BookOpen,
+  Monitor, Phone, Mail, ShieldCheck, BookOpen, Calendar,
 } from 'lucide-react';
 import SectionHeader from '../../components/ui/SectionHeader';
 import api from '../../utils/api';
 import { formatPrice } from '../../utils/utils';
-import heroBg from '../../assets/hero.jpeg';
+import { useTheme } from '../../context/ThemeContext';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
+};
+
+const formatCourseStartDate = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(text)
+    ? text
+    : text.replace(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/, (_, day, month, year) => `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+  const date = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
 const getFavicon = (url) => {
@@ -32,12 +43,34 @@ const MARQUEE_NAMES = [
   'Learning Hub', 'Car Rentals', 'Tour Hub',
 ];
 const MARQUEE_ROW = [...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES];
+const darkHeroVideo = 'https://res.cloudinary.com/dqmg9yp6r/video/upload/only-us/hero.mp4';
+const lightHeroVideo = '/hero2.mp4';
 
 export default function Home() {
+  const { isDark } = useTheme();
   const [info, setInfo] = useState(null);
   const [courses, setCourses] = useState([]);
   const [products, setProducts] = useState([]);
   const [jobs, setJobs] = useState([]);
+
+  const heroCopy = isDark
+    ? {
+        eyebrow: 'Pune · Software · AI · Training',
+        title: 'Where Builders Create the',
+        accent: 'Future.',
+        subtitle: info?.heroSubtitle ||
+          'WorknAi is an IT training, software R&D and product engineering company building careers and cutting-edge SaaS from Pune.',
+        primary: 'Explore Courses',
+        secondary: 'Our Products',
+      }
+    : {
+        eyebrow: 'AI Skills · Live Projects · Career Growth',
+        title: 'Learn Tech.',
+        accent: 'Build Careers.',
+        subtitle: 'Learn modern tech, work on live projects, and grow with a Pune-based product studio building AI, software, and career-ready training.',
+        primary: 'Start Learning',
+        secondary: 'View Products',
+      };
 
   useEffect(() => {
     Promise.all([
@@ -49,81 +82,158 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className={isDark ? '' : 'reference-home'}>
 
       {/* ============= HERO ============= */}
-      <section className="relative flex min-h-[calc(100svh-65px)] items-center px-4 sm:px-6 py-10 md:py-16 overflow-hidden bg-[#06030f]">
-        {/* Mobile: full bg video */}
-        <div className="absolute inset-0 z-0 md:hidden overflow-hidden" aria-hidden="true">
-          <video className="h-full w-full object-cover object-center" autoPlay muted loop playsInline preload="none">
-            <source src="https://res.cloudinary.com/dqmg9yp6r/video/upload/only-us/hero.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-[#06030f]/70" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#06030f]/40 via-transparent to-[#06030f]/80" />
-        </div>
+      <section className={`relative flex min-h-[calc(100svh-65px)] items-center px-4 sm:px-6 py-10 md:py-16 overflow-hidden ${isDark ? 'bg-[#06030f]' : 'reference-hero'}`}>
+        {isDark ? (
+          <>
+            {/* Mobile: full bg video */}
+            <div className="absolute inset-0 z-0 md:hidden overflow-hidden" aria-hidden="true">
+              <video className="h-full w-full object-cover object-center" autoPlay muted loop playsInline preload="none">
+                <source src={darkHeroVideo} type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-[#06030f]/70" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#06030f]/40 via-transparent to-[#06030f]/80" />
+            </div>
 
-        {/* Desktop: right side video */}
-        <div className="absolute inset-y-0 right-0 z-0 hidden md:block w-[55%] overflow-hidden" aria-hidden="true">
-          <video className="h-full w-full object-cover object-center" autoPlay muted loop playsInline preload="none">
-            <source src="https://res.cloudinary.com/dqmg9yp6r/video/upload/only-us/hero.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#06030f] via-transparent to-transparent" />
-        </div>
-
-        {/* Glow orb */}
-        <div className="glow-orb w-[200px] h-[200px] md:w-[500px] md:h-[500px] bg-violet-700 top-20 -left-20 md:-left-40 animate-pulse-slow" />
-
-        <div className="container-x relative z-10 w-full">
-          <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-12">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-              className="lg:col-span-7 w-full"
+            {/* Desktop: right side video */}
+            <div className="absolute inset-y-0 right-0 z-0 hidden md:block w-[55%] overflow-hidden" aria-hidden="true">
+              <video className="h-full w-full object-cover object-center" autoPlay muted loop playsInline preload="none">
+                <source src={darkHeroVideo} type="video/mp4" />
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-r from-[#06030f] via-transparent to-transparent" />
+            </div>
+          </>
+        ) : (
+          <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+            <video
+              key="light-hero-video"
+              className="h-full w-full object-cover object-center"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="none"
             >
-              <motion.div variants={fadeUp} transition={{ duration: 0.6 }}>
-                <span className="chip">
-                  <Sparkles className="w-3 h-3" /> Pune · Software · AI · Training
-                </span>
-              </motion.div>
-              <br /><br />
-
-              <motion.h1
-                variants={fadeUp}
-                transition={{ duration: 0.7 }}
-                className="display-h text-[clamp(2rem,6.4vw,5rem)] mt-4"
-              >
-                <span className="text-gradient block">Where Builders Create the</span>
-                <span className="block text-violet-300">Future.</span>
-              </motion.h1>
-
-              <motion.p
-                variants={fadeUp}
-                transition={{ duration: 0.7 }}
-                className="text-base md:text-lg text-ink-dim mt-6 max-w-xl leading-relaxed"
-              >
-                {info?.heroSubtitle ||
-                  'WorknAi is an IT training, software R&D and product engineering company building careers and cutting-edge SaaS from Pune.'}
-              </motion.p>
-
-              <motion.div
-                variants={fadeUp}
-                transition={{ duration: 0.7 }}
-                className="flex flex-wrap items-center gap-4 mt-8"
-              >
-                <Link to="/courses" className="btn-primary">
-                  Explore Courses <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link to="/products" className="btn-ghost">
-                  Our Products <ArrowUpRight className="w-4 h-4" />
-                </Link>
-              </motion.div>
-            </motion.div>
-
-            <div className="hidden lg:block lg:col-span-5" />
+              <source src={lightHeroVideo} type="video/mp4" />
+            </video>
           </div>
-        </div>
+        )}
+
+        {isDark ? (
+          <>
+            {/* Glow orb */}
+            <div className="glow-orb w-[200px] h-[200px] md:w-[500px] md:h-[500px] bg-violet-700 top-20 -left-20 md:-left-40 animate-pulse-slow" />
+
+            <div className="container-x relative z-10 w-full">
+              <div className="grid items-center gap-8 md:gap-12 lg:grid-cols-12">
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+                  className="lg:col-span-7 w-full"
+                >
+                  <motion.div variants={fadeUp} transition={{ duration: 0.6 }}>
+                    <span className="chip">
+                      <Sparkles className="w-3 h-3" /> {heroCopy.eyebrow}
+                    </span>
+                  </motion.div>
+
+                  <motion.h1
+                    variants={fadeUp}
+                    transition={{ duration: 0.7 }}
+                    className="display-h text-[clamp(2.35rem,6.4vw,5rem)] mt-7"
+                  >
+                    <span className="text-gradient block">{heroCopy.title}</span>
+                    <span className="block text-violet-300">{heroCopy.accent}</span>
+                  </motion.h1>
+
+                  <motion.p
+                    variants={fadeUp}
+                    transition={{ duration: 0.7 }}
+                    className="text-base md:text-lg text-ink-dim mt-6 max-w-xl leading-relaxed"
+                  >
+                    {heroCopy.subtitle}
+                  </motion.p>
+
+                  <motion.div
+                    variants={fadeUp}
+                    transition={{ duration: 0.7 }}
+                    className="flex flex-wrap items-center gap-4 mt-8"
+                  >
+                    <Link to="/courses" className="btn-primary">
+                      {heroCopy.primary} <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <Link to="/products" className="btn-ghost">
+                      {heroCopy.secondary} <ArrowUpRight className="w-4 h-4" />
+                    </Link>
+                  </motion.div>
+                </motion.div>
+
+                <div className="hidden lg:block lg:col-span-5" />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="reference-hero-wash absolute inset-0 z-[1]" />
+            <div className="reference-hero-bottom absolute inset-x-0 bottom-0 z-[1] h-[24%]" />
+
+            <div className="container-x relative z-10 w-full pt-10 md:pt-24">
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.75 }}
+                className="reference-hero-copy max-w-3xl"
+              >
+                <h1 className="mt-4 font-display text-[2.25rem] font-bold leading-[0.94] text-white sm:text-[2.8rem] md:mt-5 md:text-[3.6rem] lg:text-[4.35rem] xl:text-[4.85rem]">
+                  {heroCopy.title}
+                  <span className="block text-[#ff314f]">{heroCopy.accent}</span>
+                </h1>
+                <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/86 md:mt-6 md:text-lg">
+                  {heroCopy.subtitle}
+                </p>
+                <span className="reference-hero-kicker mt-5">
+                  <Sparkles className="h-4 w-4" /> {heroCopy.eyebrow}
+                </span>
+                <div className="mt-6 flex flex-wrap items-center gap-3 md:mt-8">
+                  <Link to="/courses" className="reference-hero-primary">
+                    {heroCopy.primary} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link to="/products" className="reference-hero-secondary">
+                    {heroCopy.secondary} <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
+                <div className="reference-hero-proof">
+                  <span>Live Projects</span>
+                  <span>AI + Full Stack</span>
+                  <span>Career Mentoring</span>
+                </div>
+              </motion.div>
+
+            </div>
+          </>
+        )}
       </section>
+
+      {!isDark && (
+        <section className="reference-highlights px-4 sm:px-6">
+          <div className="container-x grid gap-10 py-14 md:grid-cols-3 md:py-20">
+            {[
+              { icon: ShieldCheck, title: 'Career Focused', desc: 'Training, internships and mentoring built around real production skills.' },
+              { icon: Rocket, title: 'Product Studio', desc: 'Our team ships SaaS, AI tools and business platforms from the same ecosystem.' },
+              { icon: Star, title: 'Premium Support', desc: 'From course selection to career growth, WorknAi keeps the path clear and practical.' },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="text-center">
+                <Icon className="mx-auto mb-5 h-12 w-12 stroke-[1.4] text-white" />
+                <h2 className="font-display text-2xl font-semibold uppercase tracking-wide text-white">{title}</h2>
+                <p className="mx-auto mt-5 max-w-xs text-sm leading-relaxed text-white/78">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
 
       {/* ============= OVERVIEW ============= */}
@@ -139,7 +249,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">Welcome to WorknAi</p>
-              <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">Overview</h2>
+              <h2 className="font-display text-4xl md:text-5xl font-bold text-ink mb-3 leading-tight">Overview</h2>
               <div className="w-12 h-1 bg-gradient-to-r from-violet-500 to-violet-300 rounded-full mb-6" />
               <p className="text-ink-dim leading-relaxed mb-4">
                 Whether the challenge is to establish a business, market it, or maintain it — we believe in understanding every challenge head-on and offering solutions that are bang-on. Boost your business technologically, digitally, and with expertise.
@@ -198,8 +308,8 @@ export default function Home() {
                 },
               ].map(({ label, desc, to, overlay, img }) => (
                 <Link key={label} to={to} className="group block px-8 py-10 relative overflow-hidden">
-                  <img src={img} alt={label} className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
-                  <div className={`absolute inset-0 bg-gradient-to-r ${overlay} group-hover:opacity-90 transition-opacity`} />
+                  <img src={img} alt={label} className="media-clean-img absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                  <div className={`media-clean-overlay absolute inset-0 bg-gradient-to-r ${overlay} group-hover:opacity-90 transition-opacity`} />
                   <div className="relative">
                     <h3 className="font-display text-2xl font-bold text-white mb-2">{label}</h3>
                     <div className="w-8 h-0.5 bg-white/60 rounded-full mb-3" />
@@ -251,7 +361,7 @@ export default function Home() {
         <div className="container-x">
           <div className="mb-10">
             <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">What We Do</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-3">Services</h2>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-ink mb-3">Services</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-violet-500 to-violet-300 rounded-full mb-5" />
             <p className="text-ink-dim max-w-xl">End-to-end technology services that enhance your business reach and help you achieve your goals.</p>
           </div>
@@ -285,13 +395,13 @@ export default function Home() {
                   <img
                     src={`https://images.unsplash.com/${img}?w=400&q=80`}
                     alt={label}
-                    className="absolute inset-0 w-full h-full object-cover object-center opacity-55 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500"
+                    className="media-clean-img absolute inset-0 w-full h-full object-cover object-center opacity-55 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500"
                   />
-                  <div className="absolute inset-0 bg-[#06030f]/45" />
+                  <div className="media-clean-overlay absolute inset-0 bg-[#06030f]/45" />
                   <div className="relative w-14 h-14 rounded-2xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center group-hover:bg-violet-500/40 transition-colors">
                     <Icon className="w-7 h-7 text-violet-300 group-hover:text-white transition-colors" />
                   </div>
-                  <span className="relative text-sm font-bold text-white tracking-wide drop-shadow-lg group-hover:text-violet-200 transition-colors">{label}</span>
+                  <span className="relative text-sm font-bold text-white tracking-wide group-hover:text-violet-200 transition-colors">{label}</span>
                 </Link>
               </motion.div>
             ))}
@@ -336,6 +446,11 @@ export default function Home() {
                       <span className="chip !text-[10px]">{c.mode}</span>
                       <span className="text-ink-faint">· {c.duration}</span>
                     </div>
+                    {c.startDate && (
+                      <p className="mb-2 inline-flex items-center gap-1 text-xs text-ink-dim">
+                        <Calendar className="h-3 w-3" /> Starts {formatCourseStartDate(c.startDate)}
+                      </p>
+                    )}
                     <h3 className="font-display text-xl font-semibold mb-2 group-hover:text-violet-300 transition-colors">
                       {c.title}
                     </h3>
@@ -466,9 +581,9 @@ export default function Home() {
                 <img
                   src={`https://images.unsplash.com/${f.img}?w=500&q=80`}
                   alt={f.title}
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-55 group-hover:opacity-65 group-hover:scale-105 transition-all duration-500"
+                  className="media-clean-img absolute inset-0 w-full h-full object-cover object-center opacity-55 group-hover:opacity-65 group-hover:scale-105 transition-all duration-500"
                 />
-                <div className="absolute inset-0 bg-[#06030f]/50" />
+                <div className="media-clean-overlay absolute inset-0 bg-[#06030f]/50" />
                 <div className="relative p-6">
                   <div className="w-12 h-12 rounded-xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center mb-4 group-hover:bg-violet-500/30 transition-colors">
                     <f.icon className="w-6 h-6 text-violet-300" />
@@ -527,21 +642,21 @@ export default function Home() {
 
 
       {/* ============= WORK WITH US ============= */}
-      <section className="relative py-20 px-4 overflow-hidden">
+      <section className="work-with-us-section relative py-20 px-4 overflow-hidden">
         <img
           src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1600"
           alt="Work with us"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
+          className="media-clean-img absolute inset-0 w-full h-full object-cover object-center opacity-30"
         />
-        <div className="absolute inset-0 bg-[#06030f]/70" />
+        <div className="media-clean-overlay absolute inset-0 bg-[#06030f]/70" />
         <div className="container-x relative">
-          <div className="mb-12">
+          <div className="work-with-us-heading mb-12">
             <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">Join With Us</p>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-3">Work with us</h2>
             <div className="w-12 h-1 bg-gradient-to-r from-violet-500 to-violet-300 rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-0">
+          <div className="work-stats-grid grid grid-cols-3 gap-x-12 gap-y-0">
             {[
               { n: '01', stat: '5+',   label: 'Years Experience' },
               { n: '02', stat: '200+', label: 'Students Trained' },
@@ -555,13 +670,13 @@ export default function Home() {
             ].map(({ n, stat, label }, i) => (
               <div
                 key={n}
-                className="flex items-center gap-5 border-b border-violet-400/40 py-7 group"
+                className="work-stat-item flex items-center gap-5 border-b border-violet-400/40 py-7 group"
               >
-                <span className="text-lg font-bold text-violet-400 font-display w-8 shrink-0">{n}</span>
-                <div className="w-px h-12 bg-violet-400/60 shrink-0" />
-                <div>
-                  <p className="text-3xl font-bold text-white font-display leading-none mb-1 group-hover:text-violet-300 transition-colors">{stat}</p>
-                  <p className="text-sm font-medium text-white/70">{label}</p>
+                <span className="work-stat-number text-lg font-bold text-violet-400 font-display w-8 shrink-0">{n}</span>
+                <div className="work-stat-divider w-px h-12 bg-violet-400/60 shrink-0" />
+                <div className="work-stat-copy">
+                  <p className="work-stat-value text-3xl font-bold text-white font-display leading-none mb-1 group-hover:text-violet-300 transition-colors">{stat}</p>
+                  <p className="work-stat-label text-sm font-medium text-white/70">{label}</p>
                 </div>
               </div>
             ))}
@@ -571,7 +686,7 @@ export default function Home() {
 
 
       {/* ============= CONTACT STRIP ============= */}
-      <section className="border-y border-violet-500/20 bg-[#0d0d1a]">
+      <section className="reference-contact-strip border-y border-violet-500/20 bg-[#0d0d1a]">
         <div className="container-x py-0">
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-violet-500/20">
             {[

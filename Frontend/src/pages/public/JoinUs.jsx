@@ -131,7 +131,7 @@ export default function JoinUs() {
       {/* Header */}
       <div className="max-w-3xl mx-auto text-center mb-12">
         <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">Connect With Us</p>
-        <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Join WorknAi</h1>
+        <h1 className="font-display text-4xl md:text-5xl font-bold text-ink mb-4">Join WorknAi</h1>
         <div className="w-12 h-1 bg-gradient-to-r from-violet-500 to-violet-300 rounded-full mx-auto mb-5" />
         <p className="text-ink-dim text-base leading-relaxed max-w-xl mx-auto">
           Whether you're looking for a career opportunity or want to partner with us — we'd love to hear from you.
@@ -144,7 +144,7 @@ export default function JoinUs() {
           <button
             onClick={() => setTab('job')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all ${
-              tab === 'job' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-white'
+              tab === 'job' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-ink'
             }`}
           >
             <Briefcase className="w-4 h-4" /> Job Inquiry
@@ -152,7 +152,7 @@ export default function JoinUs() {
           <button
             onClick={() => setTab('business')}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all ${
-              tab === 'business' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-white'
+              tab === 'business' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-ink'
             }`}
           >
             <Building2 className="w-4 h-4" /> Business Inquiry
@@ -162,7 +162,7 @@ export default function JoinUs() {
 
       {/* ═══════════ JOB FORM ═══════════ */}
       {tab === 'job' && (
-        <div className="max-w-3xl mx-auto bg-white/[0.03] border border-violet-500/15 rounded-2xl p-8">
+        <div className="max-w-3xl mx-auto glass rounded-2xl p-8">
 
           {/* Not logged in — block the form */}
           {!user ? (
@@ -256,7 +256,7 @@ export default function JoinUs() {
 
       {/* ═══════════ BUSINESS FORM ═══════════ */}
       {tab === 'business' && (
-        <div className="max-w-3xl mx-auto bg-white/[0.03] border border-violet-500/15 rounded-2xl p-8">
+        <div className="max-w-3xl mx-auto glass rounded-2xl p-8">
           {bizDone ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />

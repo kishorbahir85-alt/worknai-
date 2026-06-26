@@ -12,23 +12,23 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative overflow-hidden bg-[#030208] border-t-2 border-violet-500/40">
+    <footer className="site-footer relative overflow-hidden bg-[#030208] border-t-2 border-violet-500/40">
       <div className="glow-orb w-[600px] h-[300px] bg-violet-600 top-0 left-1/2 -translate-x-1/2 opacity-20" />
 
-      <div className="container-x relative px-4 sm:px-6 py-12 md:py-16">
+      <div className="footer-inner container-x relative px-4 sm:px-6 py-12 md:py-16">
 
         {/* Main grid */}
-        <div className="flex flex-col lg:flex-row justify-between gap-10 md:gap-12">
+        <div className="footer-main flex flex-col lg:flex-row justify-between gap-10 md:gap-12">
 
           {/* Col 1 — Brand */}
-          <div className="lg:max-w-[240px] shrink-0">
-            <img src={worknaiLogo} alt="WorknAi" className="h-28 w-auto object-contain mb-3" />
-            <p className="text-sm text-ink-dim leading-relaxed mb-3 max-w-xs">
+          <div className="footer-brand lg:max-w-[240px] shrink-0">
+            <img src={worknaiLogo} alt="WorknAi" className="footer-logo h-28 w-auto object-contain mb-3" />
+            <p className="footer-desc text-sm text-ink-dim leading-relaxed mb-3 max-w-xs">
               {info?.name || 'WorknAi Technologies India Pvt Ltd'} — IT training, software R&D and digital solutions from Pune.
             </p>
 
             {/* Company badges */}
-            <div className="flex flex-wrap gap-2 mb-5">
+            <div className="footer-badges flex flex-wrap gap-2 mb-5">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Active Company
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
 
             {/* Social icons */}
-            <div className="flex flex-wrap gap-2">
+            <div className="footer-social flex flex-wrap gap-2">
               {[
                 { href: info?.social?.instagram || 'https://www.instagram.com/worknai_institute_center/', Icon: Instagram },
                 { href: info?.social?.linkedin  || 'https://in.linkedin.com/in/worknai-technology-8830973b6', Icon: Linkedin },
@@ -55,10 +55,10 @@ export default function Footer() {
           </div>
 
           {/* Links group */}
-          <div className="flex flex-wrap gap-10 md:gap-12 lg:gap-14">
+          <div className="footer-links flex flex-wrap gap-10 md:gap-12 lg:gap-14">
 
             {/* Col 2 — Explore */}
-            <div>
+            <div className="footer-link-col">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Explore</h4>
               <ul className="space-y-3 text-sm">
                 {[
@@ -76,7 +76,7 @@ export default function Footer() {
             </div>
 
             {/* Col 3 — Learn */}
-            <div>
+            <div className="footer-link-col">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Learn</h4>
               <ul className="space-y-3 text-sm">
                 <li><Link to="/courses?mode=online"  className="text-ink-dim hover:text-white transition-colors">Online Courses</Link></li>
@@ -87,7 +87,7 @@ export default function Footer() {
             </div>
 
             {/* Col — Development */}
-            <div>
+            <div className="footer-link-col">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Development</h4>
               <ul className="space-y-3 text-sm">
                 {[
@@ -105,7 +105,7 @@ export default function Footer() {
             </div>
 
             {/* Col — Solutions */}
-            <div>
+            <div className="footer-link-col">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Solutions</h4>
               <ul className="space-y-3 text-sm">
                 {[
@@ -124,7 +124,7 @@ export default function Footer() {
             </div>
 
             {/* Col — Resource Outsourcing */}
-            <div>
+            <div className="footer-link-col">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Resource Outsourcing</h4>
               <ul className="space-y-3 text-sm">
                 {[
@@ -142,7 +142,7 @@ export default function Footer() {
             </div>
 
             {/* Col 4 — Reach Us */}
-            <div>
+            <div className="footer-link-col footer-reach">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Reach Us</h4>
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3 text-ink-dim">
@@ -173,7 +173,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-line2 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-faint">
+        <div className="footer-bottom border-t border-line2 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-faint">
           <p>© {new Date().getFullYear()} {info?.name || 'WorknAi Technologies India Pvt Ltd'}. All rights reserved.</p>
           <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end">
             <Link to="/hr/login" className="hover:text-sky-300 transition-colors flex items-center gap-1">

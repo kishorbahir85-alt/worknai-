@@ -55,7 +55,7 @@ export const enrollCourse = asyncHandler(async (req, res) => {
 // User: get my enrollments
 export const getMyEnrollments = asyncHandler(async (req, res) => {
   const enrollments = await Enrollment.find({ user: req.user._id })
-    .populate('course', 'title slug shortDescription category level mode duration price discountPrice videoUrl isActive icon')
+    .populate('course', 'title slug shortDescription category level mode duration startDate price discountPrice videoUrl isActive icon')
     .sort({ createdAt: -1 });
   res.json({ data: enrollments });
 });

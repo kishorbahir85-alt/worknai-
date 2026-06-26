@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight, User, LogOut, LayoutDashboard, BookOpen, ChevronDown } from 'lucide-react';
+import { Menu, X, ArrowUpRight, LogOut, LayoutDashboard, BookOpen, ChevronDown, Moon, Sun } from 'lucide-react';
 import worknaiLogo from '../../assets/worknai_logo.png';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
 const guestNavItems = [
@@ -31,6 +32,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isUser, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +61,20 @@ export default function Navbar() {
   };
 
   const navItems = user && isUser ? userNavItems : guestNavItems;
+  const themeLabel = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+  const ThemeIcon = isDark ? Sun : Moon;
+
+  const renderThemeToggle = () => (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className="theme-toggle inline-flex h-10 w-10 items-center justify-center rounded-full border border-line2 bg-violet-500/10 text-ink transition-colors hover:border-violet-400/50 hover:bg-violet-500/20"
+      aria-label={themeLabel}
+      title={themeLabel}
+    >
+      <ThemeIcon className="h-4 w-4" />
+    </button>
+  );
 
   return (
     <>
@@ -66,7 +82,7 @@ export default function Navbar() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
+        className={`site-navbar fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300 ${
           scrolled
             ? 'bg-[#0d0d1a]/90 backdrop-blur-xl border-b border-violet-500/20 shadow-lg shadow-violet-900/10'
             : 'bg-[#0d0d1a]/70 backdrop-blur-md border-b border-white/5'
@@ -86,8 +102,8 @@ export default function Navbar() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `relative px-3 py-1.5 text-sm font-medium transition-colors rounded-full whitespace-nowrap ${
-                    isActive ? 'text-white' : 'text-ink-dim hover:text-white'
+                  `site-nav-link relative px-3 py-1.5 text-sm font-medium transition-colors rounded-full whitespace-nowrap ${
+                    isActive ? 'text-ink' : 'text-ink-dim hover:text-ink'
                   }`
                 }
               >
@@ -97,7 +113,7 @@ export default function Navbar() {
                     {isActive && (
                       <motion.span
                         layoutId="nav-pill"
-                        className="absolute inset-0 -z-10 bg-violet-500/20 border border-violet-400/30 rounded-full"
+                        className="site-nav-pill absolute inset-0 -z-10 bg-violet-500/20 border border-violet-400/30 rounded-full"
                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -109,16 +125,17 @@ export default function Navbar() {
 
           {/* CTA / Auth buttons */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
+            {renderThemeToggle()}
             {user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen((o) => !o)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 transition-colors text-sm font-medium text-white"
+                  className="site-user-trigger flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 transition-colors text-sm font-medium text-ink"
                 >
                   {user.avatar ? (
                     <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full object-cover" />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold">
+                    <div className="site-user-avatar w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold">
                       {user.name?.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -133,12 +150,12 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 6, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-48 bg-[#0d0d1a]/95 backdrop-blur-xl border border-violet-500/20 rounded-xl shadow-xl shadow-violet-900/20 py-1.5 z-50"
+                      className="site-menu-surface absolute right-0 top-full mt-2 w-48 bg-[#0d0d1a]/95 backdrop-blur-xl border border-violet-500/20 rounded-xl shadow-xl shadow-violet-900/20 py-1.5 z-50"
                     >
                       <Link
                         to="/user/dashboard"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-dim hover:text-white hover:bg-violet-500/10 transition-colors"
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors"
                       >
                         <LayoutDashboard className="w-4 h-4" />
                         Dashboard
@@ -146,7 +163,7 @@ export default function Navbar() {
                       <Link
                         to="/user/my-courses"
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-dim hover:text-white hover:bg-violet-500/10 transition-colors"
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors"
                       >
                         <BookOpen className="w-4 h-4" />
                         My Courses
@@ -176,14 +193,17 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setOpen((o) => !o)}
-            className="lg:hidden p-2 rounded-lg border border-line2 text-ink"
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Mobile controls */}
+          <div className="lg:hidden flex items-center gap-2">
+            {renderThemeToggle()}
+            <button
+              onClick={() => setOpen((o) => !o)}
+              className="p-2 rounded-lg border border-line2 text-ink"
+              aria-label="Toggle menu"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -196,7 +216,7 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -10 }}
             className="fixed top-[65px] left-0 right-0 z-50 lg:hidden"
           >
-            <div className="bg-[#0d0d1a]/95 backdrop-blur-xl border-b border-violet-500/20 px-6 py-4 flex flex-col gap-1">
+            <div className="site-menu-surface bg-[#0d0d1a]/95 backdrop-blur-xl border-b border-violet-500/20 px-6 py-4 flex flex-col gap-1">
               {navItems.map((item) => (
                 <NavLink
                   key={item.to}
@@ -205,8 +225,8 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `px-4 py-3 text-base font-medium rounded-xl ${
                       isActive
-                        ? 'bg-violet-500/20 text-white border border-violet-400/30'
-                        : 'text-ink-dim hover:bg-violet-500/10'
+                        ? 'bg-violet-500/20 text-ink border border-violet-400/30'
+                        : 'text-ink-dim hover:text-ink hover:bg-violet-500/10'
                     }`
                   }
                 >
@@ -217,11 +237,11 @@ export default function Navbar() {
               <div className="border-t border-violet-500/10 mt-2 pt-2">
                 {user ? (
                   <>
-                    <div className="flex items-center gap-2 px-4 py-2 text-sm text-white font-medium">
+                    <div className="flex items-center gap-2 px-4 py-2 text-sm text-ink font-medium">
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
                       ) : (
-                        <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold">
+                        <div className="site-user-avatar w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-xs font-bold">
                           {user.name?.charAt(0).toUpperCase()}
                         </div>
                       )}

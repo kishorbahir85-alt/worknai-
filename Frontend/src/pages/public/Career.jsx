@@ -40,7 +40,7 @@ export default function Career() {
         {/* Header */}
         <div className="text-center mb-10">
           <span className="chip mb-4">We're Hiring</span>
-          <h1 className="display-h text-4xl md:text-5xl text-white mb-4">Career Opportunities</h1>
+          <h1 className="display-h text-4xl md:text-5xl text-ink mb-4">Career Opportunities</h1>
           <p className="text-ink-dim max-w-xl mx-auto">Join the WorknAi team. We're looking for passionate people to build the future with us.</p>
         </div>
 
@@ -72,7 +72,7 @@ export default function Career() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <Search size={40} className="mx-auto mb-4 text-ink-faint opacity-40" />
-            <p className="text-white font-semibold text-lg mb-1">No results found</p>
+            <p className="text-ink font-semibold text-lg mb-1">No results found</p>
             <p className="text-ink-dim text-sm">No job openings match "<span className="text-violet-300">{query}</span>"</p>
             <button onClick={() => setQuery('')} className="mt-4 text-sm text-violet-400 hover:text-violet-300 underline underline-offset-2">
               Clear search

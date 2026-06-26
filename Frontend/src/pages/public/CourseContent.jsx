@@ -57,7 +57,7 @@ export default function CourseContent() {
   return (
     <section className="py-10 px-4 max-w-5xl mx-auto">
       <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-        <Link to={`/courses/${slug}`} className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-white transition-colors mb-6">
+        <Link to={`/courses/${slug}`} className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-ink transition-colors mb-6">
           <ArrowLeft className="w-4 h-4" /> Back to Course
         </Link>
       </motion.div>
@@ -66,7 +66,7 @@ export default function CourseContent() {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <PlayCircle className="w-5 h-5 text-violet-400" />
-            <h1 className="text-2xl font-bold text-white">{course?.title}</h1>
+            <h1 className="text-2xl font-bold text-ink">{course?.title}</h1>
           </div>
           <p className="text-ink-dim text-sm">Course Content — Only visible to enrolled students</p>
         </div>

@@ -5,12 +5,14 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login, googleLogin } = useAuth();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
@@ -53,7 +55,7 @@ export default function Login() {
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-6 transition-colors group"
+          className="flex items-center gap-2 text-sm text-ink-dim hover:text-ink mb-6 transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           Back
@@ -71,7 +73,7 @@ export default function Login() {
             <GoogleLogin
               onSuccess={handleGoogle}
               onError={() => toast.error('Google login failed')}
-              theme="filled_black"
+              theme={isDark ? 'filled_black' : 'outline'}
               shape="pill"
               text="signin_with"
               size="large"
@@ -114,7 +116,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPass((s) => !s)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-ink transition-colors"
               >
                 {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>

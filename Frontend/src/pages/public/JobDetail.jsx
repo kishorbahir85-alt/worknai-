@@ -119,7 +119,7 @@ export default function JobDetail() {
   if (notFound || !job) return (
     <section className="py-20 text-center px-4">
       <AlertCircle className="w-14 h-14 text-red-400 mx-auto mb-4" />
-      <h1 className="text-2xl font-bold text-white mb-2">Job not found</h1>
+      <h1 className="text-2xl font-bold text-ink mb-2">Job not found</h1>
       <p className="text-ink-dim mb-6">This job may have been closed or doesn't exist.</p>
       <Link to="/career" className="btn-primary"><ArrowLeft className="w-4 h-4" /> Back to Jobs</Link>
     </section>
@@ -129,7 +129,7 @@ export default function JobDetail() {
     <>
       <section className="py-12 px-4 max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-          <Link to="/career" className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-white transition-colors mb-8">
+          <Link to="/career" className="inline-flex items-center gap-2 text-sm text-ink-dim hover:text-ink transition-colors mb-8">
             <ArrowLeft className="w-4 h-4" /> Back to Jobs
           </Link>
         </motion.div>
@@ -212,7 +212,7 @@ export default function JobDetail() {
                   <h2 className="text-lg font-semibold text-white">Apply for {job.title}</h2>
                   <p className="text-sm text-ink-dim mt-0.5">{job.location} · <span className="capitalize">{job.type}</span></p>
                 </div>
-                <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-white hover:bg-violet-500/10 transition-colors">
+                <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>

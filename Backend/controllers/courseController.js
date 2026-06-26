@@ -52,10 +52,38 @@ const uniqueSlug = async (title) => {
   return slug;
 };
 
+const normalizeDateString = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  if (!text) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+
+  const localMatch = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (localMatch) {
+    const [, day, month, year] = localMatch;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  const date = new Date(text);
+  if (!Number.isNaN(date.getTime())) return date.toISOString().slice(0, 10);
+  return text;
+};
+
+const normalizeBatches = (batches = []) => (
+  Array.isArray(batches)
+    ? batches.map((batch) => ({
+      ...batch,
+      startDate: normalizeDateString(batch.startDate),
+      totalSeats: Number(batch.totalSeats) || 0,
+      enrolledCount: Number(batch.enrolledCount) || 0,
+    }))
+    : []
+);
+
 export const createCourse = asyncHandler(async (req, res) => {
   const {
     title, shortDescription, description, icon, category, duration,
-    price, discountPrice, level, mode, videoUrl, batches, featured,
+    startDate, price, discountPrice, level, mode, videoUrl, batches, featured,
   } = req.body;
   if (!title) { res.status(400); throw new Error('Title is required'); }
   const course = await Course.create({
@@ -66,12 +94,13 @@ export const createCourse = asyncHandler(async (req, res) => {
     icon: icon || '📚',
     category: category || '',
     duration: duration || '',
+    startDate: normalizeDateString(startDate),
     price: Number(price) || 0,
     discountPrice: Number(discountPrice) || 0,
     level: level || 'beginner',
     mode: mode || 'offline',
     videoUrl: videoUrl || '',
-    batches: batches || [],
+    batches: normalizeBatches(batches),
     featured: featured || false,
     postedBy: req.user._id,
   });
@@ -87,9 +116,11 @@ export const updateCourse = asyncHandler(async (req, res) => {
   const fields = [
     'title', 'shortDescription', 'description', 'icon', 'category',
     'duration', 'price', 'discountPrice', 'level', 'mode',
-    'isActive', 'videoUrl', 'batches', 'featured',
+    'isActive', 'videoUrl', 'featured',
   ];
   fields.forEach(f => { if (req.body[f] !== undefined) course[f] = req.body[f]; });
+  if (req.body.startDate !== undefined) course.startDate = normalizeDateString(req.body.startDate);
+  if (req.body.batches !== undefined) course.batches = normalizeBatches(req.body.batches);
   if (req.body.price !== undefined)         course.price         = Number(req.body.price) || 0;
   if (req.body.discountPrice !== undefined) course.discountPrice = Number(req.body.discountPrice) || 0;
   await course.save();

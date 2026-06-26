@@ -53,7 +53,7 @@ export default function ForgotPassword() {
                 >
                   Try a different email
                 </button>
-                <Link to="/login" className="text-sm text-ink-dim hover:text-white transition-colors flex items-center justify-center gap-1">
+                <Link to="/login" className="text-sm text-ink-dim hover:text-ink transition-colors flex items-center justify-center gap-1">
                   <ArrowLeft className="w-3.5 h-3.5" /> Back to Login
                 </Link>
               </div>
@@ -100,7 +100,7 @@ export default function ForgotPassword() {
 
               <Link
                 to="/login"
-                className="flex items-center justify-center gap-1.5 text-sm text-ink-dim hover:text-white transition-colors mt-6"
+                className="flex items-center justify-center gap-1.5 text-sm text-ink-dim hover:text-ink transition-colors mt-6"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Login
               </Link>

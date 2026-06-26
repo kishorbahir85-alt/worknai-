@@ -3,7 +3,20 @@ import api from '../utils/api';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const empty = { title: '', description: '', category: '', duration: '', price: '', level: 'beginner', mode: 'offline' };
+const empty = { title: '', description: '', category: '', duration: '', startDate: '', price: '', level: 'beginner', mode: 'offline' };
+const toDateInputValue = (value) => {
+  if (!value) return '';
+  const text = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+  const match = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (match) return `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+  return '';
+};
+const formatDate = (value) => {
+  const normalized = toDateInputValue(value);
+  if (!normalized) return '—';
+  return new Date(`${normalized}T00:00:00`).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+};
 
 export default function ManageCourses() {
   const [courses, setCourses] = useState([]);
@@ -26,7 +39,7 @@ export default function ManageCourses() {
   };
 
   const startEdit = (c) => {
-    setForm({ title: c.title, description: c.description, category: c.category, duration: c.duration, price: c.price, level: c.level, mode: c.mode });
+    setForm({ title: c.title, description: c.description, category: c.category, duration: c.duration, startDate: toDateInputValue(c.startDate), price: c.price, level: c.level, mode: c.mode });
     setEditing(c._id); setShowForm(true); window.scrollTo(0, 0);
   };
 
@@ -57,6 +70,7 @@ export default function ManageCourses() {
           <div className="sm:col-span-2"><label className="field-label">Description</label><textarea className="field" rows={3} value={form.description} onChange={f('description')} /></div>
           <div><label className="field-label">Category</label><input className="field" value={form.category} onChange={f('category')} placeholder="Web Development" /></div>
           <div><label className="field-label">Duration</label><input className="field" value={form.duration} onChange={f('duration')} placeholder="3 Months" /></div>
+          <div><label className="field-label">Start Date</label><input type="date" className="field" value={form.startDate} onChange={f('startDate')} /></div>
           <div><label className="field-label">Price (₹)</label><input type="number" className="field" value={form.price} onChange={f('price')} min={0} /></div>
           <div><label className="field-label">Level</label><select className="field" value={form.level} onChange={f('level')}>{['beginner','intermediate','advanced'].map(l=><option key={l}>{l}</option>)}</select></div>
           <div><label className="field-label">Mode</label><select className="field" value={form.mode} onChange={f('mode')}>{['online','offline','hybrid'].map(m=><option key={m}>{m}</option>)}</select></div>
@@ -70,7 +84,7 @@ export default function ManageCourses() {
       {loading ? <div className="flex justify-center py-16"><div className="w-7 h-7 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div> : (
         <div className="panel-card overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider"><th className="text-left py-3 px-4">Title</th><th className="text-left py-3 px-4">Category</th><th className="text-left py-3 px-4">Level</th><th className="text-left py-3 px-4">Mode</th><th className="text-left py-3 px-4">Price</th><th className="py-3 px-4" /></tr></thead>
+            <thead><tr className="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider"><th className="text-left py-3 px-4">Title</th><th className="text-left py-3 px-4">Category</th><th className="text-left py-3 px-4">Level</th><th className="text-left py-3 px-4">Mode</th><th className="text-left py-3 px-4">Start Date</th><th className="text-left py-3 px-4">Price</th><th className="py-3 px-4" /></tr></thead>
             <tbody>
               {courses.map(c => (
                 <tr key={c._id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
@@ -78,6 +92,7 @@ export default function ManageCourses() {
                   <td className="py-3 px-4 text-slate-400">{c.category||'—'}</td>
                   <td className="py-3 px-4 text-slate-400 capitalize">{c.level}</td>
                   <td className="py-3 px-4 text-slate-400 capitalize">{c.mode}</td>
+                  <td className="py-3 px-4 text-slate-400">{formatDate(c.startDate)}</td>
                   <td className="py-3 px-4 text-slate-400">{c.price?`₹${c.price}`:'Free'}</td>
                   <td className="py-3 px-4 text-right flex gap-1 justify-end">
                     <button onClick={()=>startEdit(c)} className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"><Pencil size={14}/></button>
@@ -85,7 +100,7 @@ export default function ManageCourses() {
                   </td>
                 </tr>
               ))}
-              {!courses.length && <tr><td colSpan={6} className="py-12 text-center text-slate-500">No courses yet</td></tr>}
+              {!courses.length && <tr><td colSpan={7} className="py-12 text-center text-slate-500">No courses yet</td></tr>}
             </tbody>
           </table>
         </div>

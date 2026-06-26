@@ -14,6 +14,7 @@ const enrollmentSchema = mongoose.Schema(
     batchName:     { type: String, default: '' },
     studentDetails: {
       name:          { type: String, default: '' },
+      email:         { type: String, default: '' },
       phone:         { type: String, default: '' },
       qualification: { type: String, default: '' },
       address:       { type: String, default: '' },

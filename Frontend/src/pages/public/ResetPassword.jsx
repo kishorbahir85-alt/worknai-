@@ -56,7 +56,7 @@ export default function ResetPassword() {
       <section className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <AlertCircle className="w-14 h-14 text-red-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-white mb-2">Invalid Link</h1>
+          <h1 className="text-2xl font-bold text-ink mb-2">Invalid Link</h1>
           <p className="text-ink-dim text-sm mb-6">This reset link is missing a token. Please request a new one.</p>
           <Link to="/forgot-password" className="btn-primary">Request New Link</Link>
         </div>
@@ -93,10 +93,10 @@ export default function ResetPassword() {
                 )}
                 {(success.role === 'manager' || success.role === 'admin') && (
                   <div className="text-sm text-ink-dim bg-white/5 border border-violet-500/10 rounded-xl p-4">
-                    Please open your <span className="text-white font-medium capitalize">{success.role}</span> panel and login with your new credentials.
+                    Please open your <span className="text-ink font-medium capitalize">{success.role}</span> panel and login with your new credentials.
                   </div>
                 )}
-                <Link to="/" className="text-sm text-ink-dim hover:text-white transition-colors">
+                <Link to="/" className="text-sm text-ink-dim hover:text-ink transition-colors">
                   Go to Homepage
                 </Link>
               </div>
@@ -148,7 +148,7 @@ export default function ResetPassword() {
                     <button
                       type="button"
                       onClick={() => setShowPass(s => !s)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-white transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-ink transition-colors"
                     >
                       {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -171,7 +171,7 @@ export default function ResetPassword() {
                       <button
                         type="button"
                         onClick={() => setShowConf(s => !s)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-white transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-dim hover:text-ink transition-colors"
                       >
                         {showConf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -193,7 +193,7 @@ export default function ResetPassword() {
 
               <Link
                 to="/forgot-password"
-                className="flex items-center justify-center gap-1.5 text-sm text-ink-dim hover:text-white transition-colors mt-6"
+                className="flex items-center justify-center gap-1.5 text-sm text-ink-dim hover:text-ink transition-colors mt-6"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Request a new link
               </Link>

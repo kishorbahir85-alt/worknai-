@@ -80,7 +80,7 @@ export default function UserDashboard() {
             )}
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Hello, {user?.name?.split(' ')[0]} 👋</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-ink">Hello, {user?.name?.split(' ')[0]} 👋</h1>
             <p className="text-ink-dim text-sm">{user?.email}</p>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function UserDashboard() {
       {/* My Applied Jobs */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-violet-400" /> My Applied Jobs
           </h2>
           <Link to="/career" className="text-sm text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors">
@@ -193,7 +193,7 @@ export default function UserDashboard() {
       {/* My Job Inquiries */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.25 }} className="mt-10">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
             <Send className="w-5 h-5 text-violet-400" /> My Job Inquiries
           </h2>
           <Link to="/join-us" className="text-sm text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors">
@@ -236,7 +236,7 @@ export default function UserDashboard() {
       {/* My Courses */}
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="mt-10">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-ink flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-violet-400" /> My Courses
           </h2>
           <Link to="/courses" className="text-sm text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors">

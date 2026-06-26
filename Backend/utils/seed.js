@@ -14,18 +14,26 @@ const users = [
 const seedUsers = async () => {
   try {
     await connectDB();
+
     for (const u of users) {
-      const existing = await User.findOne({ email: u.email });
-      if (existing) {
-        console.log(`Already exists: ${u.email}`);
-        continue;
-      }
-      await User.create({ ...u, password: await bcrypt.hash(u.password, 10) });
-      console.log(`Seeded: ${u.email} (${u.role})`);
+      await User.deleteOne({ email: u.email }); // purana nikalo
+
+      const hashed = await bcrypt.hash(u.password, 10); // ✅ manually hash karo
+
+      await User.create({
+        name: u.name,
+        email: u.email,
+        password: hashed, // hashed password save karo
+        role: u.role,
+      });
+
+      console.log(`✅ Seeded: ${u.email} (${u.role})`);
     }
+
+    console.log('\n🎉 All users seeded successfully!');
     process.exit();
   } catch (error) {
-    console.error(error);
+    console.error('❌ Seed error:', error);
     process.exit(1);
   }
 };

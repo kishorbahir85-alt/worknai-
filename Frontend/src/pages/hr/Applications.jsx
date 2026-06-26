@@ -16,7 +16,7 @@ const statusStyle = {
   hired:       'bg-green-500/15 text-green-400 border-green-500/30',
 };
 
-const BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+const BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5001';
 
 function ApplicantRow({ app, onUpdate }) {
   const [open, setOpen] = useState(false);
