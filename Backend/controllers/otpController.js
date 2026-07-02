@@ -14,21 +14,28 @@ export const sendOtp = asyncHandler(async (req, res) => {
   const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
   otpStore.set(email.toLowerCase(), { otp, expiry });
 
-  await sendMail({
-    to: email,
-    subject: 'WorknAi — Your OTP for Business Inquiry',
-    html: `
-      <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:32px;background:#0d0d1a;color:#fff;border-radius:12px;">
-        <h2 style="color:#9a6bff;margin-bottom:8px;">WorknAi Technologies</h2>
-        <p style="color:#a89cc8;margin-bottom:24px;">Your OTP for Business Inquiry verification:</p>
-        <div style="background:#1a0b3d;border:1px solid #3d1a8c;border-radius:10px;padding:24px;text-align:center;margin-bottom:24px;">
-          <span style="font-size:40px;font-weight:bold;letter-spacing:12px;color:#fff;">${otp}</span>
+  try {
+    await sendMail({
+      to: email,
+      subject: 'WorknAi — Your OTP for Business Inquiry',
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:32px;background:#0d0d1a;color:#fff;border-radius:12px;">
+          <h2 style="color:#9a6bff;margin-bottom:8px;">WorknAi Technologies</h2>
+          <p style="color:#a89cc8;margin-bottom:24px;">Your OTP for Business Inquiry verification:</p>
+          <div style="background:#1a0b3d;border:1px solid #3d1a8c;border-radius:10px;padding:24px;text-align:center;margin-bottom:24px;">
+            <span style="font-size:40px;font-weight:bold;letter-spacing:12px;color:#fff;">${otp}</span>
+          </div>
+          <p style="color:#a89cc8;font-size:13px;">This OTP is valid for <strong style="color:#fff;">10 minutes</strong>. Do not share it with anyone.</p>
+          <p style="color:#6b5d8f;font-size:12px;margin-top:16px;">If you did not request this, please ignore this email.</p>
         </div>
-        <p style="color:#a89cc8;font-size:13px;">This OTP is valid for <strong style="color:#fff;">10 minutes</strong>. Do not share it with anyone.</p>
-        <p style="color:#6b5d8f;font-size:12px;margin-top:16px;">If you did not request this, please ignore this email.</p>
-      </div>
-    `,
-  });
+      `,
+    });
+  } catch (err) {
+    otpStore.delete(email.toLowerCase());
+    console.error('OTP email send failed:', err.message);
+    res.status(502);
+    throw new Error('Unable to send the OTP email right now. Please try again later or contact us directly.');
+  }
 
   res.json({ message: 'OTP sent successfully' });
 });

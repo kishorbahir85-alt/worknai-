@@ -5,7 +5,8 @@ export const sendMail = async ({ to, subject, html }) => {
     service: 'gmail',
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      // Gmail app passwords are often pasted as "xxxx xxxx xxxx xxxx"; spaces are not part of the password.
+      pass: (process.env.SMTP_PASS || '').replace(/\s+/g, ''),
     },
   });
 
