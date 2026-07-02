@@ -1,13 +1,14 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  LayoutDashboard, BookOpen, Briefcase,
+  LayoutDashboard, BookOpen, Briefcase, Package,
   FileText, ClipboardList, UserCircle, LogOut
 } from 'lucide-react';
 
 const navItems = [
   { to: '/hr/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/hr/courses', label: 'Courses', icon: BookOpen },
+  { to: '/hr/products', label: 'Products', icon: Package },
   { to: '/hr/jobs', label: 'Jobs', icon: Briefcase },
   { to: '/hr/applications', label: 'Applications', icon: FileText },
   { to: '/hr/enrollments', label: 'Enrollments', icon: ClipboardList },

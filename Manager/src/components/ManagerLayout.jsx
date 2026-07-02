@@ -2,7 +2,8 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, BookOpen, Package, Handshake,
-  Building2, MessageSquare, UserCircle, LogOut, Users, GraduationCap
+  Building2, MessageSquare, UserCircle, LogOut, Users, GraduationCap,
+  Newspaper, ListChecks
 } from 'lucide-react';
 
 const navItems = [
@@ -11,6 +12,8 @@ const navItems = [
   { to: '/courses',     label: 'Courses',     icon: BookOpen },
   { to: '/enrollments', label: 'Enrollments', icon: GraduationCap },
   { to: '/products',    label: 'Products',    icon: Package },
+  { to: '/blog',        label: 'Blog',        icon: Newspaper },
+  { to: '/tutorials',   label: 'Tutorials',   icon: ListChecks },
   { to: '/partners',    label: 'Partners',    icon: Handshake },
   { to: '/company',     label: 'Company',     icon: Building2 },
   { to: '/inquiries',   label: 'Inquiries',   icon: MessageSquare },

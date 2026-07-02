@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const applicationSchema = mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false, default: null },
     job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job', required: false, default: null },
     source: { type: String, default: '' },
     status: {
@@ -29,7 +29,7 @@ const applicationSchema = mongoose.Schema(
 
 applicationSchema.index(
   { user: 1, job: 1 },
-  { unique: true, partialFilterExpression: { job: { $type: 'objectId' } } }
+  { unique: true, partialFilterExpression: { user: { $type: 'objectId' }, job: { $type: 'objectId' } } }
 );
 
 const Application = mongoose.model('Application', applicationSchema);

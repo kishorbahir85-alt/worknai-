@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Briefcase, IndianRupee, Clock, ArrowLeft,
   CheckCircle, AlertCircle, Loader2, X, Send,
-  User, Mail, Phone, Star,
+  User, Mail, Phone, Star, KeyRound,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 
@@ -31,8 +30,6 @@ const emptyForm = {
 
 export default function JobDetail() {
   const { slug } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +42,12 @@ export default function JobDetail() {
   const [coverLetterFile, setCoverLetterFile] = useState(null);
   const [form, setForm] = useState(emptyForm);
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
   useEffect(() => {
     api.get(`/jobs/${slug}`)
       .then((res) => setJob(res.data.data))
@@ -52,38 +55,43 @@ export default function JobDetail() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  useEffect(() => {
-    if (!user || !job) return;
-    api.get('/applications/my')
-      .then((res) => {
-        const alreadyApplied = res.data.data.some((a) => a.job?._id === job._id || a.job === job._id);
-        setApplied(alreadyApplied);
-      })
-      .catch(() => {});
-  }, [user, job]);
+  const f = (k) => (e) => {
+    setForm((p) => ({ ...p, [k]: e.target.value }));
+    if (k === 'applicantEmail') { setOtpSent(false); setOtpVerified(false); setOtpValue(''); }
+  };
 
-  // Pre-fill name and email from logged-in user
-  useEffect(() => {
-    if (user) {
-      setForm((f) => ({
-        ...f,
-        applicantName: user.name || '',
-        applicantEmail: user.email || '',
-      }));
+  const handleApplyClick = () => setShowModal(true);
+
+  const sendOtp = async () => {
+    if (!form.applicantEmail || !/\S+@\S+\.\S+/.test(form.applicantEmail)) return toast.error('Please enter a valid email first');
+    setOtpLoading(true);
+    try {
+      await api.post('/otp/send', { email: form.applicantEmail });
+      setOtpSent(true);
+      toast.success(`OTP sent to ${form.applicantEmail}`);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to send OTP');
+    } finally {
+      setOtpLoading(false);
     }
-  }, [user]);
+  };
 
-  const f = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
-
-  const handleApplyClick = () => {
-    if (!user) {
-      navigate('/login', { state: { from: { pathname: `/career/${slug}` } } });
-      return;
+  const verifyOtp = async () => {
+    if (!otpValue || otpValue.length < 4) return toast.error('Enter the OTP sent to your email');
+    setVerifyLoading(true);
+    try {
+      await api.post('/otp/verify', { email: form.applicantEmail, otp: otpValue });
+      setOtpVerified(true);
+      toast.success('Email verified successfully!');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Invalid or expired OTP');
+    } finally {
+      setVerifyLoading(false);
     }
-    setShowModal(true);
   };
 
   const handleSubmit = async () => {
+    if (!otpVerified) return toast.error('Please verify your email with OTP first');
     if (!form.applicantName || !form.applicantEmail || !form.experience) {
       return toast.error('Name, email and experience are required');
     }
@@ -173,17 +181,12 @@ export default function JobDetail() {
           <div className="flex items-center gap-4">
             {applied ? (
               <div className="flex items-center gap-2 text-green-400 font-medium">
-                <CheckCircle className="w-5 h-5" /> You've already applied for this job
+                <CheckCircle className="w-5 h-5" /> Application submitted
               </div>
             ) : (
               <button onClick={handleApplyClick} className="btn-primary">
                 <Briefcase className="w-4 h-4" /> Apply Now
               </button>
-            )}
-            {!user && (
-              <p className="text-sm text-ink-dim">
-                <Link to="/login" className="text-violet-400 hover:text-violet-300">Login</Link> to apply
-              </p>
             )}
           </div>
         </motion.div>
@@ -226,13 +229,57 @@ export default function JobDetail() {
                   <input type="text" value={form.applicantName} onChange={f('applicantName')} placeholder="Your full name" className={inp} />
                 </div>
 
-                {/* Email */}
+                {/* Email + OTP */}
                 <div>
                   <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
                     <Mail className="w-3 h-3" /> Email <span className="text-red-400">*</span>
                   </label>
-                  <input type="email" value={form.applicantEmail} onChange={f('applicantEmail')} placeholder="your@email.com" className={inp} />
+                  <div className="flex gap-2">
+                    <input
+                      type="email" value={form.applicantEmail} onChange={f('applicantEmail')}
+                      placeholder="your@email.com"
+                      disabled={otpVerified}
+                      className={inp + (otpVerified ? ' opacity-60 cursor-not-allowed' : '')}
+                    />
+                    {!otpVerified && (
+                      <button
+                        type="button"
+                        onClick={sendOtp} disabled={otpLoading || !form.applicantEmail}
+                        className="shrink-0 px-4 py-2.5 rounded-xl border border-violet-500/30 bg-violet-500/10 text-violet-300 text-sm font-medium hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {otpLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : otpSent ? 'Resend' : 'Send OTP'}
+                      </button>
+                    )}
+                    {otpVerified && (
+                      <span className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-green-500/30 bg-green-500/10 text-green-400 text-sm font-medium">
+                        <CheckCircle className="w-4 h-4" /> Verified
+                      </span>
+                    )}
+                  </div>
                 </div>
+
+                {otpSent && !otpVerified && (
+                  <div>
+                    <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
+                      <KeyRound className="w-3 h-3" /> Enter OTP <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">sent to {form.applicantEmail}</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text" value={otpValue} onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        placeholder="Enter 6-digit OTP"
+                        maxLength={6}
+                        className={inp + ' tracking-[0.5em] font-mono text-center text-lg'}
+                      />
+                      <button
+                        type="button"
+                        onClick={verifyOtp} disabled={verifyLoading || otpValue.length < 4}
+                        className="shrink-0 px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-medium hover:bg-violet-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {verifyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify'}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Phone */}
                 <div>
@@ -311,11 +358,16 @@ export default function JobDetail() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 mt-5">
+              {!otpVerified && (
+                <p className="text-xs text-amber-400 flex items-center gap-1.5 mt-4">
+                  <KeyRound className="w-3.5 h-3.5" /> Please verify your email with OTP before submitting.
+                </p>
+              )}
+              <div className="flex items-center gap-3 mt-4">
                 <button
                   onClick={handleSubmit}
-                  disabled={applying}
-                  className="btn-primary flex-1 justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={applying || !otpVerified}
+                  className="btn-primary flex-1 justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {applying ? (
                     <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</span>

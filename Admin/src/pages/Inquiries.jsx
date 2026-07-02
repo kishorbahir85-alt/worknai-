@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import {
   MessageSquare, Building2, Mail, Phone, Tag,
-  Clock, ChevronDown, ChevronUp, RefreshCw, Loader2,
+  Clock, ChevronDown, ChevronUp, RefreshCw, Loader2, TrendingUp, Package, GraduationCap,
 } from 'lucide-react';
 
 const statusStyle = {
@@ -34,8 +34,8 @@ function InquiryCard({ inq, onStatusChange }) {
         className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-800/50 transition-colors"
       >
         <div className="flex items-center gap-4 min-w-0">
-          <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
-            <Building2 size={16} className="text-violet-400" />
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border ${inq.product ? 'bg-fuchsia-500/10 border-fuchsia-500/20' : inq.course ? 'bg-sky-500/10 border-sky-500/20' : 'bg-violet-500/10 border-violet-500/20'}`}>
+            {inq.product ? <TrendingUp size={16} className="text-fuchsia-400" /> : inq.course ? <GraduationCap size={16} className="text-sky-400" /> : <Building2 size={16} className="text-violet-400" />}
           </div>
           <div className="min-w-0">
             <p className="text-white font-semibold text-sm truncate">{inq.company || inq.name}</p>
@@ -43,6 +43,16 @@ function InquiryCard({ inq, onStatusChange }) {
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          {inq.product && (
+            <span className="hidden sm:flex items-center gap-1 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30">
+              <Package size={11} /> {inq.product.title}
+            </span>
+          )}
+          {inq.course && (
+            <span className="hidden sm:flex items-center gap-1 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-sky-500/15 text-sky-300 border-sky-500/30">
+              <GraduationCap size={11} /> {inq.course.title}
+            </span>
+          )}
           <span className={`text-xs font-medium border rounded-full px-2.5 py-0.5 ${statusStyle[status]}`}>
             {statusLabel[status]}
           </span>
@@ -56,6 +66,30 @@ function InquiryCard({ inq, onStatusChange }) {
       {open && (
         <div className="px-5 pb-5 border-t border-slate-800">
           <div className="grid sm:grid-cols-2 gap-3 mt-4 mb-4">
+            {inq.product && (
+              <div className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
+                <Package size={13} className="text-fuchsia-400 shrink-0" />
+                <span>Regarding product: <span className="text-fuchsia-300 font-medium">{inq.product.title}</span></span>
+              </div>
+            )}
+            {inq.course && (
+              <div className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
+                <GraduationCap size={13} className="text-sky-400 shrink-0" />
+                <span>Regarding course: <span className="text-sky-300 font-medium">{inq.course.title}</span></span>
+              </div>
+            )}
+            {inq.qualification && (
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <Tag size={13} className="text-slate-500 shrink-0" />
+                <span>Qualification: {inq.qualification}</span>
+              </div>
+            )}
+            {inq.address && (
+              <div className="flex items-center gap-2 text-sm text-slate-300">
+                <Building2 size={13} className="text-slate-500 shrink-0" />
+                <span>{inq.address}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-sm text-slate-300">
               <Mail size={13} className="text-slate-500 shrink-0" />
               <a href={`mailto:${inq.email}`} className="hover:text-white transition-colors">{inq.email}</a>
@@ -123,13 +157,18 @@ export default function Inquiries() {
     setInquiries((prev) => prev.map((i) => i._id === id ? { ...i, status: newStatus } : i));
   };
 
-  const filtered = filter === 'all' ? inquiries : inquiries.filter((i) => i.status === filter);
+  const filtered = filter === 'all' ? inquiries
+    : filter === 'investor' ? inquiries.filter((i) => i.product)
+    : filter === 'courses' ? inquiries.filter((i) => i.course)
+    : inquiries.filter((i) => i.status === filter);
 
   const counts = {
-    all:     inquiries.length,
-    new:     inquiries.filter((i) => i.status === 'new').length,
-    read:    inquiries.filter((i) => i.status === 'read').length,
-    replied: inquiries.filter((i) => i.status === 'replied').length,
+    all:      inquiries.length,
+    new:      inquiries.filter((i) => i.status === 'new').length,
+    read:     inquiries.filter((i) => i.status === 'read').length,
+    replied:  inquiries.filter((i) => i.status === 'replied').length,
+    investor: inquiries.filter((i) => i.product).length,
+    courses:  inquiries.filter((i) => i.course).length,
   };
 
   return (
@@ -144,12 +183,14 @@ export default function Inquiries() {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-6">
         {[
-          { key: 'all',     label: 'Total',   color: 'text-white' },
-          { key: 'new',     label: 'New',     color: 'text-yellow-400' },
-          { key: 'read',    label: 'Read',    color: 'text-blue-400' },
-          { key: 'replied', label: 'Replied', color: 'text-green-400' },
+          { key: 'all',      label: 'Total',     color: 'text-white' },
+          { key: 'new',      label: 'New',       color: 'text-yellow-400' },
+          { key: 'read',     label: 'Read',      color: 'text-blue-400' },
+          { key: 'replied',  label: 'Replied',   color: 'text-green-400' },
+          { key: 'investor', label: 'Investors', color: 'text-fuchsia-400' },
+          { key: 'courses',  label: 'Courses',   color: 'text-sky-400' },
         ].map(({ key, label, color }) => (
           <button
             key={key}

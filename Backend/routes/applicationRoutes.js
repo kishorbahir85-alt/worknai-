@@ -1,7 +1,6 @@
 import express from 'express';
 import {
   applyForJob,
-  getMyApplications,
   getJobApplications,
   getAllApplications,
   updateApplicationStatus,
@@ -11,9 +10,8 @@ import { uploadResume } from '../middleware/upload.js';
 
 const router = express.Router();
 
-// User routes
-router.post('/', protect, uploadResume.fields([{ name: 'resume', maxCount: 1 }, { name: 'coverLetterFile', maxCount: 1 }]), applyForJob);
-router.get('/my', protect, getMyApplications);
+// Public: guest job applications (email-OTP verified client-side before submit)
+router.post('/', uploadResume.fields([{ name: 'resume', maxCount: 1 }, { name: 'coverLetterFile', maxCount: 1 }]), applyForJob);
 
 // HR/Manager/Admin routes
 router.get('/', protect, authorize('admin', 'manager', 'hr'), getAllApplications);

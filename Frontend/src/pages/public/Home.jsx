@@ -180,7 +180,7 @@ export default function Home() {
             <div className="reference-hero-wash absolute inset-0 z-[1]" />
             <div className="reference-hero-bottom absolute inset-x-0 bottom-0 z-[1] h-[24%]" />
 
-            <div className="container-x relative z-10 w-full pt-10 md:pt-24">
+            <div className="container-x relative z-10 w-full pt-2 md:pt-8">
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -266,7 +266,7 @@ export default function Home() {
                 {[
                   { icon: GraduationCap, label: 'Training' },
                   { icon: Rocket,        label: 'Products' },
-                  { icon: Briefcase,     label: 'Career' },
+                  { icon: Briefcase,     label: 'Careers' },
                 ].map(({ icon: Icon, label }) => (
                   <div key={label} className="glass rounded-xl p-4 flex flex-col items-center gap-3 hover:border-violet-400/40 transition-all group">
                     <Icon className="w-7 h-7 text-violet-400 group-hover:text-violet-300 transition-colors" />
@@ -300,7 +300,7 @@ export default function Home() {
                   img: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=80',
                 },
                 {
-                  label: 'Career',
+                  label: 'Careers',
                   desc: "Experience tomorrow's workplace — join the WorknAi team today.",
                   to: '/career',
                   overlay: 'from-slate-900/60 to-slate-700/50',

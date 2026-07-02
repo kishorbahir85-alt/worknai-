@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, BookOpen, Clock, Tag, CheckCircle, AlertCircle,
-  Loader2, PlayCircle, User, Phone, GraduationCap, MapPin,
-  Copy, Key, X, Calendar, Users, IndianRupee, Smartphone, Mail,
+  Loader2, User, Phone, GraduationCap, MapPin,
+  X, Calendar, Users, Mail, Send,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
-
-const UPI_ID   = import.meta.env.VITE_UPI_ID   || 'worknai@upi';
-const UPI_NAME = import.meta.env.VITE_UPI_NAME || 'WorknAi Technologies';
 
 const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-400 bg-amber-500/10', advanced: 'text-red-400 bg-red-500/10' };
 const modeColor  = { online: 'text-sky-400 bg-sky-500/10', offline: 'text-violet-400 bg-violet-500/10', hybrid: 'text-pink-400 bg-pink-500/10' };
@@ -39,21 +35,20 @@ const getCourseStartDate = (course) => {
   return batchDates[0] || '';
 };
 
+const emptyForm = { name: '', email: '', phone: '', qualification: '', address: '', message: '' };
+
 export default function CourseDetail() {
   const { slug } = useParams();
-  const navigate  = useNavigate();
-  const { user }  = useAuth();
 
   const [course, setCourse]         = useState(null);
   const [loading, setLoading]       = useState(true);
   const [notFound, setNotFound]     = useState(false);
-  const [enrollment, setEnrollment] = useState(null);
+  const [sent, setSent]             = useState(false);
   const [showModal, setShowModal]   = useState(false);
-  const [step, setStep]             = useState(1); // 1=details form, 2=payment (online only)
   const [submitting, setSubmitting] = useState(false);
-  const [copied, setCopied]         = useState(false);
+  const [batchId, setBatchId]       = useState('');
 
-  const [form, setForm] = useState({ name: '', email: '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
+  const [form, setForm] = useState(emptyForm);
   const f = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
 
   useEffect(() => {
@@ -63,60 +58,44 @@ export default function CourseDetail() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  useEffect(() => {
-    if (!user || !course) return;
-    api.get(`/enrollments/check/${course._id}`)
-      .then(r => { if (r.data.data.enrolled) setEnrollment(r.data.data.enrollment); })
-      .catch(() => {});
-  }, [user, course]);
-
   const openModal = () => {
-    if (!user) { navigate('/login', { state: { from: { pathname: `/courses/${slug}` } } }); return; }
-    setForm({ name: user.name || '', email: user.email || '', phone: '', qualification: '', address: '', batchId: '', transactionRef: '' });
-    setStep(1);
+    setForm(emptyForm);
+    setBatchId('');
     setShowModal(true);
   };
 
-  const price  = course ? (course.discountPrice > 0 ? course.discountPrice : course.price) : 0;
-  const isOnline  = course && (course.mode === 'online' || course.mode === 'hybrid');
   const isOffline = course && (course.mode === 'offline' || course.mode === 'hybrid');
   const hasBatches = course?.batches?.length > 0;
-  const isPaid = price > 0;
+  const price = course ? (course.discountPrice > 0 ? course.discountPrice : course.price) : 0;
   const courseStartDate = formatStartDate(getCourseStartDate(course));
 
-  // Step 1 → proceed to payment (online+paid) or submit directly (offline or free)
-  const proceedFromStep1 = () => {
+  const submitInquiry = async () => {
     if (!form.name || !form.email || !form.phone) return toast.error('Name, email, and phone are required');
-    if (isOffline && hasBatches && !form.batchId) return toast.error('Please select a batch');
-    if (isOnline && isPaid) { setStep(2); return; }
-    submitEnrollment();
-  };
-
-  const submitEnrollment = async () => {
-    if (isOnline && isPaid && !form.transactionRef.trim()) return toast.error('Please enter the UPI Transaction ID / UTR number');
+    if (isOffline && hasBatches && !batchId) return toast.error('Please select a batch');
     setSubmitting(true);
     try {
-      const res = await api.post('/enrollments', {
-        courseId: course._id,
-        batchId: form.batchId || undefined,
-        transactionRef: form.transactionRef || '',
-        studentDetails: { name: form.name, email: form.email, phone: form.phone, qualification: form.qualification, address: form.address },
+      const selectedBatch = course.batches?.find((b) => b._id === batchId);
+      const batchNote = selectedBatch ? `Preferred batch: ${selectedBatch.name}` : '';
+      await api.post('/inquiries', {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        qualification: form.qualification,
+        address: form.address,
+        message: [form.message, batchNote].filter(Boolean).join(' — ') || `Interested in enrolling in ${course.title}.`,
+        type: 'Course Enrollment',
+        source: 'course-enrollment',
+        course: course._id,
       });
-      setEnrollment(res.data.data);
+      setSent(true);
       setShowModal(false);
-      toast.success(isOffline && !isOnline ? 'Application submitted! Our team will contact you.' : 'Enrolled! Payment will be verified shortly.');
+      toast.success('Enrollment inquiry submitted! Our team will reach out soon.');
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Enrollment failed');
+      toast.error(err?.response?.data?.message || 'Submission failed. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
-
-  const copyUpi = () => { navigator.clipboard.writeText(UPI_ID); setCopied(true); setTimeout(() => setCopied(false), 2000); toast.success('UPI ID copied!'); };
-  const copyCode = (code) => { navigator.clipboard.writeText(code); toast.success('Access code copied!'); };
-
-  const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${price}&cu=INR&tn=${encodeURIComponent('Course: ' + (course?.title || ''))}`;
-  const qrUrl   = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-10 h-10 text-violet-400 animate-spin" /></div>;
   if (notFound || !course) return (
@@ -209,16 +188,15 @@ export default function CourseDetail() {
           <div className="border-t border-violet-500/10 mb-6"/>
           {course.description && <div className="text-ink-dim text-sm leading-relaxed whitespace-pre-line mb-8">{course.description}</div>}
 
-          {enrollment ? (
-            <EnrolledState enrollment={enrollment} course={course} slug={slug} copyCode={copyCode}/>
-          ) : (
-            <div className="flex flex-wrap items-center gap-4">
-              <button onClick={openModal} className="btn-primary">
-                <BookOpen className="w-4 h-4"/>
-                {course.mode === 'offline' ? 'Apply Now' : price > 0 ? `Enroll for ₹${price.toLocaleString()}` : 'Enroll for Free'}
-              </button>
-              {!user && <p className="text-sm text-ink-dim"><Link to="/login" className="text-violet-400 hover:text-violet-300">Login</Link> to apply</p>}
+          {sent ? (
+            <div className="flex items-center gap-2 text-green-400 font-medium">
+              <CheckCircle className="w-5 h-5" /> Enrollment inquiry submitted — our team will reach out soon
             </div>
+          ) : (
+            <button onClick={openModal} className="btn-primary">
+              <BookOpen className="w-4 h-4"/>
+              {course.mode === 'offline' ? 'Apply Now' : price > 0 ? `Enroll for ₹${price.toLocaleString()}` : 'Enroll for Free'}
+            </button>
           )}
         </div>
       </section>
@@ -229,181 +207,61 @@ export default function CourseDetail() {
           <div className="w-full max-w-md bg-[#0d0d1a] border border-violet-500/20 rounded-2xl p-6 shadow-2xl my-4">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-lg font-bold text-white">
-                  {step === 1 ? 'Student Details' : 'Complete Payment'}
-                </h2>
+                <h2 className="text-lg font-bold text-white">Enrollment Inquiry</h2>
                 <p className="text-xs text-ink-dim mt-0.5">{course.title}</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors"><X className="w-4 h-4"/></button>
             </div>
 
-            {step === 1 && (
-              <div className="flex flex-col gap-4">
-                <div><label className={lbl}><User className="w-3 h-3 inline mr-1"/>Full Name <span className="text-red-400">*</span></label>
-                  <input type="text" value={form.name} onChange={f('name')} placeholder="Your full name" className={inp}/></div>
-                <div><label className={lbl}><Mail className="w-3 h-3 inline mr-1"/>Email <span className="text-red-400">*</span></label>
-                  <input type="email" value={form.email} onChange={f('email')} placeholder="you@example.com" className={inp}/></div>
-                <div><label className={lbl}><Phone className="w-3 h-3 inline mr-1"/>Phone Number <span className="text-red-400">*</span></label>
-                  <input type="tel" value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" className={inp}/></div>
-                <div><label className={lbl}><GraduationCap className="w-3 h-3 inline mr-1"/>Highest Qualification</label>
-                  <input type="text" value={form.qualification} onChange={f('qualification')} placeholder="e.g. B.Tech, 12th, BCA" className={inp}/></div>
-                {isOffline && (
-                  <div><label className={lbl}><MapPin className="w-3 h-3 inline mr-1"/>Address</label>
-                    <input type="text" value={form.address} onChange={f('address')} placeholder="Your address" className={inp}/></div>
-                )}
+            <div className="flex flex-col gap-4">
+              <div><label className={lbl}><User className="w-3 h-3 inline mr-1"/>Full Name <span className="text-red-400">*</span></label>
+                <input type="text" value={form.name} onChange={f('name')} placeholder="Your full name" className={inp}/></div>
+              <div><label className={lbl}><Mail className="w-3 h-3 inline mr-1"/>Email <span className="text-red-400">*</span></label>
+                <input type="email" value={form.email} onChange={f('email')} placeholder="you@example.com" className={inp}/></div>
+              <div><label className={lbl}><Phone className="w-3 h-3 inline mr-1"/>Phone Number <span className="text-red-400">*</span></label>
+                <input type="tel" value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" className={inp}/></div>
+              <div><label className={lbl}><GraduationCap className="w-3 h-3 inline mr-1"/>Highest Qualification</label>
+                <input type="text" value={form.qualification} onChange={f('qualification')} placeholder="e.g. B.Tech, 12th, BCA" className={inp}/></div>
+              {isOffline && (
+                <div><label className={lbl}><MapPin className="w-3 h-3 inline mr-1"/>Address</label>
+                  <input type="text" value={form.address} onChange={f('address')} placeholder="Your address" className={inp}/></div>
+              )}
 
-                {/* Batch selection */}
-                {isOffline && hasBatches && (
-                  <div>
-                    <label className={lbl}><Calendar className="w-3 h-3 inline mr-1"/>Select Batch <span className="text-red-400">*</span></label>
-                    <div className="flex flex-col gap-2">
-                      {course.batches.map((b) => {
-                        const full = b.totalSeats > 0 && b.enrolledCount >= b.totalSeats;
-                        return (
-                          <label key={b._id} className={`flex items-start gap-3 border rounded-xl p-3 transition-all ${full ? 'opacity-40 cursor-not-allowed border-slate-700' : form.batchId === b._id ? 'border-violet-500/60 bg-violet-500/10 cursor-pointer' : 'border-violet-500/20 hover:border-violet-500/40 cursor-pointer'}`}>
-                            <input type="radio" name="batch" value={b._id} disabled={full} checked={form.batchId === b._id} onChange={() => !full && setForm(p => ({...p, batchId: b._id}))} className="mt-0.5"/>
-                            <div>
-                              <p className="text-white text-sm font-medium">{b.name}</p>
-                              {b.timing && <p className="text-ink-dim text-xs">{b.timing}{b.days ? ` · ${b.days}` : ''}</p>}
-                              {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
-                              {b.totalSeats > 0 && <p className={`text-xs font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}>{full ? 'Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
-                            </div>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                <button onClick={proceedFromStep1} className="btn-primary justify-center mt-1">
-                  {isOnline && isPaid ? <><IndianRupee className="w-4 h-4"/>Proceed to Payment</> : <><CheckCircle className="w-4 h-4"/>Submit Application</>}
-                </button>
-              </div>
-            )}
-
-            {step === 2 && (
-              /* Payment step — online only */
-              <div className="flex flex-col gap-5">
-                {/* Amount */}
-                <div className="flex items-center justify-between bg-violet-500/10 border border-violet-500/20 rounded-xl px-5 py-3">
-                  <span className="text-ink-dim text-sm">Amount to Pay</span>
-                  <span className="text-2xl font-bold text-white">₹{price.toLocaleString()}</span>
-                </div>
-
-                {/* QR Code */}
-                <div className="flex flex-col items-center gap-3">
-                  <p className="text-sm text-ink-dim text-center">Scan QR code with any UPI app</p>
-                  <div className="bg-white p-3 rounded-2xl">
-                    <img src={qrUrl} alt="UPI QR" width={180} height={180} className="rounded-xl"/>
-                  </div>
-                  <div className="flex items-center gap-2 bg-white/5 border border-violet-500/20 rounded-xl px-4 py-2.5 w-full">
-                    <Smartphone className="w-4 h-4 text-violet-400 shrink-0"/>
-                    <span className="text-white font-mono text-sm flex-1">{UPI_ID}</span>
-                    <button onClick={copyUpi} className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 shrink-0">
-                      <Copy className="w-3 h-3"/>{copied ? 'Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                  <p className="text-xs text-ink-dim text-center">Or open your UPI app and pay to: <strong className="text-white">{UPI_ID}</strong></p>
-                </div>
-
-                {/* Transaction Reference */}
+              {/* Batch selection */}
+              {isOffline && hasBatches && (
                 <div>
-                  <label className={lbl}>UPI Transaction ID / UTR Number <span className="text-red-400">*</span></label>
-                  <input type="text" value={form.transactionRef} onChange={f('transactionRef')} placeholder="e.g. 123456789012" className={inp}/>
-                  <p className="text-xs text-ink-dim mt-1">Enter the 12-digit UTR or Transaction ID from your payment app after paying.</p>
+                  <label className={lbl}><Calendar className="w-3 h-3 inline mr-1"/>Select Batch <span className="text-red-400">*</span></label>
+                  <div className="flex flex-col gap-2">
+                    {course.batches.map((b) => {
+                      const full = b.totalSeats > 0 && b.enrolledCount >= b.totalSeats;
+                      return (
+                        <label key={b._id} className={`flex items-start gap-3 border rounded-xl p-3 transition-all ${full ? 'opacity-40 cursor-not-allowed border-slate-700' : batchId === b._id ? 'border-violet-500/60 bg-violet-500/10 cursor-pointer' : 'border-violet-500/20 hover:border-violet-500/40 cursor-pointer'}`}>
+                          <input type="radio" name="batch" value={b._id} disabled={full} checked={batchId === b._id} onChange={() => !full && setBatchId(b._id)} className="mt-0.5"/>
+                          <div>
+                            <p className="text-white text-sm font-medium">{b.name}</p>
+                            {b.timing && <p className="text-ink-dim text-xs">{b.timing}{b.days ? ` · ${b.days}` : ''}</p>}
+                            {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
+                            {b.totalSeats > 0 && <p className={`text-xs font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}>{full ? 'Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
                 </div>
+              )}
 
-                <button onClick={submitEnrollment} disabled={submitting} className="btn-primary justify-center disabled:opacity-50">
-                  {submitting ? <><Loader2 className="w-4 h-4 animate-spin"/>Submitting...</> : <><CheckCircle className="w-4 h-4"/>I've Paid — Submit</>}
-                </button>
-                <button onClick={() => setStep(1)} className="text-xs text-ink-dim hover:text-ink text-center transition-colors">← Back to details</button>
+              <div>
+                <label className={lbl}>Message <span className="text-ink-dim text-xs">(optional)</span></label>
+                <textarea value={form.message} onChange={f('message')} rows={3} placeholder="Any questions or details you'd like to share..." className={inp + ' resize-none'} />
               </div>
-            )}
+
+              <button onClick={submitInquiry} disabled={submitting} className="btn-primary justify-center mt-1 disabled:opacity-50">
+                {submitting ? <><Loader2 className="w-4 h-4 animate-spin"/>Submitting...</> : <><Send className="w-4 h-4"/>Submit Enrollment Inquiry</>}
+              </button>
+            </div>
           </div>
         </div>
       )}
     </>
   );
-}
-
-const appStatusConfig = {
-  pending:   { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20', label: 'Application Pending', icon: Loader2, spin: true },
-  approved:  { color: 'text-blue-400',  bg: 'bg-blue-500/10 border-blue-500/20',  label: 'Application Approved', icon: CheckCircle, spin: false },
-  confirmed: { color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20', label: 'Enrollment Confirmed', icon: CheckCircle, spin: false },
-  rejected:  { color: 'text-red-400',   bg: 'bg-red-500/10 border-red-500/20',    label: 'Application Rejected', icon: AlertCircle, spin: false },
-};
-
-function EnrolledState({ enrollment, course, slug, copyCode }) {
-  const isOnline  = enrollment.enrollmentType === 'online' || enrollment.enrollmentType === 'hybrid';
-  const isOffline = enrollment.enrollmentType === 'offline';
-
-  // Offline course — show application status flow (no payment)
-  if (isOffline) {
-    const cfg = appStatusConfig[enrollment.applicationStatus] || appStatusConfig.pending;
-    const Icon = cfg.icon;
-    return (
-      <div className="flex flex-col gap-4">
-        <div className={`flex items-start gap-3 border rounded-xl p-4 ${cfg.bg}`}>
-          <Icon className={`w-5 h-5 shrink-0 mt-0.5 ${cfg.color} ${cfg.spin ? 'animate-spin' : ''}`}/>
-          <div>
-            <p className={`font-semibold ${cfg.color}`}>{cfg.label}</p>
-            <p className="text-ink-dim text-sm mt-0.5">
-              {enrollment.applicationStatus === 'pending'   && 'Our team will review your application and contact you shortly.'}
-              {enrollment.applicationStatus === 'approved'  && 'Your application has been approved. HR/Manager will contact you with batch details.'}
-              {enrollment.applicationStatus === 'confirmed' && 'Your enrollment is confirmed. Welcome to the course!'}
-              {enrollment.applicationStatus === 'rejected'  && 'Your application was not accepted at this time.'}
-            </p>
-            {enrollment.statusNote && (
-              <p className="text-xs text-ink-dim mt-2 italic">Note: {enrollment.statusNote}</p>
-            )}
-          </div>
-        </div>
-        {enrollment.batchName && enrollment.applicationStatus !== 'rejected' && (
-          <div className="bg-violet-500/5 border border-violet-500/20 rounded-xl p-4">
-            <p className="text-xs text-violet-400 font-semibold uppercase tracking-wide mb-1">Selected Batch</p>
-            <p className="text-white font-medium">{enrollment.batchName}</p>
-          </div>
-        )}
-        <p className="text-xs text-ink-dim">
-          Applied on: {new Date(enrollment.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
-      </div>
-    );
-  }
-
-  if (enrollment.paymentStatus === 'pending') {
-    return (
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-amber-400 font-medium"><Loader2 className="w-5 h-5 animate-spin"/>Payment Under Verification</div>
-        <p className="text-ink-dim text-sm">Our team is verifying your payment. Once confirmed, your access code will be activated.</p>
-        {enrollment.transactionRef && <p className="text-xs text-ink-dim">Transaction Ref: <span className="text-white font-mono">{enrollment.transactionRef}</span></p>}
-      </div>
-    );
-  }
-
-  if (enrollment.paymentStatus === 'paid' || enrollment.paymentStatus === 'free') {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 text-green-400 font-medium"><CheckCircle className="w-5 h-5"/>You're enrolled!</div>
-        {isOnline && enrollment.accessCode && (
-          <div className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-5">
-            <p className="text-xs text-violet-400 font-semibold uppercase tracking-wide mb-3 flex items-center gap-1"><Key className="w-3.5 h-3.5"/>Your App Access Code</p>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-2xl font-bold text-white tracking-widest">{enrollment.accessCode}</span>
-              <button onClick={() => copyCode(enrollment.accessCode)} className="p-2 rounded-lg border border-violet-500/30 hover:bg-violet-500/20 transition-colors"><Copy className="w-4 h-4 text-violet-400"/></button>
-            </div>
-            <p className="text-ink-dim text-xs mt-3">Enter this code in the WorknAi app to access your live course and sessions.</p>
-          </div>
-        )}
-        {enrollment.batchName && (
-          <div className="bg-violet-500/5 border border-violet-500/20 rounded-xl p-4">
-            <p className="text-xs text-violet-400 font-semibold uppercase tracking-wide mb-1">Your Batch</p>
-            <p className="text-white font-medium">{enrollment.batchName}</p>
-          </div>
-        )}
-        {isOnline && <Link to={`/courses/${slug}/content`} className="btn-primary"><PlayCircle className="w-4 h-4"/>Go to Course</Link>}
-      </div>
-    );
-  }
-  return null;
 }

@@ -14,6 +14,8 @@ import applicationRoutes from './routes/applicationRoutes.js';
 import enrollmentRoutes from './routes/enrollmentRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
 import inquiryRoutes from './routes/inquiryRoutes.js';
+import blogRoutes from './routes/blogRoutes.js';
+import tutorialRoutes from './routes/tutorialRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +59,8 @@ app.use('/api/applications', applicationRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/blog', blogRoutes);
+app.use('/api/tutorials', tutorialRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {

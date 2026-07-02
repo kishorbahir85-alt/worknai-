@@ -13,15 +13,13 @@ export const applyForJob = asyncHandler(async (req, res) => {
   if (!isJoinUs) {
     const job = await Job.findById(jobId);
     if (!job || !job.isActive) { res.status(404); throw new Error('Job not found or no longer active'); }
-    const existing = await Application.findOne({ user: req.user._id, job: jobId });
-    if (existing) { res.status(400); throw new Error('You have already applied for this job'); }
   }
 
   const resumeUrl = req.files?.resume?.[0] ? `/uploads/resumes/${req.files.resume[0].filename}` : '';
   const coverLetterUrl = req.files?.coverLetterFile?.[0] ? `/uploads/coverletters/${req.files.coverLetterFile[0].filename}` : '';
 
   const application = await Application.create({
-    user: req.user._id,
+    user: req.user?._id || null,
     job: isJoinUs ? null : jobId,
     source: source || '',
     applicantName,
@@ -34,13 +32,6 @@ export const applyForJob = asyncHandler(async (req, res) => {
     coverLetterUrl,
   });
   res.status(201).json({ data: application });
-});
-
-export const getMyApplications = asyncHandler(async (req, res) => {
-  const applications = await Application.find({ user: req.user._id })
-    .populate('job', 'title slug location type experience salary isActive')
-    .sort({ createdAt: -1 });
-  res.json({ data: applications });
 });
 
 // HR/Manager: get all applications for a specific job

@@ -2,16 +2,29 @@ import asyncHandler from 'express-async-handler';
 import Inquiry from '../models/inquiryModel.js';
 
 export const createInquiry = asyncHandler(async (req, res) => {
-  const { name, company, email, phone, type, message, source } = req.body;
-  if (!name || !email || !message) {
-    res.status(400); throw new Error('Name, email and message are required');
+  const { name, company, email, phone, type, message, source, product, course, qualification, address } = req.body;
+  if (!name || !email) {
+    res.status(400); throw new Error('Name and email are required');
   }
-  const inquiry = await Inquiry.create({ name, company, email, phone, type, message, source });
+  if (!message && !course) {
+    res.status(400); throw new Error('Message is required');
+  }
+  const inquiry = await Inquiry.create({
+    name, company, email, phone, type, source,
+    message: message || `Interested in enrolling — please reach out with more details.`,
+    product: product || null,
+    course: course || null,
+    qualification: qualification || '',
+    address: address || '',
+  });
   res.status(201).json({ data: inquiry });
 });
 
 export const getAllInquiries = asyncHandler(async (req, res) => {
-  const inquiries = await Inquiry.find().sort({ createdAt: -1 });
+  const inquiries = await Inquiry.find()
+    .populate('product', 'title slug')
+    .populate('course', 'title slug')
+    .sort({ createdAt: -1 });
   res.json({ data: inquiries });
 });
 

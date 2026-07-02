@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ExternalLink, Code2 } from 'lucide-react';
 import api from '../../utils/api';
+
+const BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5001';
+const resolveUrl = (url) => (url && !/^https?:\/\//.test(url) ? `${BASE}${url}` : url);
 
 const getFavicon = (url) => {
   if (!url) return null;
@@ -35,44 +39,54 @@ export default function Products() {
           <div className="text-center py-20 text-ink-dim">Products coming soon!</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map(p => (
-              <div key={p._id} className="glass rounded-2xl p-6 flex flex-col gap-4 hover:border-violet-400/40 transition-colors">
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-violet-500/30 to-violet-700/30 border border-violet-400/20 flex items-center justify-center overflow-hidden">
-                    {p.url && getFavicon(p.url) ? (
-                      <img
-                        src={getFavicon(p.url)}
-                        alt={p.title}
-                        className="w-8 h-8 object-contain"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    ) : (
-                      <Code2 size={20} className="text-violet-400 opacity-60" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-display text-lg font-semibold text-white leading-snug">{p.title}</h3>
-                      {p.category && <span className="text-xs text-violet-300 bg-violet-500/10 px-2 py-0.5 rounded-full shrink-0">{p.category}</span>}
+            {products.map(p => {
+              const logoSrc = p.logoUrl ? resolveUrl(p.logoUrl) : (p.url ? getFavicon(p.url) : null);
+              return (
+                <Link
+                  to={`/products/${p.slug}`}
+                  key={p._id}
+                  className="glass rounded-2xl p-6 flex flex-col gap-4 hover:border-violet-400/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 shrink-0 rounded-xl bg-gradient-to-br from-violet-500/30 to-violet-700/30 border border-violet-400/20 flex items-center justify-center overflow-hidden">
+                      {logoSrc ? (
+                        <img
+                          src={logoSrc}
+                          alt={p.title}
+                          className="w-8 h-8 object-contain"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <Code2 size={20} className="text-violet-400 opacity-60" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                        <h3 className="font-display text-lg font-semibold text-white leading-snug break-words">{p.title}</h3>
+                        {p.category && <span className="text-xs text-violet-300 bg-violet-500/10 px-2 py-0.5 rounded-full max-w-full truncate">{p.category}</span>}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {p.description && <p className="text-sm text-ink-dim line-clamp-3">{p.description}</p>}
-                {p.techStack?.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-auto">
-                    <Code2 size={12} className="text-ink-faint mt-0.5 shrink-0" />
-                    {p.techStack.map(t => (
-                      <span key={t} className="text-xs text-ink-faint">{t}</span>
-                    ))}
-                  </div>
-                )}
-                {p.url && (
-                  <a href={p.url} target="_blank" rel="noreferrer" className="btn-ghost text-sm px-4 py-2 inline-flex items-center gap-2">
-                    Visit Product <ExternalLink size={13} />
-                  </a>
-                )}
-              </div>
-            ))}
+                  {p.description && <p className="text-sm text-ink-dim line-clamp-3">{p.description}</p>}
+                  {p.techStack?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-auto">
+                      <Code2 size={12} className="text-ink-faint mt-0.5 shrink-0" />
+                      {p.techStack.map(t => (
+                        <span key={t} className="text-xs text-ink-faint">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  {p.url && (
+                    <span
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(p.url, '_blank', 'noopener,noreferrer'); }}
+                      className="btn-ghost text-sm px-4 py-2 inline-flex items-center gap-2 w-fit"
+                    >
+                      Visit Product <ExternalLink size={13} />
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

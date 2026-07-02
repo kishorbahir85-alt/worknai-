@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import {
   Briefcase, Building2, User, Mail, Phone, FileText,
-  Send, Loader2, CheckCircle, Upload, Lock, KeyRound, ArrowRight,
+  Send, Loader2, CheckCircle, Upload, KeyRound,
 } from 'lucide-react';
 import api from '../../utils/api';
-import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const inp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-3 px-4 text-sm text-white placeholder-ink-dim focus:outline-none focus:border-violet-400/60 transition-all';
@@ -15,9 +13,60 @@ const lbl = 'block text-xs font-medium text-ink-dim mb-1.5';
 const emptyJob = { applicantName: '', applicantEmail: '', phone: '', position: '', experience: '', coverLetter: '' };
 const emptyBiz = { companyName: '', contactName: '', email: '', phone: '', businessType: '', message: '' };
 
+function OtpGate({ email, onChangeEmail, otpSent, otpValue, setOtpValue, otpVerified, otpLoading, verifyLoading, sendOtp, verifyOtp }) {
+  return (
+    <>
+      <div className="sm:col-span-2">
+        <label className={lbl}><Mail className="w-3 h-3 inline mr-1" />Email <span className="text-red-400">*</span></label>
+        <div className="flex gap-2">
+          <input
+            type="email" value={email} onChange={onChangeEmail}
+            placeholder="you@email.com"
+            disabled={otpVerified}
+            className={inp + (otpVerified ? ' opacity-60 cursor-not-allowed' : '')}
+          />
+          {!otpVerified && (
+            <button
+              type="button"
+              onClick={sendOtp} disabled={otpLoading || !email}
+              className="shrink-0 px-4 py-2.5 rounded-xl border border-violet-500/30 bg-violet-500/10 text-violet-300 text-sm font-medium hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              {otpLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : otpSent ? 'Resend OTP' : 'Send OTP'}
+            </button>
+          )}
+          {otpVerified && (
+            <span className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-green-500/30 bg-green-500/10 text-green-400 text-sm font-medium">
+              <CheckCircle className="w-4 h-4" /> Verified
+            </span>
+          )}
+        </div>
+      </div>
+
+      {otpSent && !otpVerified && (
+        <div className="sm:col-span-2">
+          <label className={lbl}><KeyRound className="w-3 h-3 inline mr-1" />Enter OTP <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">sent to {email}</span></label>
+          <div className="flex gap-2">
+            <input
+              type="text" value={otpValue} onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="Enter 6-digit OTP"
+              maxLength={6}
+              className={inp + ' tracking-[0.5em] font-mono text-center text-lg'}
+            />
+            <button
+              type="button"
+              onClick={verifyOtp} disabled={verifyLoading || otpValue.length < 4}
+              className="shrink-0 px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-medium hover:bg-violet-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              {verifyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify'}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function JoinUs() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const [tab, setTab] = useState('job');
 
   /* ── Job form state ── */
@@ -25,58 +74,62 @@ export default function JoinUs() {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobLoading, setJobLoading] = useState(false);
   const [jobDone, setJobDone] = useState(false);
+  const [jobOtpSent, setJobOtpSent] = useState(false);
+  const [jobOtpValue, setJobOtpValue] = useState('');
+  const [jobOtpVerified, setJobOtpVerified] = useState(false);
+  const [jobOtpLoading, setJobOtpLoading] = useState(false);
+  const [jobVerifyLoading, setJobVerifyLoading] = useState(false);
 
   /* ── Business form state ── */
   const [bizForm, setBizForm] = useState(emptyBiz);
   const [bizLoading, setBizLoading] = useState(false);
   const [bizDone, setBizDone] = useState(false);
+  const [bizOtpSent, setBizOtpSent] = useState(false);
+  const [bizOtpValue, setBizOtpValue] = useState('');
+  const [bizOtpVerified, setBizOtpVerified] = useState(false);
+  const [bizOtpLoading, setBizOtpLoading] = useState(false);
+  const [bizVerifyLoading, setBizVerifyLoading] = useState(false);
 
-  /* OTP state */
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpValue, setOtpValue] = useState('');
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
-  const [verifyLoading, setVerifyLoading] = useState(false);
-
-  const fJob = (k) => (e) => setJobForm((p) => ({ ...p, [k]: e.target.value }));
+  const fJob = (k) => (e) => {
+    setJobForm((p) => ({ ...p, [k]: e.target.value }));
+    if (k === 'applicantEmail') { setJobOtpSent(false); setJobOtpVerified(false); setJobOtpValue(''); }
+  };
   const fBiz = (k) => (e) => {
     setBizForm((p) => ({ ...p, [k]: e.target.value }));
-    if (k === 'email') { setOtpSent(false); setOtpVerified(false); setOtpValue(''); }
+    if (k === 'email') { setBizOtpSent(false); setBizOtpVerified(false); setBizOtpValue(''); }
   };
 
-  /* ── Send OTP ── */
-  const sendOtp = async () => {
-    if (!bizForm.email || !/\S+@\S+\.\S+/.test(bizForm.email)) return toast.error('Please enter a valid email first');
-    setOtpLoading(true);
+  const sendOtpFor = async (email, setSent, setLoading) => {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) return toast.error('Please enter a valid email first');
+    setLoading(true);
     try {
-      await api.post('/otp/send', { email: bizForm.email });
-      setOtpSent(true);
-      toast.success(`OTP sent to ${bizForm.email}`);
+      await api.post('/otp/send', { email });
+      setSent(true);
+      toast.success(`OTP sent to ${email}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to send OTP');
     } finally {
-      setOtpLoading(false);
+      setLoading(false);
     }
   };
 
-  /* ── Verify OTP ── */
-  const verifyOtp = async () => {
+  const verifyOtpFor = async (email, otpValue, setVerified, setLoading) => {
     if (!otpValue || otpValue.length < 4) return toast.error('Enter the OTP sent to your email');
-    setVerifyLoading(true);
+    setLoading(true);
     try {
-      await api.post('/otp/verify', { email: bizForm.email, otp: otpValue });
-      setOtpVerified(true);
+      await api.post('/otp/verify', { email, otp: otpValue });
+      setVerified(true);
       toast.success('Email verified successfully!');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Invalid or expired OTP');
     } finally {
-      setVerifyLoading(false);
+      setLoading(false);
     }
   };
 
-  /* ── Submit Job Inquiry (login required) ── */
+  /* ── Submit Job Inquiry (email-OTP verified) ── */
   const submitJob = async () => {
-    if (!user) return toast.error('Please login to submit a job inquiry');
+    if (!jobOtpVerified) return toast.error('Please verify your email with OTP first');
     if (!jobForm.applicantName || !jobForm.applicantEmail || !jobForm.position || !jobForm.experience)
       return toast.error('Name, email, position and experience are required');
     if (!resumeFile) return toast.error('Please upload your resume');
@@ -103,7 +156,7 @@ export default function JoinUs() {
 
   /* ── Submit Business Inquiry (OTP required) ── */
   const submitBiz = async () => {
-    if (!otpVerified) return toast.error('Please verify your email with OTP first');
+    if (!bizOtpVerified) return toast.error('Please verify your email with OTP first');
     if (!bizForm.companyName || !bizForm.contactName || !bizForm.email || !bizForm.businessType || !bizForm.message)
       return toast.error('All fields except phone are required');
     setBizLoading(true);
@@ -163,35 +216,14 @@ export default function JoinUs() {
       {/* ═══════════ JOB FORM ═══════════ */}
       {tab === 'job' && (
         <div className="max-w-3xl mx-auto glass rounded-2xl p-8">
-
-          {/* Not logged in — block the form */}
-          {!user ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-8 h-8 text-violet-400" />
-              </div>
-              <h2 className="text-xl font-bold text-white mb-2">Login Required</h2>
-              <p className="text-ink-dim mb-6 max-w-sm mx-auto">
-                You need to be logged in to submit a job inquiry. Your application will be tracked in your dashboard.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link to="/login" state={{ from: { pathname: '/join-us' } }} className="btn-primary">
-                  Login <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link to="/register" className="btn-ghost">Create Account</Link>
-              </div>
-            </div>
-          ) : jobDone ? (
+          {jobDone ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-2">Inquiry Submitted!</h2>
-              <p className="text-ink-dim mb-6">Our HR team will review your profile and reach out soon. You can track the status in your dashboard.</p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Link to="/user/dashboard" className="btn-primary">View Dashboard <ArrowRight className="w-4 h-4" /></Link>
-                <button onClick={() => { setJobDone(false); setJobForm(emptyJob); setResumeFile(null); }} className="btn-ghost">
-                  Submit Another
-                </button>
-              </div>
+              <p className="text-ink-dim mb-6">Our HR team will review your profile and reach out soon.</p>
+              <button onClick={() => { setJobDone(false); setJobForm(emptyJob); setResumeFile(null); setJobOtpSent(false); setJobOtpVerified(false); setJobOtpValue(''); }} className="btn-ghost">
+                Submit Another
+              </button>
             </div>
           ) : (
             <>
@@ -201,7 +233,7 @@ export default function JoinUs() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Job / Career Inquiry</h2>
-                  <p className="text-xs text-ink-dim">Goes directly to our HR team · Visible in your dashboard</p>
+                  <p className="text-xs text-ink-dim">Email verification required · Goes directly to our HR team</p>
                 </div>
               </div>
 
@@ -211,18 +243,28 @@ export default function JoinUs() {
                   <input type="text" value={jobForm.applicantName} onChange={fJob('applicantName')} placeholder="Your full name" className={inp} />
                 </div>
                 <div>
-                  <label className={lbl}><Mail className="w-3 h-3 inline mr-1" />Email <span className="text-red-400">*</span></label>
-                  <input type="email" value={jobForm.applicantEmail} onChange={fJob('applicantEmail')} placeholder="your@email.com" className={inp} />
-                </div>
-                <div>
                   <label className={lbl}><Phone className="w-3 h-3 inline mr-1" />Phone</label>
                   <input type="tel" value={jobForm.phone} onChange={fJob('phone')} placeholder="+91 99999 99999" className={inp} />
                 </div>
+
+                <OtpGate
+                  email={jobForm.applicantEmail}
+                  onChangeEmail={fJob('applicantEmail')}
+                  otpSent={jobOtpSent}
+                  otpValue={jobOtpValue}
+                  setOtpValue={setJobOtpValue}
+                  otpVerified={jobOtpVerified}
+                  otpLoading={jobOtpLoading}
+                  verifyLoading={jobVerifyLoading}
+                  sendOtp={() => sendOtpFor(jobForm.applicantEmail, setJobOtpSent, setJobOtpLoading)}
+                  verifyOtp={() => verifyOtpFor(jobForm.applicantEmail, jobOtpValue, setJobOtpVerified, setJobVerifyLoading)}
+                />
+
                 <div>
                   <label className={lbl}><Briefcase className="w-3 h-3 inline mr-1" />Position / Role <span className="text-red-400">*</span></label>
                   <input type="text" value={jobForm.position} onChange={fJob('position')} placeholder="e.g. React Developer" className={inp} />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className={lbl}>Experience <span className="text-red-400">*</span></label>
                   <select value={jobForm.experience} onChange={fJob('experience')} className={selInp}>
                     <option value="" className="bg-[#0d0d1a] text-slate-400">-- Select experience --</option>
@@ -246,7 +288,12 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              <button onClick={submitJob} disabled={jobLoading} className="btn-primary w-full justify-center mt-6 disabled:opacity-50 disabled:cursor-not-allowed">
+              {!jobOtpVerified && (
+                <p className="text-xs text-amber-400 flex items-center gap-1.5 mt-4">
+                  <KeyRound className="w-3.5 h-3.5" /> Please verify your email with OTP before submitting.
+                </p>
+              )}
+              <button onClick={submitJob} disabled={jobLoading || !jobOtpVerified} className="btn-primary w-full justify-center mt-4 disabled:opacity-40 disabled:cursor-not-allowed">
                 {jobLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Job Inquiry</>}
               </button>
             </>
@@ -262,7 +309,7 @@ export default function JoinUs() {
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-2">Inquiry Submitted!</h2>
               <p className="text-ink-dim mb-6">Our business team will review your inquiry and get back to you shortly.</p>
-              <button onClick={() => { setBizDone(false); setBizForm(emptyBiz); setOtpSent(false); setOtpVerified(false); setOtpValue(''); }} className="btn-ghost">
+              <button onClick={() => { setBizDone(false); setBizForm(emptyBiz); setBizOtpSent(false); setBizOtpVerified(false); setBizOtpValue(''); }} className="btn-ghost">
                 Submit Another
               </button>
             </div>
@@ -288,52 +335,18 @@ export default function JoinUs() {
                   <input type="text" value={bizForm.contactName} onChange={fBiz('contactName')} placeholder="Your full name" className={inp} />
                 </div>
 
-                {/* Email + OTP */}
-                <div className="sm:col-span-2">
-                  <label className={lbl}><Mail className="w-3 h-3 inline mr-1" />Email <span className="text-red-400">*</span></label>
-                  <div className="flex gap-2">
-                    <input
-                      type="email" value={bizForm.email} onChange={fBiz('email')}
-                      placeholder="business@company.com"
-                      disabled={otpVerified}
-                      className={inp + (otpVerified ? ' opacity-60 cursor-not-allowed' : '')}
-                    />
-                    {!otpVerified && (
-                      <button
-                        onClick={sendOtp} disabled={otpLoading || !bizForm.email}
-                        className="shrink-0 px-4 py-2.5 rounded-xl border border-violet-500/30 bg-violet-500/10 text-violet-300 text-sm font-medium hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-                      >
-                        {otpLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : otpSent ? 'Resend OTP' : 'Send OTP'}
-                      </button>
-                    )}
-                    {otpVerified && (
-                      <span className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-green-500/30 bg-green-500/10 text-green-400 text-sm font-medium">
-                        <CheckCircle className="w-4 h-4" /> Verified
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* OTP Input */}
-                {otpSent && !otpVerified && (
-                  <div className="sm:col-span-2">
-                    <label className={lbl}><KeyRound className="w-3 h-3 inline mr-1" />Enter OTP <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">sent to {bizForm.email}</span></label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text" value={otpValue} onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        placeholder="Enter 6-digit OTP"
-                        maxLength={6}
-                        className={inp + ' tracking-[0.5em] font-mono text-center text-lg'}
-                      />
-                      <button
-                        onClick={verifyOtp} disabled={verifyLoading || otpValue.length < 4}
-                        className="shrink-0 px-4 py-2.5 rounded-xl bg-violet-600 text-white text-sm font-medium hover:bg-violet-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-                      >
-                        {verifyLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Verify'}
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <OtpGate
+                  email={bizForm.email}
+                  onChangeEmail={fBiz('email')}
+                  otpSent={bizOtpSent}
+                  otpValue={bizOtpValue}
+                  setOtpValue={setBizOtpValue}
+                  otpVerified={bizOtpVerified}
+                  otpLoading={bizOtpLoading}
+                  verifyLoading={bizVerifyLoading}
+                  sendOtp={() => sendOtpFor(bizForm.email, setBizOtpSent, setBizOtpLoading)}
+                  verifyOtp={() => verifyOtpFor(bizForm.email, bizOtpValue, setBizOtpVerified, setBizVerifyLoading)}
+                />
 
                 <div>
                   <label className={lbl}><Phone className="w-3 h-3 inline mr-1" />Phone</label>
@@ -354,15 +367,14 @@ export default function JoinUs() {
                 </div>
               </div>
 
-              {/* Submit — only enabled after OTP verified */}
               <div className="mt-6">
-                {!otpVerified && (
+                {!bizOtpVerified && (
                   <p className="text-xs text-amber-400 flex items-center gap-1.5 mb-3">
                     <KeyRound className="w-3.5 h-3.5" /> Please verify your email with OTP before submitting.
                   </p>
                 )}
                 <button
-                  onClick={submitBiz} disabled={bizLoading || !otpVerified}
+                  onClick={submitBiz} disabled={bizLoading || !bizOtpVerified}
                   className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {bizLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Business Inquiry</>}

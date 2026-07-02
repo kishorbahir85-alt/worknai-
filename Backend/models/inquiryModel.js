@@ -10,6 +10,10 @@ const inquirySchema = mongoose.Schema(
     message:     { type: String, required: true },
     source:      { type: String, default: '' },
     status:      { type: String, enum: ['new', 'read', 'replied'], default: 'new' },
+    product:     { type: mongoose.Schema.Types.ObjectId, ref: 'Product', default: null },
+    course:      { type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: null },
+    qualification: { type: String, default: '' },
+    address:     { type: String, default: '' },
   },
   { timestamps: true }
 );
