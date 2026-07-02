@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Application from '../models/applicationModel.js';
 import Job from '../models/jobModel.js';
+import { sendLeadToCrm } from '../utils/crm.js';
 
 export const applyForJob = asyncHandler(async (req, res) => {
   const { jobId, applicantName, applicantEmail, phone, experience, currentRole, coverLetter, source } = req.body;
@@ -31,6 +32,20 @@ export const applyForJob = asyncHandler(async (req, res) => {
     resumeUrl,
     coverLetterUrl,
   });
+
+  // Fire-and-forget CRM sync for join-us job inquiries; never blocks or fails the submission.
+  if (isJoinUs) {
+    sendLeadToCrm({
+      name: applicantName,
+      email: applicantEmail,
+      phone: phone || '',
+      message: coverLetter || '',
+      formType: 'job-inquiry',
+      position: currentRole || '',
+      experience,
+    });
+  }
+
   res.status(201).json({ data: application });
 });
 

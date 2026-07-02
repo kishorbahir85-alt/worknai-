@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Inquiry from '../models/inquiryModel.js';
+import { sendLeadToCrm } from '../utils/crm.js';
 
 export const createInquiry = asyncHandler(async (req, res) => {
   const { name, company, email, phone, type, message, source, product, course, qualification, address } = req.body;
@@ -17,6 +18,20 @@ export const createInquiry = asyncHandler(async (req, res) => {
     qualification: qualification || '',
     address: address || '',
   });
+
+  // Fire-and-forget CRM sync for join-us business inquiries; never blocks or fails the submission.
+  if (source === 'join-us') {
+    sendLeadToCrm({
+      name,
+      email,
+      phone: phone || '',
+      message: inquiry.message,
+      formType: 'business-inquiry',
+      companyName: company || '',
+      inquiryType: type || '',
+    });
+  }
+
   res.status(201).json({ data: inquiry });
 });
 
