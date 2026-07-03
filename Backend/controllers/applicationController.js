@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import Application from '../models/applicationModel.js';
 import Job from '../models/jobModel.js';
-import { sendLeadToCrm } from '../utils/crm.js';
+import { syncLeadToCrm } from '../utils/crmSync.js';
 
 export const applyForJob = asyncHandler(async (req, res) => {
   const { jobId, applicantName, applicantEmail, phone, experience, currentRole, coverLetter, source } = req.body;
@@ -35,14 +35,19 @@ export const applyForJob = asyncHandler(async (req, res) => {
 
   // Fire-and-forget CRM sync for join-us job inquiries; never blocks or fails the submission.
   if (isJoinUs) {
-    sendLeadToCrm({
+    syncLeadToCrm({
       name: applicantName,
       email: applicantEmail,
       phone: phone || '',
-      message: coverLetter || '',
-      formType: 'job-inquiry',
-      position: currentRole || '',
-      experience,
+      source: 'worknai.com',
+      formType: 'job_inquiry',
+      jobDetails: {
+        position: currentRole || '', // the form's "Position / Role" field arrives as currentRole
+        experience,
+        resumeUrl, // relative path; served at https://<backend-domain>/uploads/resumes/...
+        skills: '', // the join-us form has no skills field
+        coverLetter: coverLetter || '',
+      },
     });
   }
 

@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Inquiry from '../models/inquiryModel.js';
-import { sendLeadToCrm } from '../utils/crm.js';
+import { syncLeadToCrm } from '../utils/crmSync.js';
 
 export const createInquiry = asyncHandler(async (req, res) => {
   const { name, company, email, phone, type, message, source, product, course, qualification, address } = req.body;
@@ -21,14 +21,18 @@ export const createInquiry = asyncHandler(async (req, res) => {
 
   // Fire-and-forget CRM sync for join-us business inquiries; never blocks or fails the submission.
   if (source === 'join-us') {
-    sendLeadToCrm({
+    syncLeadToCrm({
       name,
       email,
       phone: phone || '',
-      message: inquiry.message,
-      formType: 'business-inquiry',
-      companyName: company || '',
-      inquiryType: type || '',
+      source: 'worknai.com',
+      formType: 'business_inquiry',
+      businessDetails: {
+        companyName: company || '',
+        serviceRequired: type || '', // the form's "Inquiry Type" select arrives as type
+        budget: '', // the join-us form has no budget field
+        message: inquiry.message,
+      },
     });
   }
 
