@@ -127,7 +127,7 @@ jobs:
           port: 22
           timeout: 60s
           command_timeout: 20m
-          envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,GOOGLE_CLIENT_ID,CRM_API_KEY
+          envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,SMTP_HOST,SMTP_PORT,SMTP_FROM,GOOGLE_CLIENT_ID,CRM_API_KEY
           script: |
             set -e
             mkdir -p /var/www/worknai_v2
@@ -147,6 +147,9 @@ jobs:
                   JWT_SECRET: ${JWT_SECRET}
                   SMTP_USER: ${SMTP_USER}
                   SMTP_PASS: ${SMTP_PASS}
+                  SMTP_HOST: ${SMTP_HOST}
+                  SMTP_PORT: ${SMTP_PORT}
+                  SMTP_FROM: ${SMTP_FROM}
                   FRONTEND_URL: https://worknai.online
                   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
                   CRM_API_URL: https://billpay.business/api/leads/capture
@@ -205,5 +208,8 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           CRM_API_KEY: ${{ secrets.CRM_API_KEY }}
