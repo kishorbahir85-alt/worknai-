@@ -1,6 +1,8 @@
 import asyncHandler from 'express-async-handler';
 import Inquiry from '../models/inquiryModel.js';
+import Product from '../models/productModel.js';
 import { syncLeadToCrm } from '../utils/crmSync.js';
+import { buildBusinessInquiryCrmPayload, buildProductInquiryCrmPayload } from '../utils/inquiryCrmPayload.js';
 
 export const createInquiry = asyncHandler(async (req, res) => {
   const { name, company, email, phone, type, message, source, product, course, qualification, address } = req.body;
@@ -19,21 +21,24 @@ export const createInquiry = asyncHandler(async (req, res) => {
     address: address || '',
   });
 
-  // Fire-and-forget CRM sync for join-us business inquiries; never blocks or fails the submission.
-  if (source === 'join-us') {
-    syncLeadToCrm({
+  // Product, purchase, and investor inquiries all use billpay.business's
+  // supported business_inquiry contract, with their category in serviceRequired.
+  if (product) {
+    const productRecord = await Product.findById(product).select('title').lean();
+    void syncLeadToCrm(buildProductInquiryCrmPayload({
+      inquiry,
+      productTitle: productRecord?.title,
+    }));
+  } else if (source === 'join-us') {
+    // Fire-and-forget CRM sync; a CRM outage must not fail the local submission.
+    void syncLeadToCrm(buildBusinessInquiryCrmPayload({
       name,
       email,
       phone: phone || '',
-      source: 'worknai.com',
-      formType: 'business_inquiry',
-      businessDetails: {
-        companyName: company || '',
-        serviceRequired: type || '', // the form's "Inquiry Type" select arrives as type
-        budget: '', // the join-us form has no budget field
-        message: inquiry.message,
-      },
-    });
+      company: company || '',
+      serviceRequired: type || '',
+      message: inquiry.message,
+    }));
   }
 
   res.status(201).json({ data: inquiry });

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import {
   MessageSquare, Building2, Mail, Phone, Tag,
-  Clock, ChevronDown, ChevronUp, RefreshCw, Loader2, TrendingUp, Package, GraduationCap,
+  Clock, ChevronDown, ChevronUp, RefreshCw, Loader2, TrendingUp, Package, GraduationCap, ShoppingCart,
 } from 'lucide-react';
 
 const statusStyle = {
@@ -12,10 +12,45 @@ const statusStyle = {
 };
 const statusLabel = { new: 'New', read: 'Read', replied: 'Replied' };
 
+const getProductInquiryKind = (inquiry) => {
+  if (!inquiry.product) return null;
+  const value = `${inquiry.source || ''} ${inquiry.type || ''}`.toLowerCase();
+  if (value.includes('purchase')) return 'purchase';
+  if (value.includes('invest')) return 'investor';
+  return 'product';
+};
+
+const productKindMeta = {
+  product: {
+    label: 'Product',
+    Icon: Package,
+    iconBox: 'bg-violet-500/10 border-violet-500/20',
+    text: 'text-violet-400',
+    badge: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+  },
+  purchase: {
+    label: 'Purchase',
+    Icon: ShoppingCart,
+    iconBox: 'bg-emerald-500/10 border-emerald-500/20',
+    text: 'text-emerald-400',
+    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  },
+  investor: {
+    label: 'Investor',
+    Icon: TrendingUp,
+    iconBox: 'bg-fuchsia-500/10 border-fuchsia-500/20',
+    text: 'text-fuchsia-400',
+    badge: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',
+  },
+};
+
 function InquiryCard({ inq, onStatusChange }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(inq.status);
+  const productKind = getProductInquiryKind(inq);
+  const productMeta = productKind ? productKindMeta[productKind] : null;
+  const ProductIcon = productMeta?.Icon;
 
   const handleStatus = async (newStatus) => {
     setSaving(true);
@@ -34,8 +69,8 @@ function InquiryCard({ inq, onStatusChange }) {
         className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-800/50 transition-colors"
       >
         <div className="flex items-center gap-4 min-w-0">
-          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border ${inq.product ? 'bg-fuchsia-500/10 border-fuchsia-500/20' : inq.course ? 'bg-sky-500/10 border-sky-500/20' : 'bg-violet-500/10 border-violet-500/20'}`}>
-            {inq.product ? <TrendingUp size={16} className="text-fuchsia-400" /> : inq.course ? <GraduationCap size={16} className="text-sky-400" /> : <Building2 size={16} className="text-violet-400" />}
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border ${productMeta ? productMeta.iconBox : inq.course ? 'bg-sky-500/10 border-sky-500/20' : 'bg-violet-500/10 border-violet-500/20'}`}>
+            {ProductIcon ? <ProductIcon size={16} className={productMeta.text} /> : inq.course ? <GraduationCap size={16} className="text-sky-400" /> : <Building2 size={16} className="text-violet-400" />}
           </div>
           <div className="min-w-0">
             <p className="text-white font-semibold text-sm truncate">{inq.company || inq.name}</p>
@@ -44,8 +79,8 @@ function InquiryCard({ inq, onStatusChange }) {
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {inq.product && (
-            <span className="hidden sm:flex items-center gap-1 text-xs font-medium border rounded-full px-2.5 py-0.5 bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30">
-              <Package size={11} /> {inq.product.title}
+            <span className={`hidden sm:flex items-center gap-1 text-xs font-medium border rounded-full px-2.5 py-0.5 ${productMeta.badge}`}>
+              <ProductIcon size={11} /> {productMeta.label}: {inq.product.title}
             </span>
           )}
           {inq.course && (
@@ -68,8 +103,8 @@ function InquiryCard({ inq, onStatusChange }) {
           <div className="grid sm:grid-cols-2 gap-3 mt-4 mb-4">
             {inq.product && (
               <div className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
-                <Package size={13} className="text-fuchsia-400 shrink-0" />
-                <span>Regarding product: <span className="text-fuchsia-300 font-medium">{inq.product.title}</span></span>
+                <ProductIcon size={13} className={`${productMeta.text} shrink-0`} />
+                <span>{productMeta.label} inquiry for: <span className="text-white font-medium">{inq.product.title}</span></span>
               </div>
             )}
             {inq.course && (
@@ -158,7 +193,7 @@ export default function Inquiries() {
   };
 
   const filtered = filter === 'all' ? inquiries
-    : filter === 'investor' ? inquiries.filter((i) => i.product)
+    : ['product', 'purchase', 'investor'].includes(filter) ? inquiries.filter((i) => getProductInquiryKind(i) === filter)
     : filter === 'courses' ? inquiries.filter((i) => i.course)
     : inquiries.filter((i) => i.status === filter);
 
@@ -167,7 +202,9 @@ export default function Inquiries() {
     new:      inquiries.filter((i) => i.status === 'new').length,
     read:     inquiries.filter((i) => i.status === 'read').length,
     replied:  inquiries.filter((i) => i.status === 'replied').length,
-    investor: inquiries.filter((i) => i.product).length,
+    product:  inquiries.filter((i) => getProductInquiryKind(i) === 'product').length,
+    purchase: inquiries.filter((i) => getProductInquiryKind(i) === 'purchase').length,
+    investor: inquiries.filter((i) => getProductInquiryKind(i) === 'investor').length,
     courses:  inquiries.filter((i) => i.course).length,
   };
 
@@ -176,19 +213,21 @@ export default function Inquiries() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-semibold text-white">Business Inquiries</h1>
-          <p className="mt-1 text-slate-400 text-sm">Business and partnership inquiries from Join Us page.</p>
+          <p className="mt-1 text-slate-400 text-sm">Product, purchase, investor, course, and business inquiries.</p>
         </div>
         <button onClick={fetchInquiries} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors text-sm">
           <RefreshCw size={14} /> Refresh
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-8 gap-3 mb-6">
         {[
           { key: 'all',      label: 'Total',     color: 'text-white' },
           { key: 'new',      label: 'New',       color: 'text-yellow-400' },
           { key: 'read',     label: 'Read',      color: 'text-blue-400' },
           { key: 'replied',  label: 'Replied',   color: 'text-green-400' },
+          { key: 'product',  label: 'Products',  color: 'text-violet-400' },
+          { key: 'purchase', label: 'Purchases', color: 'text-emerald-400' },
           { key: 'investor', label: 'Investors', color: 'text-fuchsia-400' },
           { key: 'courses',  label: 'Courses',   color: 'text-sky-400' },
         ].map(({ key, label, color }) => (
@@ -213,7 +252,7 @@ export default function Inquiries() {
         <div className="text-center py-20 bg-slate-900 border border-slate-800 rounded-xl">
           <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-3" />
           <p className="text-white font-medium">No inquiries found</p>
-          <p className="text-slate-400 text-sm mt-1">Business inquiries from Join Us page will appear here.</p>
+          <p className="text-slate-400 text-sm mt-1">New website inquiries will appear here.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">

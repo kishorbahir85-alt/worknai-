@@ -4,6 +4,7 @@ import {
   ExternalLink, Code2, ArrowLeft, AlertCircle, Loader2, CheckCircle2,
   PlayCircle, X, Sparkles, Layers, ChevronDown, Rocket, Quote, Star,
   Zap, ShieldCheck, Globe2, TrendingUp, Send, User, Mail, Phone, Building2,
+  MessageSquare, ShoppingCart,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../utils/api';
@@ -26,15 +27,64 @@ const TESTIMONIAL_NAMES = [
   { name: 'Rohan Verma', role: 'CTO' },
 ];
 
-const investorInp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-3 px-4 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-violet-400/60 transition-all';
-const investorLbl = 'block text-xs font-semibold text-ink-dim mb-1.5 uppercase tracking-wider';
+const enquiryInp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-3 px-4 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-violet-400/60 transition-all';
+const enquiryLbl = 'block text-xs font-semibold text-ink-dim mb-1.5 uppercase tracking-wider';
 
-function InvestorEnquiryForm({ product }) {
+const PRODUCT_ENQUIRY_TYPES = [
+  {
+    key: 'product',
+    type: 'Product Inquiry',
+    source: 'product-inquiry',
+    label: 'Product Inquiry',
+    shortDescription: 'Features, demo, integration, or support questions',
+    heading: (title) => `Ask about ${title}`,
+    description: (title) => `Tell us what you would like to know about ${title} and our product team will help you.`,
+    placeholder: (title) => `What would you like to know about ${title}?`,
+    submitLabel: 'Send Product Inquiry',
+    success: 'Your product inquiry has been sent to our team.',
+    icon: MessageSquare,
+  },
+  {
+    key: 'purchase',
+    type: 'Purchase Inquiry',
+    source: 'product-purchase-inquiry',
+    label: 'Purchase Inquiry',
+    shortDescription: 'Pricing, plans, licenses, and purchase assistance',
+    heading: (title) => `Purchase ${title}`,
+    description: (title) => `Share your requirements and our sales team will help you purchase the right ${title} plan.`,
+    placeholder: (title) => `Tell us how you plan to use ${title}, expected users, or any pricing questions...`,
+    submitLabel: 'Send Purchase Inquiry',
+    success: 'Your purchase inquiry has been sent to our sales team.',
+    icon: ShoppingCart,
+  },
+  {
+    key: 'investor',
+    type: 'Investor Interest',
+    source: 'investor-enquiry',
+    label: 'Investor Inquiry',
+    shortDescription: 'Investment, partnership, and growth opportunities',
+    heading: (title) => `Invest in ${title}`,
+    description: (title) => `Interested in investing in ${title}? Share your details and our team will connect with you.`,
+    placeholder: (title) => `Tell us about your investment interest in ${title}...`,
+    submitLabel: 'Send Investment Interest',
+    success: 'Your investment interest has been sent to our team.',
+    icon: TrendingUp,
+  },
+];
+
+function ProductEnquirySection({ product }) {
+  const [activeType, setActiveType] = useState('product');
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', message: '' });
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sentType, setSentType] = useState('');
+  const enquiry = PRODUCT_ENQUIRY_TYPES.find((item) => item.key === activeType) || PRODUCT_ENQUIRY_TYPES[0];
+  const ActiveIcon = enquiry.icon;
 
   const f = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const selectType = (key) => {
+    setActiveType(key);
+    setSentType('');
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -46,13 +96,13 @@ function InvestorEnquiryForm({ product }) {
     try {
       await api.post('/inquiries', {
         ...form,
-        type: 'Investor Interest',
-        source: 'investor-enquiry',
+        type: enquiry.type,
+        source: enquiry.source,
         product: product._id,
       });
-      setSent(true);
+      setSentType(enquiry.key);
       setForm({ name: '', email: '', phone: '', company: '', message: '' });
-      toast.success('Your interest has been sent to our team.');
+      toast.success(enquiry.success);
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Could not send your enquiry');
     } finally {
@@ -61,51 +111,83 @@ function InvestorEnquiryForm({ product }) {
   };
 
   return (
-    <form onSubmit={submit} className="glass-strong rounded-2xl p-6 md:p-8">
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold">Investor Interest</p>
-          <h2 className="text-2xl font-bold text-ink mt-1">Interested in investing in {product.title}?</h2>
-        </div>
-        <div className="w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-400/30 flex items-center justify-center shrink-0">
-          <TrendingUp className="w-5 h-5 text-violet-400" />
-        </div>
+    <div>
+      <div className="grid sm:grid-cols-3 gap-3 mb-5" role="tablist" aria-label="Product inquiry type">
+        {PRODUCT_ENQUIRY_TYPES.map((item) => {
+          const Icon = item.icon;
+          const selected = activeType === item.key;
+          return (
+            <button
+              key={item.key}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => selectType(item.key)}
+              className={`rounded-2xl border p-4 text-left transition-all ${
+                selected
+                  ? 'bg-violet-500/15 border-violet-400/60 shadow-[0_12px_35px_-18px_rgba(139,92,246,0.9)]'
+                  : 'bg-white/[0.03] border-white/10 hover:border-violet-400/35 hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${
+                selected ? 'bg-violet-500/25 text-violet-300' : 'bg-white/5 text-ink-dim'
+              }`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <div className="text-sm font-semibold text-ink">{item.label}</div>
+              <div className="text-xs text-ink-faint leading-relaxed mt-1">{item.shortDescription}</div>
+            </button>
+          );
+        })}
       </div>
 
-      {sent && (
-        <div className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
-          <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>Thanks! Our team will reach out to you shortly.</span>
+      <form onSubmit={submit} className="glass-strong rounded-2xl p-6 md:p-8">
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold">{enquiry.label}</p>
+            <h2 className="text-2xl font-bold text-ink mt-1">{enquiry.heading(product.title)}</h2>
+            <p className="text-sm text-ink-dim mt-2 max-w-xl">{enquiry.description(product.title)}</p>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-400/30 flex items-center justify-center shrink-0">
+            <ActiveIcon className="w-5 h-5 text-violet-400" />
+          </div>
         </div>
-      )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <label className={investorLbl}><User className="w-3.5 h-3.5 inline mr-1" />Name *</label>
-          <input className={investorInp} value={form.name} onChange={f('name')} placeholder="Your full name" />
-        </div>
-        <div>
-          <label className={investorLbl}><Mail className="w-3.5 h-3.5 inline mr-1" />Email *</label>
-          <input type="email" className={investorInp} value={form.email} onChange={f('email')} placeholder="you@example.com" />
-        </div>
-        <div>
-          <label className={investorLbl}><Phone className="w-3.5 h-3.5 inline mr-1" />Phone</label>
-          <input className={investorInp} value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" />
-        </div>
-        <div>
-          <label className={investorLbl}><Building2 className="w-3.5 h-3.5 inline mr-1" />Company / Fund</label>
-          <input className={investorInp} value={form.company} onChange={f('company')} placeholder="Optional" />
-        </div>
-        <div className="sm:col-span-2">
-          <label className={investorLbl}>Message *</label>
-          <textarea className={`${investorInp} min-h-28 resize-y`} value={form.message} onChange={f('message')} placeholder={`Tell us about your investment interest in ${product.title}...`} />
-        </div>
-      </div>
+        {sentType === enquiry.key && (
+          <div className="mb-5 flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400">
+            <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
+            <span>Thanks! {enquiry.success}</span>
+          </div>
+        )}
 
-      <button type="submit" disabled={loading} className="btn-primary justify-center w-full mt-6 disabled:opacity-60">
-        {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</> : <><Send className="w-4 h-4" /> Send Investment Interest</>}
-      </button>
-    </form>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className={enquiryLbl}><User className="w-3.5 h-3.5 inline mr-1" />Name *</label>
+            <input className={enquiryInp} value={form.name} onChange={f('name')} placeholder="Your full name" />
+          </div>
+          <div>
+            <label className={enquiryLbl}><Mail className="w-3.5 h-3.5 inline mr-1" />Email *</label>
+            <input type="email" className={enquiryInp} value={form.email} onChange={f('email')} placeholder="you@example.com" />
+          </div>
+          <div>
+            <label className={enquiryLbl}><Phone className="w-3.5 h-3.5 inline mr-1" />Phone</label>
+            <input className={enquiryInp} value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" />
+          </div>
+          <div>
+            <label className={enquiryLbl}><Building2 className="w-3.5 h-3.5 inline mr-1" />{activeType === 'investor' ? 'Company / Fund' : 'Company / Organization'}</label>
+            <input className={enquiryInp} value={form.company} onChange={f('company')} placeholder="Optional" />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={enquiryLbl}>Message *</label>
+            <textarea className={`${enquiryInp} min-h-28 resize-y`} value={form.message} onChange={f('message')} placeholder={enquiry.placeholder(product.title)} />
+          </div>
+        </div>
+
+        <button type="submit" disabled={loading} className="btn-primary justify-center w-full mt-6 disabled:opacity-60">
+          {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</> : <><Send className="w-4 h-4" /> {enquiry.submitLabel}</>}
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -517,15 +599,15 @@ export default function ProductDetail() {
         </section>
       )}
 
-      {/* ===== Investor Interest ===== */}
+      {/* ===== Product Inquiries ===== */}
       <section className="section pt-0">
-        <div className="container-x max-w-2xl">
+        <div className="container-x max-w-5xl">
           <div className="text-center mb-8">
-            <span className="chip mb-4"><TrendingUp size={12} /> Invest</span>
-            <h2 className="display-h text-3xl sm:text-4xl text-ink">Back {product.title}</h2>
-            <p className="text-ink-dim max-w-xl mx-auto mt-3">Interested in investing in this product? Share your details and our team will connect with you.</p>
+            <span className="chip mb-4"><MessageSquare size={12} /> Connect</span>
+            <h2 className="display-h text-3xl sm:text-4xl text-ink">Connect about {product.title}</h2>
+            <p className="text-ink-dim max-w-2xl mx-auto mt-3">Ask about the product, get purchase assistance, or discuss an investment opportunity.</p>
           </div>
-          <InvestorEnquiryForm product={product} />
+          <ProductEnquirySection product={product} />
         </div>
       </section>
 

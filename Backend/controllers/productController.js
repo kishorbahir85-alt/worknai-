@@ -58,10 +58,12 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
 });
 
 export const getManageProducts = asyncHandler(async (req, res) => {
-  const filter = req.user.role === 'admin' ? {} : { postedBy: req.user._id };
-  const products = await Product.find(filter)
+  // Products are a shared public catalog. Every authorized admin/manager should
+  // see and manage the same list, regardless of which manager created an item.
+  const products = await Product.find({})
     .populate('postedBy', 'name email role')
     .sort('-createdAt');
+  res.set('Cache-Control', 'no-store');
   res.json({ data: products });
 });
 
@@ -98,9 +100,6 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) { res.status(404); throw new Error('Product not found'); }
-  if (req.user.role !== 'admin' && product.postedBy.toString() !== req.user._id.toString()) {
-    res.status(403); throw new Error('Not authorized');
-  }
   const fields = ['title', 'description', 'category', 'url', 'isActive', 'videoUrl', 'tagline'];
   fields.forEach(f => { if (req.body[f] !== undefined) product[f] = req.body[f]; });
   if (req.body.techStack !== undefined) product.techStack = toArray(req.body.techStack);
@@ -162,9 +161,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
 export const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) { res.status(404); throw new Error('Product not found'); }
-  if (req.user.role !== 'admin' && product.postedBy.toString() !== req.user._id.toString()) {
-    res.status(403); throw new Error('Not authorized');
-  }
   destroyCloudinaryAsset(product.logoUrl);
   destroyCloudinaryAssets(product.gallery);
   destroyCloudinaryAsset(product.heroImage);

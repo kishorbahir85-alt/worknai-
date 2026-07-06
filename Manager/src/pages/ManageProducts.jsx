@@ -34,6 +34,7 @@ export default function ManageProducts() {
   const [howItWorks, setHowItWorks] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = () => {
     setLoading(true);
@@ -143,9 +144,21 @@ export default function ManageProducts() {
       if (benefitsImageFile) formData.append('benefitsImage', benefitsImageFile);
       if (form.benefitsImageText.trim()) formData.append('benefitsImageText', form.benefitsImageText.trim());
 
-      if (editing) { await api.put(`/products/${editing}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }); toast.success('Product updated'); }
-      else { await api.post('/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } }); toast.success('Product added'); }
-      cancel(); load();
+      if (editing) {
+        const response = await api.put(`/products/${editing}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        setProducts((current) => current.map((product) => (
+          product._id === editing
+            ? { ...product, ...response.data.data, postedBy: product.postedBy }
+            : product
+        )));
+        toast.success('Product updated');
+        cancel();
+      } else {
+        await api.post('/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        toast.success('Product added');
+        cancel();
+        load();
+      }
     } catch (err) { toast.error(err.response?.data?.message || 'Error'); }
     finally { setSaving(false); }
   };
@@ -173,8 +186,14 @@ export default function ManageProducts() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this product?')) return;
-    try { await api.delete(`/products/${id}`); toast.success('Deleted'); load(); }
+    setDeletingId(id);
+    try {
+      await api.delete(`/products/${id}`);
+      setProducts((current) => current.filter((product) => product._id !== id));
+      toast.success('Product deleted');
+    }
     catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+    finally { setDeletingId(null); }
   };
 
   const cancel = () => {
@@ -411,8 +430,8 @@ export default function ManageProducts() {
                     {p.url ? <a href={p.url} target="_blank" rel="noreferrer" className="text-emerald-400 hover:text-emerald-300 text-xs">Visit ↗</a> : <span className="text-slate-500">—</span>}
                   </td>
                   <td className="py-3 px-4 text-right flex gap-1 justify-end">
-                    <button onClick={() => startEdit(p)} className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"><Pencil size={14} /></button>
-                    <button onClick={() => handleDelete(p._id)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                    <button type="button" onClick={() => startEdit(p)} title={`Edit ${p.title}`} aria-label={`Edit ${p.title}`} className="p-1.5 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"><Pencil size={14} /></button>
+                    <button type="button" onClick={() => handleDelete(p._id)} disabled={deletingId === p._id} title={`Delete ${p.title}`} aria-label={`Delete ${p.title}`} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"><Trash2 size={14} /></button>
                   </td>
                 </tr>
               ))}
