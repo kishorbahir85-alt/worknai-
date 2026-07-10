@@ -17,6 +17,38 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
 };
 
+// Hero accent ke liye typewriter — type karta hai, rukta hai, delete karke repeat
+function Typewriter({ text, className }) {
+  const [count, setCount] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    setCount(0);
+    setDeleting(false);
+  }, [text]);
+
+  useEffect(() => {
+    let t;
+    if (!deleting && count < text.length) {
+      t = setTimeout(() => setCount((c) => c + 1), 95);
+    } else if (!deleting && count === text.length) {
+      t = setTimeout(() => setDeleting(true), 2400);
+    } else if (deleting && count > 0) {
+      t = setTimeout(() => setCount((c) => c - 1), 45);
+    } else {
+      t = setTimeout(() => setDeleting(false), 400);
+    }
+    return () => clearTimeout(t);
+  }, [count, deleting, text]);
+
+  return (
+    <span className={className} aria-label={text}>
+      <span aria-hidden="true">{text.slice(0, count)}</span>
+      <span className="typewriter-caret" aria-hidden="true" />
+    </span>
+  );
+}
+
 const formatCourseStartDate = (value) => {
   if (!value) return '';
   const text = String(value).trim();
@@ -44,7 +76,7 @@ const MARQUEE_NAMES = [
 ];
 const MARQUEE_ROW = [...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES];
 const darkHeroVideo = 'https://res.cloudinary.com/dqmg9yp6r/video/upload/only-us/hero.mp4';
-const lightHeroVideo = '/hero2.mp4';
+const lightHeroVideo = '/hero.mp4';
 
 export default function Home() {
   const { isDark } = useTheme();
@@ -146,7 +178,7 @@ export default function Home() {
                     className="display-h text-[clamp(2.35rem,6.4vw,5rem)] mt-7"
                   >
                     <span className="text-gradient block">{heroCopy.title}</span>
-                    <span className="block text-violet-300">{heroCopy.accent}</span>
+                    <Typewriter text={heroCopy.accent} className="block text-violet-300" />
                   </motion.h1>
 
                   <motion.p
@@ -177,9 +209,6 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div className="reference-hero-wash absolute inset-0 z-[1]" />
-            <div className="reference-hero-bottom absolute inset-x-0 bottom-0 z-[1] h-[24%]" />
-
             <div className="container-x relative z-10 w-full pt-2 md:pt-8">
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
@@ -189,7 +218,7 @@ export default function Home() {
               >
                 <h1 className="mt-4 font-display text-[2.25rem] font-bold leading-[0.94] text-white sm:text-[2.8rem] md:mt-5 md:text-[3.6rem] lg:text-[4.35rem] xl:text-[4.85rem]">
                   {heroCopy.title}
-                  <span className="block text-[#ff314f]">{heroCopy.accent}</span>
+                  <Typewriter text={heroCopy.accent} className="block text-[#8b5cf6]" />
                 </h1>
                 <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/86 md:mt-6 md:text-lg">
                   {heroCopy.subtitle}

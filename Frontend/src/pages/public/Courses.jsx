@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Clock, Tag, ArrowRight, Calendar } from 'lucide-react';
 import api from '../../utils/api';
 
-const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-400 bg-amber-500/10', advanced: 'text-red-400 bg-red-500/10' };
+const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-300 bg-amber-500/10', advanced: 'text-rose-300 bg-rose-500/10' };
 const modeColor  = { online: 'text-sky-400 bg-sky-500/10', offline: 'text-violet-400 bg-violet-500/10', hybrid: 'text-pink-400 bg-pink-500/10' };
 const formatStartDate = (value) => {
   if (!value) return '';

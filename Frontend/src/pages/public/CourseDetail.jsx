@@ -8,7 +8,7 @@ import {
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 
-const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-400 bg-amber-500/10', advanced: 'text-red-400 bg-red-500/10' };
+const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-300 bg-amber-500/10', advanced: 'text-rose-300 bg-rose-500/10' };
 const modeColor  = { online: 'text-sky-400 bg-sky-500/10', offline: 'text-violet-400 bg-violet-500/10', hybrid: 'text-pink-400 bg-pink-500/10' };
 const inp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-2.5 px-4 text-sm text-white placeholder-ink-dim focus:outline-none focus:border-violet-400/60 transition-all';
 const lbl = 'block text-xs font-medium text-ink-dim mb-1.5';
@@ -172,12 +172,12 @@ export default function CourseDetail() {
                 {course.batches.map((b) => {
                   const full = b.totalSeats > 0 && b.enrolledCount >= b.totalSeats;
                   return (
-                    <div key={b._id} className={`border rounded-xl p-4 ${full ? 'border-red-500/20 bg-red-500/5 opacity-60' : 'border-violet-500/20 bg-violet-500/5'}`}>
+                    <div key={b._id} className={`border rounded-xl p-4 ${full ? 'border-rose-500/20 bg-rose-500/5 opacity-60' : 'border-violet-500/20 bg-violet-500/5'}`}>
                       <p className="text-white font-semibold text-sm">{b.name}</p>
                       {b.timing && <p className="text-ink-dim text-xs mt-1"><Clock size={10} className="inline mr-1"/>{b.timing}</p>}
                       {b.days   && <p className="text-ink-dim text-xs"><Calendar size={10} className="inline mr-1"/>{b.days}</p>}
                       {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
-                      {b.totalSeats > 0 && <p className={`text-xs mt-1 font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}><Users size={10} className="inline mr-1"/>{full ? 'Batch Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
+                      {b.totalSeats > 0 && <p className={`text-xs mt-1 font-medium ${full ? 'text-rose-300' : 'text-emerald-400'}`}><Users size={10} className="inline mr-1"/>{full ? 'Batch Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
                     </div>
                   );
                 })}
@@ -214,11 +214,11 @@ export default function CourseDetail() {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div><label className={lbl}><User className="w-3 h-3 inline mr-1"/>Full Name <span className="text-red-400">*</span></label>
+              <div><label className={lbl}><User className="w-3 h-3 inline mr-1"/>Full Name <span className="text-violet-400">*</span></label>
                 <input type="text" value={form.name} onChange={f('name')} placeholder="Your full name" className={inp}/></div>
-              <div><label className={lbl}><Mail className="w-3 h-3 inline mr-1"/>Email <span className="text-red-400">*</span></label>
+              <div><label className={lbl}><Mail className="w-3 h-3 inline mr-1"/>Email <span className="text-violet-400">*</span></label>
                 <input type="email" value={form.email} onChange={f('email')} placeholder="you@example.com" className={inp}/></div>
-              <div><label className={lbl}><Phone className="w-3 h-3 inline mr-1"/>Phone Number <span className="text-red-400">*</span></label>
+              <div><label className={lbl}><Phone className="w-3 h-3 inline mr-1"/>Phone Number <span className="text-violet-400">*</span></label>
                 <input type="tel" value={form.phone} onChange={f('phone')} placeholder="+91 99999 99999" className={inp}/></div>
               <div><label className={lbl}><GraduationCap className="w-3 h-3 inline mr-1"/>Highest Qualification</label>
                 <input type="text" value={form.qualification} onChange={f('qualification')} placeholder="e.g. B.Tech, 12th, BCA" className={inp}/></div>
@@ -230,7 +230,7 @@ export default function CourseDetail() {
               {/* Batch selection */}
               {isOffline && hasBatches && (
                 <div>
-                  <label className={lbl}><Calendar className="w-3 h-3 inline mr-1"/>Select Batch <span className="text-red-400">*</span></label>
+                  <label className={lbl}><Calendar className="w-3 h-3 inline mr-1"/>Select Batch <span className="text-violet-400">*</span></label>
                   <div className="flex flex-col gap-2">
                     {course.batches.map((b) => {
                       const full = b.totalSeats > 0 && b.enrolledCount >= b.totalSeats;
@@ -241,7 +241,7 @@ export default function CourseDetail() {
                             <p className="text-white text-sm font-medium">{b.name}</p>
                             {b.timing && <p className="text-ink-dim text-xs">{b.timing}{b.days ? ` · ${b.days}` : ''}</p>}
                             {b.startDate && <p className="text-ink-dim text-xs">Starts: {formatStartDate(b.startDate)}</p>}
-                            {b.totalSeats > 0 && <p className={`text-xs font-medium ${full ? 'text-red-400' : 'text-emerald-400'}`}>{full ? 'Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
+                            {b.totalSeats > 0 && <p className={`text-xs font-medium ${full ? 'text-rose-300' : 'text-emerald-400'}`}>{full ? 'Full' : `${b.totalSeats - b.enrolledCount} seats left`}</p>}
                           </div>
                         </label>
                       );

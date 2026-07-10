@@ -9,7 +9,7 @@ const resolveUrl = (url) => (url && !/^https?:\/\//.test(url) ? `${BASE}${url}` 
 const difficultyStyle = {
   Beginner: 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30',
   Intermediate: 'text-amber-300 bg-amber-500/10 border-amber-500/30',
-  Advanced: 'text-red-300 bg-red-500/10 border-red-500/30',
+  Advanced: 'text-rose-300 bg-rose-500/10 border-rose-500/30',
 };
 
 function getEmbedUrl(videoUrl) {

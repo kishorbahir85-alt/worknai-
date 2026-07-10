@@ -224,7 +224,7 @@ export default function JobDetail() {
                 {/* Name */}
                 <div>
                   <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
-                    <User className="w-3 h-3" /> Full Name <span className="text-red-400">*</span>
+                    <User className="w-3 h-3" /> Full Name <span className="text-violet-400">*</span>
                   </label>
                   <input type="text" value={form.applicantName} onChange={f('applicantName')} placeholder="Your full name" className={inp} />
                 </div>
@@ -232,7 +232,7 @@ export default function JobDetail() {
                 {/* Email + OTP */}
                 <div>
                   <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
-                    <Mail className="w-3 h-3" /> Email <span className="text-red-400">*</span>
+                    <Mail className="w-3 h-3" /> Email <span className="text-violet-400">*</span>
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -261,7 +261,7 @@ export default function JobDetail() {
                 {otpSent && !otpVerified && (
                   <div>
                     <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
-                      <KeyRound className="w-3 h-3" /> Enter OTP <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">sent to {form.applicantEmail}</span>
+                      <KeyRound className="w-3 h-3" /> Enter OTP <span className="text-violet-400">*</span> <span className="text-ink-faint ml-1">sent to {form.applicantEmail}</span>
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -292,7 +292,7 @@ export default function JobDetail() {
                 {/* Experience */}
                 <div>
                   <label className="block text-xs text-ink-dim mb-1.5 flex items-center gap-1">
-                    <Star className="w-3 h-3" /> Experience <span className="text-red-400">*</span>
+                    <Star className="w-3 h-3" /> Experience <span className="text-violet-400">*</span>
                   </label>
                   <select value={form.experience} onChange={f('experience')} className={selInp}>
                     <option value="" className="bg-[#0d0d1a] text-slate-400">-- Select experience --</option>

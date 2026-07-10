@@ -17,7 +17,7 @@ function OtpGate({ email, onChangeEmail, otpSent, otpValue, setOtpValue, otpVeri
   return (
     <>
       <div className="sm:col-span-2">
-        <label className={lbl}><Mail className="w-3 h-3 inline mr-1" />Email <span className="text-red-400">*</span></label>
+        <label className={lbl}><Mail className="w-3 h-3 inline mr-1" />Email <span className="text-violet-400">*</span></label>
         <div className="flex gap-2">
           <input
             type="email" value={email} onChange={onChangeEmail}
@@ -44,7 +44,7 @@ function OtpGate({ email, onChangeEmail, otpSent, otpValue, setOtpValue, otpVeri
 
       {otpSent && !otpVerified && (
         <div className="sm:col-span-2">
-          <label className={lbl}><KeyRound className="w-3 h-3 inline mr-1" />Enter OTP <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">sent to {email}</span></label>
+          <label className={lbl}><KeyRound className="w-3 h-3 inline mr-1" />Enter OTP <span className="text-violet-400">*</span> <span className="text-ink-faint ml-1">sent to {email}</span></label>
           <div className="flex gap-2">
             <input
               type="text" value={otpValue} onChange={(e) => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -239,7 +239,7 @@ export default function JoinUs() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={lbl}><User className="w-3 h-3 inline mr-1" />Full Name <span className="text-red-400">*</span></label>
+                  <label className={lbl}><User className="w-3 h-3 inline mr-1" />Full Name <span className="text-violet-400">*</span></label>
                   <input type="text" value={jobForm.applicantName} onChange={fJob('applicantName')} placeholder="Your full name" className={inp} />
                 </div>
                 <div>
@@ -261,11 +261,11 @@ export default function JoinUs() {
                 />
 
                 <div>
-                  <label className={lbl}><Briefcase className="w-3 h-3 inline mr-1" />Position / Role <span className="text-red-400">*</span></label>
+                  <label className={lbl}><Briefcase className="w-3 h-3 inline mr-1" />Position / Role <span className="text-violet-400">*</span></label>
                   <input type="text" value={jobForm.position} onChange={fJob('position')} placeholder="e.g. React Developer" className={inp} />
                 </div>
                 <div>
-                  <label className={lbl}>Experience <span className="text-red-400">*</span></label>
+                  <label className={lbl}>Experience <span className="text-violet-400">*</span></label>
                   <select value={jobForm.experience} onChange={fJob('experience')} className={selInp}>
                     <option value="" className="bg-[#0d0d1a] text-slate-400">-- Select experience --</option>
                     {['Fresher (0 years)', 'Less than 1 year', '1 year', '2 years', '3 years', '4 years', '5 years', '6-8 years', '9-10 years', '10+ years'].map(v => (
@@ -278,7 +278,7 @@ export default function JoinUs() {
                   <textarea value={jobForm.coverLetter} onChange={fJob('coverLetter')} rows={4} placeholder="Tell us about yourself and why you want to join WorknAi..." className={inp + ' resize-none'} />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={lbl}><Upload className="w-3 h-3 inline mr-1" />Resume <span className="text-red-400">*</span> <span className="text-ink-faint ml-1">(PDF / DOC / DOCX, max 5MB)</span></label>
+                  <label className={lbl}><Upload className="w-3 h-3 inline mr-1" />Resume <span className="text-violet-400">*</span> <span className="text-ink-faint ml-1">(PDF / DOC / DOCX, max 5MB)</span></label>
                   <input
                     type="file" accept=".pdf,.doc,.docx"
                     onChange={(e) => setResumeFile(e.target.files[0] || null)}
@@ -327,11 +327,11 @@ export default function JoinUs() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={lbl}><Building2 className="w-3 h-3 inline mr-1" />Company Name <span className="text-red-400">*</span></label>
+                  <label className={lbl}><Building2 className="w-3 h-3 inline mr-1" />Company Name <span className="text-violet-400">*</span></label>
                   <input type="text" value={bizForm.companyName} onChange={fBiz('companyName')} placeholder="Your company name" className={inp} />
                 </div>
                 <div>
-                  <label className={lbl}><User className="w-3 h-3 inline mr-1" />Contact Person <span className="text-red-400">*</span></label>
+                  <label className={lbl}><User className="w-3 h-3 inline mr-1" />Contact Person <span className="text-violet-400">*</span></label>
                   <input type="text" value={bizForm.contactName} onChange={fBiz('contactName')} placeholder="Your full name" className={inp} />
                 </div>
 
@@ -353,7 +353,7 @@ export default function JoinUs() {
                   <input type="tel" value={bizForm.phone} onChange={fBiz('phone')} placeholder="+91 99999 99999" className={inp} />
                 </div>
                 <div>
-                  <label className={lbl}>Inquiry Type <span className="text-red-400">*</span></label>
+                  <label className={lbl}>Inquiry Type <span className="text-violet-400">*</span></label>
                   <select value={bizForm.businessType} onChange={fBiz('businessType')} className={selInp}>
                     <option value="" className="bg-[#0d0d1a] text-slate-400">-- Select type --</option>
                     {['Business Partnership', 'Become a Client', 'Investment Opportunity', 'Reseller / Affiliate', 'Other'].map(v => (
@@ -362,7 +362,7 @@ export default function JoinUs() {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={lbl}><FileText className="w-3 h-3 inline mr-1" />Message / Proposal <span className="text-red-400">*</span></label>
+                  <label className={lbl}><FileText className="w-3 h-3 inline mr-1" />Message / Proposal <span className="text-violet-400">*</span></label>
                   <textarea value={bizForm.message} onChange={fBiz('message')} rows={5} placeholder="Describe your business proposal, requirements, or how you'd like to collaborate..." className={inp + ' resize-none'} />
                 </div>
               </div>

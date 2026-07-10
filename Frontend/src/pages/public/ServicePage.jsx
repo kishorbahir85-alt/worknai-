@@ -58,7 +58,7 @@ export default function ServicePage() {
           >
             <ArrowLeft size={13} /> Home / {svc.category} / {svc.title}
           </Link>
-          <p className="text-xs uppercase tracking-widest text-orange-300 font-semibold mb-3">{svc.category}</p>
+          <p className="text-xs uppercase tracking-widest text-violet-300 font-semibold mb-3">{svc.category}</p>
           <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-4 max-w-2xl leading-tight">
             {svc.title}
           </h1>

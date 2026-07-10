@@ -7,6 +7,7 @@ import {
   MessageSquare, ShoppingCart,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import api from '../../utils/api';
 import { categoryImage, resolveUrl } from '../../utils/productImage';
 
@@ -20,6 +21,28 @@ function getEmbedUrl(videoUrl) {
 }
 
 const FEATURE_ICONS = [Zap, ShieldCheck, Globe2, Sparkles, Rocket, Layers, CheckCircle2, Code2];
+
+// Scroll pe fade-up reveal — har section isi se enter hota hai
+const Reveal = ({ children, delay = 0, className = '' }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-60px' }}
+    transition={{ duration: 0.55, delay, ease: 'easeOut' }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
+// Left-aligned professional section header
+const SectionHead = ({ eyebrow, title, sub }) => (
+  <div className="max-w-2xl mb-10 md:mb-14">
+    <p className="text-sm font-medium text-violet-400 mb-3">{eyebrow}</p>
+    <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink">{title}</h2>
+    {sub && <p className="text-ink-dim mt-3 leading-relaxed">{sub}</p>}
+  </div>
+);
 
 const TESTIMONIAL_NAMES = [
   { name: 'Aarav Mehta', role: 'Product Manager' },
@@ -285,20 +308,28 @@ export default function ProductDetail() {
             <img
               src={heroImage}
               alt={product.title}
-              className="w-full h-full object-cover"
+              className="hero-media-zoom w-full h-full object-cover"
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = categoryImage(product, 'hero', 1600, 1000); }}
             />
           )}
         </div>
         <div className="product-hero-wash absolute inset-0" />
+        {/* Bottom cinematic fade — stats readable rahein */}
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
 
-        <div className="container-x relative z-10 pt-20 pb-12 px-4">
-          <Link to="/products" className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Products
-          </Link>
+        <div className="w-full relative z-10 pt-20 pb-16 px-5 sm:px-8 lg:px-14">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <Link to="/products" className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white mb-8 transition-colors group">
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" /> Back to Products
+            </Link>
+          </motion.div>
 
           <div className="max-w-3xl">
-            <div className="flex items-center gap-4 mb-5">
+            {/* Badge row */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}
+              className="flex flex-wrap items-center gap-3 mb-6"
+            >
               <div className="w-16 h-16 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500/30 to-violet-700/30 border border-violet-400/30 backdrop-blur-md flex items-center justify-center overflow-hidden shadow-[0_10px_40px_-10px_rgba(122,59,255,0.6)]">
                 {product.logoUrl ? (
                   <img src={resolveUrl(product.logoUrl)} alt={product.title} className="w-full h-full object-contain p-2" />
@@ -306,80 +337,115 @@ export default function ProductDetail() {
                   <Code2 size={24} className="text-violet-300" />
                 )}
               </div>
-              {product.category && <span className="chip">{product.category}</span>}
-            </div>
-
-            <h1 className="display-h text-4xl sm:text-6xl lg:text-7xl text-white leading-[1.02]">{product.title}</h1>
-            {product.tagline && <p className="text-white/85 text-lg sm:text-xl mt-4 max-w-2xl">{product.tagline}</p>}
-
-            <div className="flex flex-wrap gap-3 mt-9">
+              {product.category && <span className="chip backdrop-blur-md">{product.category}</span>}
               {product.url && (
-                <a href={product.url} target="_blank" rel="noreferrer" className="btn-primary">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-emerald-500/15 border border-emerald-400/30 backdrop-blur-md text-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
+                </span>
+              )}
+            </motion.div>
+
+            {/* Title + tagline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.16 }}
+              className="display-h text-4xl sm:text-6xl lg:text-7xl text-white leading-[1.02] drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]"
+            >
+              {product.title}
+            </motion.h1>
+            {product.tagline && (
+              <motion.p
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.26 }}
+                className="text-white/85 text-lg sm:text-2xl mt-5 max-w-2xl font-light leading-relaxed"
+              >
+                {product.tagline}
+              </motion.p>
+            )}
+
+            {/* CTA buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.36 }}
+              className="flex flex-wrap gap-3 mt-9"
+            >
+              {product.url && (
+                <a href={product.url} target="_blank" rel="noreferrer" className="btn-primary shadow-[0_16px_40px_-12px_rgba(122,59,255,0.8)] hover:-translate-y-0.5 transition-transform">
                   Visit Product <ExternalLink size={15} />
                 </a>
               )}
               {(embedUrl || product.videoUrl) ? (
-                <a href="#demo" className="product-hero-ghost-btn">
+                <a href="#demo" className="product-hero-ghost-btn hover:-translate-y-0.5 transition-transform">
                   <PlayCircle size={16} /> Watch Demo
                 </a>
               ) : null}
-              <Link to="/contact" className="product-hero-ghost-btn">Get Started</Link>
-            </div>
+              <Link to="/contact" className="product-hero-ghost-btn hover:-translate-y-0.5 transition-transform">Get Started</Link>
+            </motion.div>
 
             {/* Quick stat strip */}
-            <div className="flex flex-wrap gap-x-10 gap-y-3 mt-12 pt-8 border-t border-white/20">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.48 }}
+              className="flex flex-wrap gap-y-4 mt-12 pt-7 border-t border-white/15 [&>div]:pr-8 sm:[&>div]:pr-10 [&>div+div]:pl-8 sm:[&>div+div]:pl-10 [&>div+div]:border-l [&>div+div]:border-white/15"
+            >
               {(product.techStack?.length > 0) && (
                 <div>
-                  <div className="text-2xl font-display font-bold text-white">{product.techStack.length}+</div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider mt-1">Technologies</div>
+                  <div className="text-2xl sm:text-3xl font-display font-bold text-white">{product.techStack.length}+</div>
+                  <div className="text-[11px] text-white/55 uppercase tracking-[0.18em] mt-1.5">Technologies</div>
                 </div>
               )}
               {(product.features?.length > 0) && (
                 <div>
-                  <div className="text-2xl font-display font-bold text-white">{product.features.length}+</div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider mt-1">Key Features</div>
+                  <div className="text-2xl sm:text-3xl font-display font-bold text-white">{product.features.length}+</div>
+                  <div className="text-[11px] text-white/55 uppercase tracking-[0.18em] mt-1.5">Key Features</div>
                 </div>
               )}
               <div>
-                <div className="text-2xl font-display font-bold text-white flex items-center gap-1">4.9 <Star className="w-4 h-4 fill-violet-400 text-violet-400" /></div>
-                <div className="text-xs text-white/60 uppercase tracking-wider mt-1">Avg. Rating</div>
+                <div className="text-2xl sm:text-3xl font-display font-bold text-white flex items-center gap-1.5">4.9 <Star className="w-4 h-4 fill-violet-400 text-violet-400" /></div>
+                <div className="text-[11px] text-white/55 uppercase tracking-[0.18em] mt-1.5">Avg. Rating</div>
               </div>
               <div>
-                <div className="text-2xl font-display font-bold text-white">24/7</div>
-                <div className="text-xs text-white/60 uppercase tracking-wider mt-1">Support</div>
+                <div className="text-2xl sm:text-3xl font-display font-bold text-white">24/7</div>
+                <div className="text-[11px] text-white/55 uppercase tracking-[0.18em] mt-1.5">Support</div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1 }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-1.5 text-white/60"
+        >
+          <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
+          <ChevronDown className="w-4 h-4 animate-bounce" />
+        </motion.div>
       </section>
 
       {/* ===== Product Overview ===== */}
       {product.description && (
         <section className="section">
-          <div className="container-x grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
-            <div>
-              <span className="chip mb-4"><Sparkles size={12} /> Overview</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink mb-5">What is {product.title}?</h2>
+          <div className="container-x grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center">
+            <Reveal>
+              <p className="text-sm font-medium text-violet-400 mb-3">Overview</p>
+              <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink mb-6">What is {product.title}?</h2>
               <p className="text-ink-dim leading-relaxed text-lg">{product.description}</p>
               {product.techStack?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-7">
+                <div className="flex flex-wrap gap-2 mt-8">
                   {product.techStack.map((t) => (
                     <span key={t} className="text-xs px-3 py-1.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20">{t}</span>
                   ))}
                 </div>
               )}
-            </div>
-            <div className="relative">
+            </Reveal>
+            <Reveal delay={0.12} className="relative">
               <div className="glow-orb w-64 h-64 bg-violet-600/30 -top-10 -right-10" />
-              <div className="glass-strong rounded-2xl overflow-hidden aspect-[4/3] relative z-10 bg-[#0d0d1a]">
+              <div className="rounded-2xl overflow-hidden aspect-[4/3] relative z-10 bg-[#0d0d1a] border border-line2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)]">
                 <img
                   src={overviewImage}
                   alt={`${product.title} preview`}
+                  loading="lazy"
                   className="w-full h-full object-cover"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = categoryImage(product, 'overview', 900, 700); }}
                 />
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -388,21 +454,28 @@ export default function ProductDetail() {
       {product.features?.length > 0 && (
         <section className="section pt-0">
           <div className="container-x">
-            <div className="text-center mb-14">
-              <span className="chip mb-4">Capabilities</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink">Key Features</h2>
-              <p className="text-ink-dim max-w-xl mx-auto mt-3">Everything {product.title} brings to the table, built for performance and ease of use.</p>
-            </div>
+            <Reveal>
+              <SectionHead
+                eyebrow="Capabilities"
+                title="Key features"
+                sub={`Everything ${product.title} brings to the table — built for performance and ease of use.`}
+              />
+            </Reveal>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {product.features.map((feat, idx) => {
                 const Icon = FEATURE_ICONS[idx % FEATURE_ICONS.length];
                 return (
-                  <div key={feat} className="glass rounded-2xl p-6 hover:border-violet-400/50 hover:-translate-y-1 transition-all duration-300">
-                    <div className="w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-400/30 flex items-center justify-center mb-4">
-                      <Icon className="w-5 h-5 text-violet-300" />
+                  <Reveal key={feat} delay={(idx % 3) * 0.08} className="h-full">
+                    <div className="h-full glass rounded-2xl p-6 md:p-7 hover:border-violet-400/50 hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-400/30 flex items-center justify-center">
+                          <Icon className="w-5 h-5 text-violet-300" />
+                        </div>
+                        <span className="font-display text-sm font-semibold text-ink-faint">{String(idx + 1).padStart(2, '0')}</span>
+                      </div>
+                      <span className="text-ink leading-relaxed font-medium">{feat}</span>
                     </div>
-                    <span className="text-ink leading-relaxed font-medium">{feat}</span>
-                  </div>
+                  </Reveal>
                 );
               })}
             </div>
@@ -413,27 +486,35 @@ export default function ProductDetail() {
       {/* ===== Screenshots / Dashboard Preview ===== */}
       <section className="section pt-0">
         <div className="container-x">
-          <div className="text-center mb-14">
-            <span className="chip mb-4">Walkthrough</span>
-            <h2 className="display-h text-3xl sm:text-4xl text-ink">Screenshots &amp; Dashboard Preview</h2>
-            <p className="text-ink-dim max-w-xl mx-auto mt-3">A closer look at the {product.title} interface and experience.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-5">
+          <Reveal>
+            <SectionHead
+              eyebrow="Walkthrough"
+              title="Screenshots & dashboard preview"
+              sub={`A closer look at the ${product.title} interface and experience.`}
+            />
+          </Reveal>
+          {/* Bento gallery — pehli image badi, baaki uske side me */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:auto-rows-[230px]">
             {galleryImages.slice(0, 4).map((img, idx) => (
-              <button
-                key={img}
-                type="button"
-                onClick={() => setLightbox(img)}
-                className={`glass rounded-2xl overflow-hidden group relative bg-[#0d0d1a] ${idx === 0 ? 'sm:col-span-2 aspect-[16/8]' : 'aspect-video'}`}
-              >
-                <img
-                  src={img}
-                  alt={`${product.title} screenshot ${idx + 1}`}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = categoryImage(product, `shot-${idx}`, 900, 600); }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </button>
+              <Reveal key={img} delay={idx * 0.06} className={`h-full ${idx === 0 ? 'sm:col-span-2 lg:row-span-2' : ''}`}>
+                <button
+                  type="button"
+                  onClick={() => setLightbox(img)}
+                  className="w-full h-full rounded-2xl overflow-hidden group relative bg-[#0d0d1a] border border-line2 aspect-video lg:aspect-auto"
+                >
+                  <img
+                    src={img}
+                    alt={`${product.title} screenshot ${idx + 1}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = categoryImage(product, `shot-${idx}`, 900, 600); }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    Click to enlarge
+                  </span>
+                </button>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -443,11 +524,10 @@ export default function ProductDetail() {
       {product.videoUrl && (
         <section id="demo" className="section pt-0">
           <div className="container-x max-w-4xl">
-            <div className="text-center mb-10">
-              <span className="chip mb-4"><PlayCircle size={12} /> Demo</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink">See It In Action</h2>
-            </div>
-            <div className="glass-strong rounded-2xl overflow-hidden aspect-video">
+            <Reveal>
+              <SectionHead eyebrow="Demo" title="See it in action" />
+            </Reveal>
+            <div className="rounded-2xl overflow-hidden aspect-video border border-line2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)]">
               {embedUrl ? (
                 <iframe
                   src={embedUrl}
@@ -468,21 +548,25 @@ export default function ProductDetail() {
       {product.howItWorks?.length > 0 && (
         <section className="section pt-0">
           <div className="container-x">
-            <div className="text-center mb-14">
-              <span className="chip mb-4">Process</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink">How It Works</h2>
-              <p className="text-ink-dim max-w-xl mx-auto mt-3">Get up and running with {product.title} in a few simple steps.</p>
-            </div>
-            <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="hidden lg:block absolute top-9 left-[16.5%] right-[16.5%] h-px bg-gradient-to-r from-violet-500/0 via-violet-500/40 to-violet-500/0" />
+            <Reveal>
+              <SectionHead
+                eyebrow="Process"
+                title="How it works"
+                sub={`Get up and running with ${product.title} in a few simple steps.`}
+              />
+            </Reveal>
+            <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="hidden lg:block absolute top-10 left-[10%] right-[10%] h-px bg-gradient-to-r from-violet-500/0 via-violet-500/40 to-violet-500/0" />
               {product.howItWorks.map((step, idx) => (
-                <div key={idx} className="glass rounded-2xl p-6 relative">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center mb-4 relative z-10 shadow-[0_8px_24px_-6px_rgba(122,59,255,0.7)]">
-                    <span className="text-white font-semibold text-sm">{idx + 1}</span>
+                <Reveal key={idx} delay={idx * 0.08} className="h-full">
+                  <div className="h-full glass rounded-2xl p-6 md:p-7 relative">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center mb-5 relative z-10 shadow-[0_8px_24px_-6px_rgba(122,59,255,0.7)]">
+                      <span className="text-white font-semibold text-sm">{idx + 1}</span>
+                    </div>
+                    <h3 className="font-display text-lg font-semibold text-ink mb-2">{step.title}</h3>
+                    {step.description && <p className="text-ink-dim text-sm leading-relaxed">{step.description}</p>}
                   </div>
-                  <h3 className="font-display text-lg font-semibold text-ink mb-2">{step.title}</h3>
-                  {step.description && <p className="text-ink-dim text-sm leading-relaxed">{step.description}</p>}
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -492,24 +576,25 @@ export default function ProductDetail() {
       {/* ===== Benefits ===== */}
       {product.benefits?.length > 0 && (
         <section className="section pt-0">
-          <div className="container-x grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
-            <div className="relative order-2 lg:order-1">
+          <div className="container-x grid lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-center">
+            <Reveal className="relative order-2 lg:order-1">
               <div className="glow-orb w-64 h-64 bg-violet-400/25 -bottom-10 -left-10" />
-              <div className="glass-strong rounded-2xl overflow-hidden aspect-[4/3] relative z-10 bg-[#0d0d1a]">
+              <div className="rounded-2xl overflow-hidden aspect-[4/3] relative z-10 bg-[#0d0d1a] border border-line2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)]">
                 <img
                   src={benefitsImage}
                   alt={`${product.title} benefits`}
+                  loading="lazy"
                   className="w-full h-full object-cover"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = categoryImage(product, 'benefits', 900, 700); }}
                 />
               </div>
-            </div>
-            <div className="order-1 lg:order-2">
-              <span className="chip mb-4"><Rocket size={12} /> Why Choose It</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink mb-6">Benefits</h2>
-              <div className="flex flex-col gap-4">
+            </Reveal>
+            <Reveal delay={0.12} className="order-1 lg:order-2">
+              <p className="text-sm font-medium text-violet-400 mb-3">Why choose it</p>
+              <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink mb-8">Benefits that compound</h2>
+              <div className="flex flex-col divide-y divide-line2">
                 {product.benefits.map((b) => (
-                  <div key={b} className="flex items-start gap-3">
+                  <div key={b} className="flex items-start gap-3.5 py-4 first:pt-0 last:pb-0">
                     <div className="w-7 h-7 rounded-full bg-violet-500/15 border border-violet-400/30 flex items-center justify-center shrink-0 mt-0.5">
                       <CheckCircle2 className="w-4 h-4 text-violet-300" />
                     </div>
@@ -517,7 +602,7 @@ export default function ProductDetail() {
                   </div>
                 ))}
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -526,21 +611,22 @@ export default function ProductDetail() {
       {product.techStack?.length > 0 && (
         <section className="section pt-0">
           <div className="container-x">
-            <div className="text-center mb-14">
-              <span className="chip mb-4"><Layers size={12} /> Stack</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink">Built With</h2>
-              <p className="text-ink-dim max-w-xl mx-auto mt-3">Modern, reliable technologies powering {product.title}.</p>
-            </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-              {product.techStack.map((t) => (
-                <div key={t} className="glass rounded-xl flex items-center gap-3 px-4 py-4 hover:border-violet-400/40 transition-colors">
-                  <div className="w-9 h-9 rounded-lg bg-violet-500/15 border border-violet-400/30 flex items-center justify-center shrink-0">
-                    <Code2 className="w-4 h-4 text-violet-300" />
-                  </div>
-                  <span className="text-sm text-ink font-medium truncate">{t}</span>
-                </div>
-              ))}
-            </div>
+            <Reveal>
+              <SectionHead
+                eyebrow="Stack"
+                title="Built with modern technology"
+                sub={`Reliable, battle-tested technologies powering ${product.title}.`}
+              />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="flex flex-wrap gap-3">
+                {product.techStack.map((t) => (
+                  <span key={t} className="glass inline-flex items-center gap-2.5 px-5 py-3 text-sm text-ink font-medium hover:border-violet-400/40 transition-colors">
+                    <Code2 className="w-4 h-4 text-violet-400" /> {t}
+                  </span>
+                ))}
+              </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -548,30 +634,30 @@ export default function ProductDetail() {
       {/* ===== Testimonials ===== */}
       <section className="section pt-0">
         <div className="container-x">
-          <div className="text-center mb-14">
-            <span className="chip mb-4"><Quote size={12} /> Testimonials</span>
-            <h2 className="display-h text-3xl sm:text-4xl text-ink">What People Are Saying</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Reveal>
+            <SectionHead eyebrow="Testimonials" title="What people are saying" />
+          </Reveal>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {TESTIMONIAL_NAMES.map((t, idx) => (
-              <div key={t.name} className="glass rounded-2xl p-6 flex flex-col gap-4">
-                <Quote className="w-6 h-6 text-violet-400/50" />
-                <p className="text-ink-dim leading-relaxed text-sm flex-1">
-                  "{product.title} completely streamlined how our team works. The experience is smooth, fast, and exactly what we needed."
-                </p>
-                <div className="flex items-center gap-3 pt-2 border-t border-line2">
-                  <img src={testimonialAvatar(idx)} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-violet-400/30" />
-                  <div>
-                    <div className="text-sm font-semibold text-ink">{t.name}</div>
-                    <div className="text-xs text-ink-faint">{t.role}</div>
-                  </div>
-                  <div className="ml-auto flex gap-0.5">
+              <Reveal key={t.name} delay={idx * 0.08} className="h-full">
+                <div className="h-full glass rounded-2xl p-7 flex flex-col gap-5">
+                  <div className="flex gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-violet-400 text-violet-400" />
+                      <Star key={i} className="w-4 h-4 fill-violet-400 text-violet-400" />
                     ))}
                   </div>
+                  <p className="text-ink leading-relaxed flex-1">
+                    "{product.title} completely streamlined how our team works. The experience is smooth, fast, and exactly what we needed."
+                  </p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-line2">
+                    <img src={testimonialAvatar(idx)} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-violet-400/30" />
+                    <div>
+                      <div className="text-sm font-semibold text-ink">{t.name}</div>
+                      <div className="text-xs text-ink-faint">{t.role}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -580,21 +666,29 @@ export default function ProductDetail() {
       {/* ===== FAQ ===== */}
       {product.faqs?.length > 0 && (
         <section className="section pt-0">
-          <div className="container-x max-w-3xl">
-            <div className="text-center mb-12">
-              <span className="chip mb-4">FAQ</span>
-              <h2 className="display-h text-3xl sm:text-4xl text-ink">Frequently Asked Questions</h2>
-            </div>
-            <div className="flex flex-col gap-3">
-              {product.faqs.map((faq, idx) => (
-                <FaqItem
-                  key={idx}
-                  faq={faq}
-                  isOpen={openFaq === idx}
-                  onToggle={() => setOpenFaq(openFaq === idx ? -1 : idx)}
-                />
-              ))}
-            </div>
+          <div className="container-x grid lg:grid-cols-[0.8fr_1.2fr] gap-10 lg:gap-16">
+            <Reveal>
+              <div className="lg:sticky lg:top-24">
+                <p className="text-sm font-medium text-violet-400 mb-3">FAQ</p>
+                <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink mb-4">Frequently asked questions</h2>
+                <p className="text-ink-dim leading-relaxed">
+                  Everything you need to know about {product.title}. Can't find your answer?{' '}
+                  <Link to="/contact" className="text-violet-400 hover:underline">Talk to our team</Link>.
+                </p>
+              </div>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="flex flex-col gap-3">
+                {product.faqs.map((faq, idx) => (
+                  <FaqItem
+                    key={idx}
+                    faq={faq}
+                    isOpen={openFaq === idx}
+                    onToggle={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+                  />
+                ))}
+              </div>
+            </Reveal>
           </div>
         </section>
       )}
@@ -602,35 +696,54 @@ export default function ProductDetail() {
       {/* ===== Product Inquiries ===== */}
       <section className="section pt-0">
         <div className="container-x max-w-5xl">
-          <div className="text-center mb-8">
-            <span className="chip mb-4"><MessageSquare size={12} /> Connect</span>
-            <h2 className="display-h text-3xl sm:text-4xl text-ink">Connect about {product.title}</h2>
-            <p className="text-ink-dim max-w-2xl mx-auto mt-3">Ask about the product, get purchase assistance, or discuss an investment opportunity.</p>
-          </div>
-          <ProductEnquirySection product={product} />
+          <Reveal>
+            <SectionHead
+              eyebrow="Connect"
+              title={`Connect about ${product.title}`}
+              sub="Ask about the product, get purchase assistance, or discuss an investment opportunity."
+            />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <ProductEnquirySection product={product} />
+          </Reveal>
         </div>
       </section>
 
       {/* ===== Contact / Get Started CTA ===== */}
       <section className="section pt-0">
         <div className="container-x">
-          <div className="glass-strong rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden">
-            <div className="glow-orb w-80 h-80 bg-violet-600/30 -top-24 -left-24" />
-            <div className="glow-orb w-80 h-80 bg-violet-400/20 -bottom-24 -right-24" />
-            <div className="relative z-10">
-              <span className="chip mb-5">Get Started</span>
-              <h2 className="display-h text-3xl sm:text-5xl text-ink mb-4">Ready to get started with {product.title}?</h2>
-              <p className="text-ink-dim max-w-xl mx-auto mb-9 text-lg">Reach out to the WorknAi team for a walkthrough, pricing, or to discuss your requirements.</p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {product.url && (
-                  <a href={product.url} target="_blank" rel="noreferrer" className="btn-primary">
-                    Visit Product <ExternalLink size={15} />
-                  </a>
-                )}
-                <Link to="/contact" className="btn-ghost">Contact Us</Link>
+          <Reveal>
+            <div className="relative overflow-hidden rounded-2xl bg-[#0c0a30]">
+              <svg className="absolute inset-0 w-full h-full opacity-25" aria-hidden="true" preserveAspectRatio="none">
+                <path d="M 60 200 L 340 -40" fill="none" stroke="#8b9dd6" strokeWidth="1" />
+                <path d="M 420 240 Q 640 40 880 160 T 1300 120" fill="none" stroke="#4f6bd8" strokeWidth="1.5" />
+                <path d="M 1380 220 L 1640 -30" fill="none" stroke="#8b9dd6" strokeWidth="1" />
+              </svg>
+              <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8 px-6 md:px-14 py-12 md:py-16">
+                <div className="max-w-xl">
+                  <p className="text-sm font-medium text-violet-300 mb-3">Get started</p>
+                  <h2 className="display-h text-3xl md:text-4xl text-white mb-4">Ready to get started with {product.title}?</h2>
+                  <p className="text-white/70 leading-relaxed">Reach out to the WorknAi team for a walkthrough, pricing, or to discuss your requirements.</p>
+                </div>
+                <div className="flex flex-wrap gap-3 shrink-0">
+                  {product.url && (
+                    <a
+                      href={product.url} target="_blank" rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#0c0a30] text-sm font-semibold hover:bg-violet-50 transition-colors"
+                    >
+                      Visit Product <ExternalLink size={15} />
+                    </a>
+                  )}
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-white/30 text-white text-sm font-semibold hover:bg-white/10 transition-colors"
+                  >
+                    Contact Us
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 

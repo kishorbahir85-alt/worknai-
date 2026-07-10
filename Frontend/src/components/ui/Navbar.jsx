@@ -296,11 +296,13 @@ export default function Navbar() {
             className="site-menu-surface fixed left-4 sm:left-6 md:left-10 top-20 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] md:w-[calc(100%-5rem)] max-w-[1360px] h-[80vh] bg-[#0d0d1a] border border-violet-500/20 rounded-2xl shadow-2xl shadow-violet-900/20 z-50 overflow-hidden grid grid-cols-[300px_1fr]"
           >
             <div className="py-4 border-r border-violet-500/10 overflow-y-auto">
-              {resourcesItems.map(({ key, label, icon: Icon }) => (
-                <button
+              {resourcesItems.map(({ key, to, label, icon: Icon }) => (
+                <Link
                   key={key}
-                  type="button"
-                  onClick={() => setActiveCategory(key)}
+                  to={to}
+                  role="menuitem"
+                  onClick={closeResources}
+                  onMouseEnter={() => setActiveCategory(key)}
                   className={`w-full flex items-center justify-between gap-3 px-6 py-4 text-base transition-colors border-l-2 ${
                     activeCategory === key
                       ? 'bg-violet-500/20 text-ink border-violet-400'
@@ -312,7 +314,7 @@ export default function Navbar() {
                     {label}
                   </span>
                   <ArrowRight className="w-4 h-4 shrink-0" />
-                </button>
+                </Link>
               ))}
             </div>
 
