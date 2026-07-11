@@ -13,9 +13,9 @@ const statusStyle = {
 
 const statusLabel = { new: 'New', read: 'Read', replied: 'Replied' };
 
-const getProduct EnquiryKind = ( Enquiry) => {
-  if (! Enquiry.product) return null;
-  const value = `${ Enquiry.source || ''} ${ Enquiry.type || ''}`.toLowerCase();
+const getProductEnquiryKind = (enquiry) => {
+  if (!enquiry.product) return null;
+  const value = `${enquiry.source || ''} ${enquiry.type || ''}`.toLowerCase();
   if (value.includes('purchase')) return 'purchase';
   if (value.includes('invest')) return 'investor';
   return 'product';
@@ -49,7 +49,7 @@ function  EnquiryCard({ inq, onStatusChange }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(inq.status);
-  const productKind = getProduct EnquiryKind(inq);
+  const productKind = getProductEnquiryKind(inq);
   const productMeta = productKind ? productKindMeta[productKind] : null;
   const ProductIcon = productMeta?.Icon;
 
@@ -197,7 +197,7 @@ export default function Inquiries() {
   };
 
   const filtered = filter === 'all' ? inquiries
-    : ['product', 'purchase', 'investor'].includes(filter) ? inquiries.filter((i) => getProduct EnquiryKind(i) === filter)
+    : ['product', 'purchase', 'investor'].includes(filter) ? inquiries.filter((i) => getProductEnquiryKind(i) === filter)
     : filter === 'courses' ? inquiries.filter((i) => i.course)
     : inquiries.filter((i) => i.status === filter);
 
@@ -206,9 +206,9 @@ export default function Inquiries() {
     new:      inquiries.filter((i) => i.status === 'new').length,
     read:     inquiries.filter((i) => i.status === 'read').length,
     replied:  inquiries.filter((i) => i.status === 'replied').length,
-    product:  inquiries.filter((i) => getProduct EnquiryKind(i) === 'product').length,
-    purchase: inquiries.filter((i) => getProduct EnquiryKind(i) === 'purchase').length,
-    investor: inquiries.filter((i) => getProduct EnquiryKind(i) === 'investor').length,
+    product:  inquiries.filter((i) => getProductEnquiryKind(i) === 'product').length,
+    purchase: inquiries.filter((i) => getProductEnquiryKind(i) === 'purchase').length,
+    investor: inquiries.filter((i) => getProductEnquiryKind(i) === 'investor').length,
     courses:  inquiries.filter((i) => i.course).length,
   };
 
