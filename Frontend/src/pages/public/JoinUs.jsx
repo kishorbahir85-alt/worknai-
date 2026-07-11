@@ -127,7 +127,7 @@ export default function JoinUs() {
     }
   };
 
-  /* ── Submit Job Inquiry (email-OTP verified) ── */
+  /* ── Submit Job  Enquiry (email-OTP verified) ── */
   const submitJob = async () => {
     if (!jobOtpVerified) return toast.error('Please verify your email with OTP first');
     if (!jobForm.applicantName || !jobForm.applicantEmail || !jobForm.position || !jobForm.experience)
@@ -146,7 +146,7 @@ export default function JoinUs() {
       fd.append('resume', resumeFile);
       await api.post('/applications', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       setJobDone(true);
-      toast.success('Job inquiry submitted! HR team will contact you.');
+      toast.success('Job  Enquiry submitted! HR team will contact you.');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Submission failed. Please try again.');
     } finally {
@@ -154,7 +154,7 @@ export default function JoinUs() {
     }
   };
 
-  /* ── Submit Business Inquiry (OTP required) ── */
+  /* ── Submit Business  Enquiry (OTP required) ── */
   const submitBiz = async () => {
     if (!bizOtpVerified) return toast.error('Please verify your email with OTP first');
     if (!bizForm.companyName || !bizForm.contactName || !bizForm.email || !bizForm.businessType || !bizForm.message)
@@ -171,7 +171,7 @@ export default function JoinUs() {
         source: 'join-us',
       });
       setBizDone(true);
-      toast.success('Business inquiry submitted! Our team will reach out soon.');
+      toast.success('Business  Enquiry submitted! Our team will reach out soon.');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Submission failed. Please try again.');
     } finally {
@@ -200,7 +200,7 @@ export default function JoinUs() {
               tab === 'job' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-ink'
             }`}
           >
-            <Briefcase className="w-4 h-4" /> Job Inquiry
+            <Briefcase className="w-4 h-4" /> Job  Enquiry
           </button>
           <button
             onClick={() => setTab('business')}
@@ -208,7 +208,7 @@ export default function JoinUs() {
               tab === 'business' ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40' : 'text-ink-dim hover:text-ink'
             }`}
           >
-            <Building2 className="w-4 h-4" /> Business Inquiry
+            <Building2 className="w-4 h-4" /> Business  Enquiry
           </button>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function JoinUs() {
           {jobDone ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">Inquiry Submitted!</h2>
+              <h2 className="text-2xl font-bold text-white mb-2"> Enquiry Submitted!</h2>
               <p className="text-ink-dim mb-6">Our HR team will review your profile and reach out soon.</p>
               <button onClick={() => { setJobDone(false); setJobForm(emptyJob); setResumeFile(null); setJobOtpSent(false); setJobOtpVerified(false); setJobOtpValue(''); }} className="btn-ghost">
                 Submit Another
@@ -232,7 +232,7 @@ export default function JoinUs() {
                   <Briefcase className="w-5 h-5 text-violet-300" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Job / Career Inquiry</h2>
+                  <h2 className="text-lg font-bold text-white">Job / Career  Enquiry</h2>
                   <p className="text-xs text-ink-dim">Email verification required · Goes directly to our HR team</p>
                 </div>
               </div>
@@ -294,7 +294,7 @@ export default function JoinUs() {
                 </p>
               )}
               <button onClick={submitJob} disabled={jobLoading || !jobOtpVerified} className="btn-primary w-full justify-center mt-4 disabled:opacity-40 disabled:cursor-not-allowed">
-                {jobLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Job Inquiry</>}
+                {jobLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Job  Enquiry</>}
               </button>
             </>
           )}
@@ -307,8 +307,8 @@ export default function JoinUs() {
           {bizDone ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-2">Inquiry Submitted!</h2>
-              <p className="text-ink-dim mb-6">Our business team will review your inquiry and get back to you shortly.</p>
+              <h2 className="text-2xl font-bold text-white mb-2"> Enquiry Submitted!</h2>
+              <p className="text-ink-dim mb-6">Our business team will review your  Enquiry and get back to you shortly.</p>
               <button onClick={() => { setBizDone(false); setBizForm(emptyBiz); setBizOtpSent(false); setBizOtpVerified(false); setBizOtpValue(''); }} className="btn-ghost">
                 Submit Another
               </button>
@@ -320,7 +320,7 @@ export default function JoinUs() {
                   <Building2 className="w-5 h-5 text-violet-300" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Business / Partnership Inquiry</h2>
+                  <h2 className="text-lg font-bold text-white">Business / Partnership  Enquiry</h2>
                   <p className="text-xs text-ink-dim">Email verification required · Goes to our Manager</p>
                 </div>
               </div>
@@ -353,7 +353,7 @@ export default function JoinUs() {
                   <input type="tel" value={bizForm.phone} onChange={fBiz('phone')} placeholder="+91 99999 99999" className={inp} />
                 </div>
                 <div>
-                  <label className={lbl}>Inquiry Type <span className="text-violet-400">*</span></label>
+                  <label className={lbl}> Enquiry Type <span className="text-violet-400">*</span></label>
                   <select value={bizForm.businessType} onChange={fBiz('businessType')} className={selInp}>
                     <option value="" className="bg-[#0d0d1a] text-slate-400">-- Select type --</option>
                     {['Business Partnership', 'Become a Client', 'Investment Opportunity', 'Reseller / Affiliate', 'Other'].map(v => (
@@ -377,7 +377,7 @@ export default function JoinUs() {
                   onClick={submitBiz} disabled={bizLoading || !bizOtpVerified}
                   className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {bizLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Business Inquiry</>}
+                  {bizLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</> : <><Send className="w-4 h-4" /> Submit Business  Enquiry</>}
                 </button>
               </div>
             </>

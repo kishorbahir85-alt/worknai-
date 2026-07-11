@@ -292,7 +292,7 @@ export const servicesData = {
     hero: img('1560520031-3a4dc4e9de0c'),
     features: [
       { title: 'Property Listing Platform', desc: 'We build real estate portals with advanced search filters, map-based browsing, virtual 360° tours, and EMI calculators — helping buyers find properties faster and developers close deals quicker.', image: img('1558618666-fcd25c85cd64') },
-      { title: 'CRM for Real Estate', desc: 'Our real estate CRM tracks leads from inquiry to closure — with automated follow-ups, site visit scheduling, inventory management, and commission tracking for your sales team.', image: img('1486325212027-8081e485255e') },
+      { title: 'CRM for Real Estate', desc: 'Our real estate CRM tracks leads from  Enquiry to closure — with automated follow-ups, site visit scheduling, inventory management, and commission tracking for your sales team.', image: img('1486325212027-8081e485255e') },
       { title: 'Property Management System', desc: 'For landlords and property managers — we build systems that handle rent collection, maintenance requests, tenant communication, lease renewals, and financial reporting in one dashboard.', image: img('1560520031-3a4dc4e9de0c') },
     ],
     industries: [

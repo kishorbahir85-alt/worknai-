@@ -13,9 +13,9 @@ const statusStyle = {
 
 const statusLabel = { new: 'New', read: 'Read', replied: 'Replied' };
 
-const getProductInquiryKind = (inquiry) => {
-  if (!inquiry.product) return null;
-  const value = `${inquiry.source || ''} ${inquiry.type || ''}`.toLowerCase();
+const getProduct EnquiryKind = ( Enquiry) => {
+  if (! Enquiry.product) return null;
+  const value = `${ Enquiry.source || ''} ${ Enquiry.type || ''}`.toLowerCase();
   if (value.includes('purchase')) return 'purchase';
   if (value.includes('invest')) return 'investor';
   return 'product';
@@ -45,11 +45,11 @@ const productKindMeta = {
   },
 };
 
-function InquiryCard({ inq, onStatusChange }) {
+function  EnquiryCard({ inq, onStatusChange }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(inq.status);
-  const productKind = getProductInquiryKind(inq);
+  const productKind = getProduct EnquiryKind(inq);
   const productMeta = productKind ? productKindMeta[productKind] : null;
   const ProductIcon = productMeta?.Icon;
 
@@ -107,7 +107,7 @@ function InquiryCard({ inq, onStatusChange }) {
             {inq.product && (
               <div className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
                 <ProductIcon size={13} className={`${productMeta.text} shrink-0`} />
-                <span>{productMeta.label} inquiry for: <span className="text-white font-medium">{inq.product.title}</span></span>
+                <span>{productMeta.label}  Enquiry for: <span className="text-white font-medium">{inq.product.title}</span></span>
               </div>
             )}
             {inq.course && (
@@ -197,7 +197,7 @@ export default function Inquiries() {
   };
 
   const filtered = filter === 'all' ? inquiries
-    : ['product', 'purchase', 'investor'].includes(filter) ? inquiries.filter((i) => getProductInquiryKind(i) === filter)
+    : ['product', 'purchase', 'investor'].includes(filter) ? inquiries.filter((i) => getProduct EnquiryKind(i) === filter)
     : filter === 'courses' ? inquiries.filter((i) => i.course)
     : inquiries.filter((i) => i.status === filter);
 
@@ -206,9 +206,9 @@ export default function Inquiries() {
     new:      inquiries.filter((i) => i.status === 'new').length,
     read:     inquiries.filter((i) => i.status === 'read').length,
     replied:  inquiries.filter((i) => i.status === 'replied').length,
-    product:  inquiries.filter((i) => getProductInquiryKind(i) === 'product').length,
-    purchase: inquiries.filter((i) => getProductInquiryKind(i) === 'purchase').length,
-    investor: inquiries.filter((i) => getProductInquiryKind(i) === 'investor').length,
+    product:  inquiries.filter((i) => getProduct EnquiryKind(i) === 'product').length,
+    purchase: inquiries.filter((i) => getProduct EnquiryKind(i) === 'purchase').length,
+    investor: inquiries.filter((i) => getProduct EnquiryKind(i) === 'investor').length,
     courses:  inquiries.filter((i) => i.course).length,
   };
 
@@ -263,7 +263,7 @@ export default function Inquiries() {
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((inq) => (
-            <InquiryCard key={inq._id} inq={inq} onStatusChange={handleStatusChange} />
+            < EnquiryCard key={inq._id} inq={inq} onStatusChange={handleStatusChange} />
           ))}
         </div>
       )}

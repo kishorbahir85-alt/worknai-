@@ -56,35 +56,35 @@ const enquiryLbl = 'block text-xs font-semibold text-ink-dim mb-1.5 uppercase tr
 const PRODUCT_ENQUIRY_TYPES = [
   {
     key: 'product',
-    type: 'Product Inquiry',
-    source: 'product-inquiry',
-    label: 'Product Inquiry',
+    type: 'Product  Enquiry',
+    source: 'product- Enquiry',
+    label: 'Product  Enquiry',
     shortDescription: 'Features, demo, integration, or support questions',
     heading: (title) => `Ask about ${title}`,
     description: (title) => `Tell us what you would like to know about ${title} and our product team will help you.`,
     placeholder: (title) => `What would you like to know about ${title}?`,
-    submitLabel: 'Send Product Inquiry',
-    success: 'Your product inquiry has been sent to our team.',
+    submitLabel: 'Send Product  Enquiry',
+    success: 'Your product  Enquiry has been sent to our team.',
     icon: MessageSquare,
   },
   {
     key: 'purchase',
-    type: 'Purchase Inquiry',
-    source: 'product-purchase-inquiry',
-    label: 'Purchase Inquiry',
+    type: 'Purchase  Enquiry',
+    source: 'product-purchase- Enquiry',
+    label: 'Purchase  Enquiry',
     shortDescription: 'Pricing, plans, licenses, and purchase assistance',
     heading: (title) => `Purchase ${title}`,
     description: (title) => `Share your requirements and our sales team will help you purchase the right ${title} plan.`,
     placeholder: (title) => `Tell us how you plan to use ${title}, expected users, or any pricing questions...`,
-    submitLabel: 'Send Purchase Inquiry',
-    success: 'Your purchase inquiry has been sent to our sales team.',
+    submitLabel: 'Send Purchase  Enquiry',
+    success: 'Your purchase  Enquiry has been sent to our sales team.',
     icon: ShoppingCart,
   },
   {
     key: 'investor',
     type: 'Investor Interest',
     source: 'investor-enquiry',
-    label: 'Investor Inquiry',
+    label: 'Investor  Enquiry',
     shortDescription: 'Investment, partnership, and growth opportunities',
     heading: (title) => `Invest in ${title}`,
     description: (title) => `Interested in investing in ${title}? Share your details and our team will connect with you.`,
@@ -135,7 +135,7 @@ function ProductEnquirySection({ product }) {
 
   return (
     <div>
-      <div className="grid sm:grid-cols-3 gap-3 mb-5" role="tablist" aria-label="Product inquiry type">
+      <div className="grid sm:grid-cols-3 gap-3 mb-5" role="tablist" aria-label="Product  Enquiry type">
         {PRODUCT_ENQUIRY_TYPES.map((item) => {
           const Icon = item.icon;
           const selected = activeType === item.key;

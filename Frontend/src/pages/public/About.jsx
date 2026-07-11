@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Users, Code, Award, Briefcase, Rocket, Brain, Globe } from 'lucide-react';
+import { MapPin, Mail, Users, Code, Award, Briefcase, Rocket, Brain, Globe } from 'lucide-react';
 
 const stats = [
   { label: 'Engineers & Staff', value: '50+', icon: Users },
@@ -256,14 +256,7 @@ export default function About() {
           <p className="text-ink-dim mb-10">
             We would love to hear from you. Reach out to us anytime.
           </p>
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <a
-              href="tel:+919923400442"
-              className="flex items-center gap-3 bg-purple-600/20 border border-purple-500/30 rounded-2xl px-8 py-5 hover:bg-purple-600/30 transition"
-            >
-              <Phone className="text-purple-400" size={22} />
-              <span className="text-lg">+91 9923400442</span>
-            </a>
+          <div className="flex flex-col gap-6 justify-center">
             <a
               href="mailto:info@worknai.online"
               className="flex items-center gap-3 bg-purple-600/20 border border-purple-500/30 rounded-2xl px-8 py-5 hover:bg-purple-600/30 transition"
@@ -271,6 +264,35 @@ export default function About() {
               <Mail className="text-purple-400" size={22} />
               <span className="text-lg">info@worknai.online</span>
             </a>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-600/20 p-6 text-left">
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="text-purple-400" size={22} />
+                  <span className="text-lg font-semibold text-ink">Registered Office</span>
+                </div>
+                <p className="text-sm text-ink-dim leading-relaxed">
+                  Unit 101, Oxford Towers<br />139/88, Old Airport Road<br />Bangalore North, Karnataka – 560008
+                </p>
+              </div>
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-600/20 p-6 text-left">
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="text-purple-400" size={22} />
+                  <span className="text-lg font-semibold text-ink">Corporate Office</span>
+                </div>
+                <p className="text-sm text-ink-dim leading-relaxed">
+                  Business Park<br />Sr. No. 199, Behind Jotiba Mandir<br />Jotiba Nagar, Talawade<br />Pune – 411062
+                </p>
+              </div>
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-600/20 p-6 text-left">
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="text-purple-400" size={22} />
+                  <span className="text-lg font-semibold text-ink">Research &amp; Development</span>
+                </div>
+                <p className="text-sm text-ink-dim leading-relaxed">
+                  Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Fitness18, Nigdi, Pimpri-Chinchwad, Maharashtra 411033
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

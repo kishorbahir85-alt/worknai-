@@ -21,6 +21,7 @@ const courseSchema = mongoose.Schema(
     startDate:        { type: String, default: '' },
     price:            { type: Number, default: 0 },
     discountPrice:    { type: Number, default: 0 },
+    showPrice:        { type: Boolean, default: true },
     level:            { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },
     mode:             { type: String, enum: ['online', 'offline', 'hybrid'], default: 'offline' },
     videoUrl:         { type: String, default: '' },

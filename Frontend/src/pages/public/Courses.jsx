@@ -59,7 +59,7 @@ export default function Courses() {
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${levelColor[c.level]}`}>{c.level}</span>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-line2">
-                  <span className="text-lg font-semibold text-white">{c.price ? `₹${c.price.toLocaleString()}` : <span className="text-emerald-400 text-sm font-medium">Free</span>}</span>
+                  <span className="text-lg font-semibold text-white">{c.showPrice === false ? <span className="text-amber-400 text-sm font-medium">Paid</span> : c.price ? `₹${c.price.toLocaleString()}` : <span className="text-emerald-400 text-sm font-medium">Free</span>}</span>
                   <Link to={`/courses/${c.slug}`} className="btn-primary text-sm px-4 py-2">
                     View Course <ArrowRight className="w-3.5 h-3.5" />
                   </Link>

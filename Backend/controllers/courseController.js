@@ -2,21 +2,26 @@ import asyncHandler from 'express-async-handler';
 import Course from '../models/courseModel.js';
 import { slugify } from '../utils/slugify.js';
 
+// Never expose videoUrl to public; hide amounts when showPrice is off
+const toPublicCourse = (course) => {
+  const { videoUrl, ...data } = course.toObject();
+  if (data.showPrice === false) { delete data.price; delete data.discountPrice; }
+  return data;
+};
+
 // PUBLIC — get all active courses
 export const getCourses = asyncHandler(async (req, res) => {
   const courses = await Course.find({ isActive: true })
     .populate('postedBy', 'name role')
     .sort('-createdAt');
-  res.json({ data: courses });
+  res.json({ data: courses.map(toPublicCourse) });
 });
 
 // PUBLIC — get single course by slug (no video)
 export const getCourseBySlug = asyncHandler(async (req, res) => {
   const course = await Course.findOne({ slug: req.params.slug, isActive: true }).populate('postedBy', 'name role');
   if (!course) { res.status(404); throw new Error('Course not found'); }
-  // Never expose videoUrl to public
-  const { videoUrl, ...data } = course.toObject();
-  res.json({ data });
+  res.json({ data: toPublicCourse(course) });
 });
 
 // PROTECTED — get course content (video) only for enrolled users
@@ -83,7 +88,7 @@ const normalizeBatches = (batches = []) => (
 export const createCourse = asyncHandler(async (req, res) => {
   const {
     title, shortDescription, description, icon, category, duration,
-    startDate, price, discountPrice, level, mode, videoUrl, batches, featured,
+    startDate, price, discountPrice, showPrice, level, mode, videoUrl, batches, featured,
   } = req.body;
   if (!title) { res.status(400); throw new Error('Title is required'); }
   const course = await Course.create({
@@ -97,6 +102,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     startDate: normalizeDateString(startDate),
     price: Number(price) || 0,
     discountPrice: Number(discountPrice) || 0,
+    showPrice: showPrice !== false && showPrice !== 'false',
     level: level || 'beginner',
     mode: mode || 'offline',
     videoUrl: videoUrl || '',
@@ -123,6 +129,7 @@ export const updateCourse = asyncHandler(async (req, res) => {
   if (req.body.batches !== undefined) course.batches = normalizeBatches(req.body.batches);
   if (req.body.price !== undefined)         course.price         = Number(req.body.price) || 0;
   if (req.body.discountPrice !== undefined) course.discountPrice = Number(req.body.discountPrice) || 0;
+  if (req.body.showPrice !== undefined)     course.showPrice     = req.body.showPrice !== false && req.body.showPrice !== 'false';
   await course.save();
   res.json({ data: course });
 });

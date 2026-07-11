@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Linkedin, Twitter, Github, Mail, Phone, MapPin, ArrowUpRight, Building2 } from 'lucide-react';
+import { Instagram, Linkedin, Twitter, Github, Mail, MapPin, ArrowUpRight, Building2 } from 'lucide-react';
 import api from '../../utils/api';
 import worknaiLogo from '../../assets/worknai_logo.png';
 
@@ -144,29 +144,29 @@ export default function Footer() {
             {/* Col 4 — Reach Us */}
             <div className="footer-link-col footer-reach">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Reach Us</h4>
-              <ul className="space-y-4 text-sm">
-                <li className="flex items-start gap-3 text-ink-dim">
-                  <Mail className="w-4 h-4 mt-0.5 text-violet-400 shrink-0" />
-                  <a href={`mailto:${info?.email || 'info@worknai.in'}`} className="hover:text-white break-all">
-                    {info?.email || 'info@worknai.in'}
-                  </a>
-                </li>
-                {info?.phone && (
-                  <li className="flex items-start gap-3 text-ink-dim">
-                    <Phone className="w-4 h-4 mt-0.5 text-violet-400 shrink-0" />
-                    <a href={`tel:${info.phone.replace(/\s/g, '')}`} className="hover:text-white">{info.phone}</a>
-                  </li>
-                )}
-                <li className="flex items-start gap-3 text-ink-dim">
-                  <MapPin className="w-4 h-4 mt-0.5 text-violet-400 shrink-0" />
-                  <span className="leading-relaxed text-xs">
-                    {info?.address || 'Talwade & Punawale Centers, Pune, Maharashtra'}
-                  </span>
-                </li>
-                {info?.workingHours && (
-                  <li className="text-ink-faint text-xs">{info.workingHours}</li>
-                )}
-              </ul>
+              <div className="grid gap-4 text-sm md:grid-cols-3">
+                <div className="space-y-2 text-xs leading-relaxed text-white/75">
+                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Registered Office</p>
+                  <p>Unit 101, Oxford Towers<br />139/88, Old Airport Road<br />Bangalore North, Karnataka – 560008</p>
+                </div>
+                <div className="space-y-2 text-xs leading-relaxed text-white/75">
+                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Corporate Office</p>
+                  <p>Business Park<br />Sr. No. 199, Behind Jotiba Mandir<br />Jotiba Nagar, Talawade<br />Pune – 411062</p>
+                </div>
+                <div className="space-y-2 text-xs leading-relaxed text-white/75">
+                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Research &amp; Development</p>
+                  <p>Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Fitness18, Nigdi, Pimpri-Chinchwad, Maharashtra 411033</p>
+                </div>
+              </div>
+              <div className="mt-4 flex items-center gap-3 text-white/75">
+                <Mail className="w-4 h-4 text-violet-400" />
+                <a href={`mailto:${info?.email || 'info@worknai.in'}`} className="hover:text-white break-all text-sm">
+                  {info?.email || 'info@worknai.in'}
+                </a>
+              </div>
+              {info?.workingHours && (
+                <p className="mt-4 text-ink-faint text-xs">{info.workingHours}</p>
+              )}
             </div>
 
           </div>

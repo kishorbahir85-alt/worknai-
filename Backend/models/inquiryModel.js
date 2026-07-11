@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const inquirySchema = mongoose.Schema(
+const  EnquirySchema = mongoose.Schema(
   {
     name:        { type: String, required: true },
     company:     { type: String, default: '' },
@@ -18,5 +18,5 @@ const inquirySchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Inquiry = mongoose.model('Inquiry', inquirySchema);
-export default Inquiry;
+const  Enquiry = mongoose.model(' Enquiry',  EnquirySchema);
+export default  Enquiry;

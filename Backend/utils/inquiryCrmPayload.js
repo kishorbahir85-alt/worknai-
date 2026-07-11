@@ -1,4 +1,4 @@
-export const buildBusinessInquiryCrmPayload = ({
+export const buildBusiness EnquiryCrmPayload = ({
   name,
   email,
   phone = '',
@@ -11,7 +11,7 @@ export const buildBusinessInquiryCrmPayload = ({
   email,
   phone,
   source: 'worknai.com',
-  formType: 'business_inquiry',
+  formType: 'business_ Enquiry',
   businessDetails: {
     companyName: company,
     serviceRequired,
@@ -20,20 +20,20 @@ export const buildBusinessInquiryCrmPayload = ({
   },
 });
 
-export const buildProductInquiryCrmPayload = ({ inquiry, productTitle }) => {
-  const inquiryType = inquiry.type || 'Product Inquiry';
+export const buildProduct EnquiryCrmPayload = ({  Enquiry, productTitle }) => {
+  const  EnquiryType =  Enquiry.type || 'Product  Enquiry';
   const productName = productTitle || 'Product';
 
-  return buildBusinessInquiryCrmPayload({
-    name: inquiry.name,
-    email: inquiry.email,
-    phone: inquiry.phone || '',
-    company: inquiry.company || '',
-    serviceRequired: `${inquiryType} - ${productName}`,
+  return buildBusiness EnquiryCrmPayload({
+    name:  Enquiry.name,
+    email:  Enquiry.email,
+    phone:  Enquiry.phone || '',
+    company:  Enquiry.company || '',
+    serviceRequired: `${ EnquiryType} - ${productName}`,
     message: [
       `Product: ${productName}`,
-      `Inquiry type: ${inquiryType}`,
-      inquiry.message,
+      ` Enquiry type: ${ EnquiryType}`,
+       Enquiry.message,
     ].filter(Boolean).join('\n'),
   });
 };

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 import TrendingTopicsLayout, { useTrendingStyles, uimg } from '../../../components/ui/TrendingTopicsLayout';
 
 export default function TrendingContactUs() {
@@ -29,11 +29,15 @@ export default function TrendingContactUs() {
               <p className="font-medium text-ink">Email</p>
               <p className="text-sm text-ink-dim mt-1">info@worknai.in</p>
             </a>
-            <a href="tel:+919923400442" className={`p-6 hover:opacity-90 transition-opacity ${s.card}`}>
-              <Phone className={`w-5 h-5 mb-4 ${s.isDark ? 'text-violet-400' : 'text-violet-600'}`} />
-              <p className="font-medium text-ink">Phone</p>
-              <p className="text-sm text-ink-dim mt-1">+91 9923400442</p>
-            </a>
+            <div className={`p-6 transition-opacity ${s.card} sm:col-span-2`}>
+              <MapPin className={`w-5 h-5 mb-4 ${s.isDark ? 'text-violet-400' : 'text-violet-600'}`} />
+              <p className="font-medium text-ink">Office Locations</p>
+              <p className="text-sm text-ink-dim mt-1 leading-relaxed">
+                Registered Office: Unit 101, Oxford Towers, 139/88, Old Airport Road, Bangalore North, Karnataka – 560008<br />
+                Corporate Office: Business Park, Sr. No. 199, Behind Jotiba Mandir, Jotiba Nagar, Talawade, Pune – 411062<br />
+                Research &amp; Development: Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Fitness18, Nigdi, Pimpri-Chinchwad, Maharashtra 411033
+              </p>
+            </div>
           </div>
         </div>
 

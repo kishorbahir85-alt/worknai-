@@ -69,7 +69,7 @@ export default function CourseDetail() {
   const price = course ? (course.discountPrice > 0 ? course.discountPrice : course.price) : 0;
   const courseStartDate = formatStartDate(getCourseStartDate(course));
 
-  const submitInquiry = async () => {
+  const submitEnquiry = async () => {
     if (!form.name || !form.email || !form.phone) return toast.error('Name, email, and phone are required');
     if (isOffline && hasBatches && !batchId) return toast.error('Please select a batch');
     setSubmitting(true);
@@ -89,7 +89,7 @@ export default function CourseDetail() {
       });
       setSent(true);
       setShowModal(false);
-      toast.success('Enrollment inquiry submitted! Our team will reach out soon.');
+      toast.success('Enrollment  Enquiry submitted! Our team will reach out soon.');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Submission failed. Please try again.');
     } finally {
@@ -131,7 +131,9 @@ export default function CourseDetail() {
               </div>
             </div>
             <div className="text-right">
-              {course.discountPrice > 0 ? (
+              {course.showPrice === false ? (
+                <p className="text-2xl font-bold text-amber-400">Paid</p>
+              ) : course.discountPrice > 0 ? (
                 <><p className="text-2xl font-bold text-white">₹{course.discountPrice.toLocaleString()}</p><p className="text-sm text-ink-dim line-through">₹{course.price.toLocaleString()}</p></>
               ) : (
                 <p className="text-2xl font-bold text-white">{course.price > 0 ? `₹${course.price.toLocaleString()}` : <span className="text-emerald-400">Free</span>}</p>
@@ -190,12 +192,12 @@ export default function CourseDetail() {
 
           {sent ? (
             <div className="flex items-center gap-2 text-green-400 font-medium">
-              <CheckCircle className="w-5 h-5" /> Enrollment inquiry submitted — our team will reach out soon
+              <CheckCircle className="w-5 h-5" /> Enrollment  Enquiry submitted — our team will reach out soon
             </div>
           ) : (
             <button onClick={openModal} className="btn-primary">
               <BookOpen className="w-4 h-4"/>
-              {course.mode === 'offline' ? 'Apply Now' : price > 0 ? `Enroll for ₹${price.toLocaleString()}` : 'Enroll for Free'}
+              {course.mode === 'offline' ? 'Apply Now' : course.showPrice === false ? 'Enroll Now' : price > 0 ? `Enroll for ₹${price.toLocaleString()}` : 'Enroll for Free'}
             </button>
           )}
         </div>
@@ -207,7 +209,7 @@ export default function CourseDetail() {
           <div className="w-full max-w-md bg-[#0d0d1a] border border-violet-500/20 rounded-2xl p-6 shadow-2xl my-4">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-lg font-bold text-white">Enrollment Inquiry</h2>
+                <h2 className="text-lg font-bold text-white">Enrollment  Enquiry</h2>
                 <p className="text-xs text-ink-dim mt-0.5">{course.title}</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-1.5 rounded-lg text-ink-dim hover:text-ink hover:bg-violet-500/10 transition-colors"><X className="w-4 h-4"/></button>
@@ -255,8 +257,8 @@ export default function CourseDetail() {
                 <textarea value={form.message} onChange={f('message')} rows={3} placeholder="Any questions or details you'd like to share..." className={inp + ' resize-none'} />
               </div>
 
-              <button onClick={submitInquiry} disabled={submitting} className="btn-primary justify-center mt-1 disabled:opacity-50">
-                {submitting ? <><Loader2 className="w-4 h-4 animate-spin"/>Submitting...</> : <><Send className="w-4 h-4"/>Submit Enrollment Inquiry</>}
+              <button onClick={submitEnquiry} disabled={submitting} className="btn-primary justify-center mt-1 disabled:opacity-50">
+                {submitting ? <><Loader2 className="w-4 h-4 animate-spin"/>Submitting...</> : <><Send className="w-4 h-4"/>Submit Enrollment  Enquiry</>}
               </button>
             </div>
           </div>

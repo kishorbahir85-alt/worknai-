@@ -3,7 +3,7 @@ import api from '../utils/api';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const empty = { title: '', description: '', category: '', duration: '', startDate: '', price: '', level: 'beginner', mode: 'offline' };
+const empty = { title: '', description: '', category: '', duration: '', startDate: '', price: '', showPrice: true, level: 'beginner', mode: 'offline' };
 const toDateInputValue = (value) => {
   if (!value) return '';
   const text = String(value).trim();
@@ -48,7 +48,7 @@ export default function ManageCourses() {
   };
 
   const startEdit = (c) => {
-    setForm({ title: c.title, description: c.description, category: c.category, duration: c.duration, startDate: toDateInputValue(c.startDate), price: c.price, level: c.level, mode: c.mode });
+    setForm({ title: c.title, description: c.description, category: c.category, duration: c.duration, startDate: toDateInputValue(c.startDate), price: c.price, showPrice: c.showPrice !== false, level: c.level, mode: c.mode });
     setEditing(c._id); setShowForm(true); window.scrollTo(0, 0);
   };
 
@@ -111,6 +111,10 @@ export default function ManageCourses() {
               {['online','offline','hybrid'].map(m => <option key={m}>{m}</option>)}
             </select>
           </div>
+          <div className="sm:col-span-2 flex items-center gap-2">
+            <input id="showPrice" type="checkbox" className="w-4 h-4 accent-violet-500" checked={form.showPrice} onChange={(e) => setForm(p => ({ ...p, showPrice: e.target.checked }))} />
+            <label htmlFor="showPrice" className="text-sm text-slate-300 cursor-pointer">Show price on website <span className="text-slate-500">(off = website shows "Paid" instead of amount)</span></label>
+          </div>
           <div className="sm:col-span-2 flex gap-3">
             <button type="submit" className="btn-primary"><Check size={15} /> {editing ? 'Update' : 'Create'}</button>
             <button type="button" onClick={cancel} className="btn-ghost"><X size={15} /> Cancel</button>
@@ -147,7 +151,10 @@ export default function ManageCourses() {
                     <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full border uppercase font-medium ${c.postedBy?.role === 'hr' ? 'text-sky-300 bg-sky-500/10 border-sky-500/30' : c.postedBy?.role === 'manager' ? 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30' : 'text-violet-300 bg-violet-500/10 border-violet-500/30'}`}>{c.postedBy?.role}</span>
                   </td>
                   <td className="py-3 px-4 text-slate-400">{formatDate(c.startDate)}</td>
-                  <td className="py-3 px-4 text-slate-400">{c.price ? `₹${c.price}` : 'Free'}</td>
+                  <td className="py-3 px-4 text-slate-400">
+                    {c.price ? `₹${c.price}` : 'Free'}
+                    {c.showPrice === false && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full border uppercase font-medium text-amber-300 bg-amber-500/10 border-amber-500/30">Hidden</span>}
+                  </td>
                   <td className="py-3 px-4 text-right flex gap-1 justify-end">
                     <button onClick={() => startEdit(c)} className="p-1.5 text-slate-500 hover:text-violet-400 hover:bg-violet-500/10 rounded-lg transition-colors"><Pencil size={14} /></button>
                     <button onClick={() => handleDelete(c._id)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>

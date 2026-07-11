@@ -5,7 +5,7 @@ import {
   ArrowRight, Sparkles, GraduationCap, Rocket, Briefcase, Users,
   Code2, Brain, Cloud, Palette, ArrowUpRight, Star, Zap,
   Globe, Smartphone, Database, Layers, Plug, TrendingUp,
-  Monitor, Phone, Mail, ShieldCheck, BookOpen, Calendar,
+  Monitor, MapPin, Mail, ShieldCheck, BookOpen, Calendar,
 } from 'lucide-react';
 import SectionHeader from '../../components/ui/SectionHeader';
 import api from '../../utils/api';
@@ -486,7 +486,9 @@ export default function Home() {
                     <p className="text-sm text-ink-dim mb-6 line-clamp-2">{c.shortDescription}</p>
                     <div className="flex items-end justify-between">
                       <div>
-                        {c.discountPrice ? (
+                        {c.showPrice === false ? (
+                          <span className="text-2xl font-display font-bold text-violet-gradient">Paid</span>
+                        ) : c.discountPrice ? (
                           <>
                             <span className="text-2xl font-display font-bold text-violet-gradient">
                               {formatPrice(c.discountPrice)}
@@ -720,10 +722,10 @@ export default function Home() {
           <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-violet-500/20">
             {[
               {
-                icon: Phone,
-                label: info?.phone || '+91 99234 00442',
-                sub: 'Mon–Sat 10am–7pm',
-                href: `tel:${(info?.phone || '+919923400442').replace(/\s/g, '')}`,
+                icon: MapPin,
+                label: 'Office Locations',
+                sub: 'Bangalore • Pune • Pimpri-Chinchwad',
+                href: 'https://www.google.com/maps/search/?api=1&query=WorknAi%20Technologies%20Pune',
               },
               {
                 icon: Mail,

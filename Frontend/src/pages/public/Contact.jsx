@@ -15,16 +15,20 @@ const fallbackInfo = {
 
 const locations = [
   {
-    name: 'Corporate Office — Punawale',
-    address: 'Office No. 312, 3rd Floor, Sai Millennium, Pune-Mumbai Highway, Jeevan Nagar, Punawale, Pimpri-Chinchwad, Pune - 411033',
+    name: 'Registered Office',
+    address: 'Unit 101, Oxford Towers\n139/88, Old Airport Road\nBangalore North, Karnataka – 560008',
   },
   {
-    name: 'Talwade Center',
-    address: 'Sr No 199, Business Park, behind Jyotiba Mandir, Jyotiba Nagar, Talwade, Pimpri-Chinchwad, Pune - 411062',
+    name: 'Corporate Office',
+    address: 'Business Park\nSr. No. 199, Behind Jotiba Mandir\nJotiba Nagar, Talawade\nPune – 411062',
+  },
+  {
+    name: 'Research & Development',
+    address: 'Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Fitness18, Nigdi, Pimpri-Chinchwad, Maharashtra 411033',
   },
 ];
 
-const inquiryTypes = ['Course Inquiry', 'Software Project', 'Partnership', 'Hiring / Careers', 'General'];
+const  EnquiryTypes = ['Course  Enquiry', 'Software Project', 'Partnership', 'Hiring / Careers', 'General'];
 const inp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-3 px-4 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-violet-400/60 transition-all';
 const lbl = 'block text-xs font-semibold text-ink-dim mb-1.5 uppercase tracking-wider';
 
@@ -37,7 +41,7 @@ export default function Contact() {
     email: '',
     phone: '',
     company: '',
-    type: inquiryTypes[0],
+    type:  EnquiryTypes[0],
     message: '',
   });
 
@@ -60,7 +64,7 @@ export default function Contact() {
     try {
       await api.post('/inquiries', { ...form, source: 'contact-page' });
       setSent(true);
-      setForm({ name: '', email: '', phone: '', company: '', type: inquiryTypes[0], message: '' });
+      setForm({ name: '', email: '', phone: '', company: '', type:  EnquiryTypes[0], message: '' });
       toast.success('Message sent. Our team will contact you soon.');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Could not send message');
@@ -90,11 +94,25 @@ export default function Contact() {
                   <p className="font-semibold text-ink">Email</p>
                   <p className="text-sm text-ink-dim break-all mt-1 group-hover:text-violet-300 transition-colors">{info.email || fallbackInfo.email}</p>
                 </a>
-                <a href={`tel:${(info.phone || fallbackInfo.phone).replace(/\s/g, '')}`} className="glass rounded-2xl p-5 group transition-all hover:border-violet-400/40">
-                  <Phone className="w-5 h-5 text-violet-400 mb-4" />
-                  <p className="font-semibold text-ink">Phone</p>
-                  <p className="text-sm text-ink-dim mt-1 group-hover:text-violet-300 transition-colors">{info.phone || fallbackInfo.phone}</p>
-                </a>
+                <div className="glass rounded-2xl p-5 sm:col-span-2">
+                  <div className="flex items-center gap-3 mb-6">
+                    <MapPin className="w-5 h-5 text-violet-400" />
+                    <p className="text-lg font-semibold text-ink">Office Locations</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    {locations.map((loc) => (
+                      <div key={loc.name} className="rounded-3xl border border-violet-500/10 bg-white/5 p-5 shadow-sm ring-1 ring-white/5 transition hover:border-violet-400/30 hover:bg-violet-500/5">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-2xl bg-violet-500/10 text-violet-300 flex items-center justify-center">
+                            <MapPin className="w-5 h-5" />
+                          </div>
+                          <p className="font-semibold text-ink">{loc.name}</p>
+                        </div>
+                        <p className="text-sm text-ink-dim leading-relaxed whitespace-pre-line">{loc.address}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
                 <div className="glass rounded-2xl p-5 sm:col-span-2">
                   <Clock className="w-5 h-5 text-violet-400 mb-4" />
                   <p className="font-semibold text-ink">Working Hours</p>
@@ -139,9 +157,9 @@ export default function Contact() {
                   <input className={inp} value={form.company} onChange={f('company')} placeholder="Optional" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={lbl}>Inquiry Type</label>
+                  <label className={lbl}> Enquiry Type</label>
                   <select className={inp} value={form.type} onChange={f('type')}>
-                    {inquiryTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                    { EnquiryTypes.map((type) => <option key={type} value={type}>{type}</option>)}
                   </select>
                 </div>
                 <div className="sm:col-span-2">
@@ -164,14 +182,14 @@ export default function Contact() {
             <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">Visit Us</p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">Our Locations</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-5">
+          <div className="grid md:grid-cols-3 gap-5">
             {locations.map((loc) => (
               <div key={loc.name} className="glass rounded-2xl p-6 md:p-7">
                 <div className="w-12 h-12 rounded-xl bg-violet-500/15 border border-violet-400/30 flex items-center justify-center mb-5">
                   <MapPin className="w-5 h-5 text-violet-400" />
                 </div>
                 <h3 className="font-display text-xl font-semibold text-ink mb-2">{loc.name}</h3>
-                <p className="text-sm text-ink-dim leading-relaxed">{loc.address}</p>
+                <p className="text-sm text-ink-dim leading-relaxed whitespace-pre-line">{loc.address}</p>
               </div>
             ))}
           </div>
