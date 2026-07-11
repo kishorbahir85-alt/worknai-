@@ -12,9 +12,9 @@ const statusStyle = {
 };
 const statusLabel = { new: 'New', read: 'Read', replied: 'Replied' };
 
-const getProduct EnquiryKind = ( Enquiry) => {
-  if (! Enquiry.product) return null;
-  const value = `${ Enquiry.source || ''} ${ Enquiry.type || ''}`.toLowerCase();
+const getProductEnquiryKind = (enquiry) => {
+  if (!enquiry.product) return null;
+  const value = `${enquiry.source || ''} ${enquiry.type || ''}`.toLowerCase();
   if (value.includes('purchase')) return 'purchase';
   if (value.includes('invest')) return 'investor';
   return 'product';
