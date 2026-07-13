@@ -28,7 +28,7 @@ const locations = [
   },
 ];
 
-const  EnquiryTypes = ['Course  Enquiry', 'Software Project', 'Partnership', 'Hiring / Careers', 'General'];
+const inquiryTypes = ['Course Inquiry', 'Software Project', 'Partnership', 'Hiring / Careers', 'General'];
 const inp = 'w-full bg-white/5 border border-violet-500/20 rounded-xl py-3 px-4 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-violet-400/60 transition-all';
 const lbl = 'block text-xs font-semibold text-ink-dim mb-1.5 uppercase tracking-wider';
 
@@ -41,7 +41,7 @@ export default function Contact() {
     email: '',
     phone: '',
     company: '',
-    type:  EnquiryTypes[0],
+    type: inquiryTypes[0],
     message: '',
   });
 
@@ -64,7 +64,7 @@ export default function Contact() {
     try {
       await api.post('/inquiries', { ...form, source: 'contact-page' });
       setSent(true);
-      setForm({ name: '', email: '', phone: '', company: '', type:  EnquiryTypes[0], message: '' });
+      setForm({ name: '', email: '', phone: '', company: '', type: inquiryTypes[0], message: '' });
       toast.success('Message sent. Our team will contact you soon.');
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Could not send message');
@@ -157,9 +157,9 @@ export default function Contact() {
                   <input className={inp} value={form.company} onChange={f('company')} placeholder="Optional" />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={lbl}> Enquiry Type</label>
+                  <label className={lbl}>Inquiry Type</label>
                   <select className={inp} value={form.type} onChange={f('type')}>
-                    { EnquiryTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                    {inquiryTypes.map((type) => <option key={type} value={type}>{type}</option>)}
                   </select>
                 </div>
                 <div className="sm:col-span-2">

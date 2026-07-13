@@ -1,10 +1,10 @@
 import asyncHandler from 'express-async-handler';
-import  Enquiry from '../models/ EnquiryModel.js';
+import Inquiry from '../models/inquiryModel.js';
 import Product from '../models/productModel.js';
 import { syncLeadToCrm } from '../utils/crmSync.js';
-import { buildBusiness EnquiryCrmPayload, buildProduct EnquiryCrmPayload } from '../utils/ EnquiryCrmPayload.js';
+import { buildBusinessInquiryCrmPayload, buildProductInquiryCrmPayload } from '../utils/inquiryCrmPayload.js';
 
-export const create Enquiry = asyncHandler(async (req, res) => {
+export const createInquiry = asyncHandler(async (req, res) => {
   const { name, company, email, phone, type, message, source, product, course, qualification, address } = req.body;
   if (!name || !email) {
     res.status(400); throw new Error('Name and email are required');
@@ -12,7 +12,7 @@ export const create Enquiry = asyncHandler(async (req, res) => {
   if (!message && !course) {
     res.status(400); throw new Error('Message is required');
   }
-  const  Enquiry = await  Enquiry.create({
+  const inquiry = await Inquiry.create({
     name, company, email, phone, type, source,
     message: message || `Interested in enrolling — please reach out with more details.`,
     product: product || null,
@@ -22,40 +22,40 @@ export const create Enquiry = asyncHandler(async (req, res) => {
   });
 
   // Product, purchase, and investor inquiries all use billpay.business's
-  // supported business_ Enquiry contract, with their category in serviceRequired.
+  // supported business_inquiry contract, with their category in serviceRequired.
   if (product) {
     const productRecord = await Product.findById(product).select('title').lean();
-    void syncLeadToCrm(buildProduct EnquiryCrmPayload({
-       Enquiry,
+    void syncLeadToCrm(buildProductInquiryCrmPayload({
+      inquiry,
       productTitle: productRecord?.title,
     }));
   } else if (source === 'join-us') {
     // Fire-and-forget CRM sync; a CRM outage must not fail the local submission.
-    void syncLeadToCrm(buildBusiness EnquiryCrmPayload({
+    void syncLeadToCrm(buildBusinessInquiryCrmPayload({
       name,
       email,
       phone: phone || '',
       company: company || '',
       serviceRequired: type || '',
-      message:  Enquiry.message,
+      message: inquiry.message,
     }));
   }
 
-  res.status(201).json({ data:  Enquiry });
+  res.status(201).json({ data: inquiry });
 });
 
 export const getAllInquiries = asyncHandler(async (req, res) => {
-  const inquiries = await  Enquiry.find()
+  const inquiries = await Inquiry.find()
     .populate('product', 'title slug')
     .populate('course', 'title slug')
     .sort({ createdAt: -1 });
   res.json({ data: inquiries });
 });
 
-export const update EnquiryStatus = asyncHandler(async (req, res) => {
-  const  Enquiry = await  Enquiry.findById(req.params.id);
-  if (! Enquiry) { res.status(404); throw new Error(' Enquiry not found'); }
-   Enquiry.status = req.body.status ||  Enquiry.status;
-  await  Enquiry.save();
-  res.json({ data:  Enquiry });
+export const updateInquiryStatus = asyncHandler(async (req, res) => {
+  const inquiry = await Inquiry.findById(req.params.id);
+  if (!inquiry) { res.status(404); throw new Error('Inquiry not found'); }
+  inquiry.status = req.body.status || inquiry.status;
+  await inquiry.save();
+  res.json({ data: inquiry });
 });

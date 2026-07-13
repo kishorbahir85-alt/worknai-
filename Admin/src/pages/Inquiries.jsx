@@ -44,7 +44,7 @@ const productKindMeta = {
   },
 };
 
-function  EnquiryCard({ inq, onStatusChange }) {
+function EnquiryCard({ inq, onStatusChange }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState(inq.status);
@@ -104,7 +104,7 @@ function  EnquiryCard({ inq, onStatusChange }) {
             {inq.product && (
               <div className="flex items-center gap-2 text-sm text-slate-300 sm:col-span-2">
                 <ProductIcon size={13} className={`${productMeta.text} shrink-0`} />
-                <span>{productMeta.label}  Enquiry for: <span className="text-white font-medium">{inq.product.title}</span></span>
+                <span>{productMeta.label} inquiry for: <span className="text-white font-medium">{inq.product.title}</span></span>
               </div>
             )}
             {inq.course && (
@@ -257,7 +257,7 @@ export default function Inquiries() {
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((inq) => (
-            < EnquiryCard key={inq._id} inq={inq} onStatusChange={handleStatusChange} />
+            <EnquiryCard key={inq._id} inq={inq} onStatusChange={handleStatusChange} />
           ))}
         </div>
       )}

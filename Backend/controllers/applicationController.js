@@ -40,7 +40,7 @@ export const applyForJob = asyncHandler(async (req, res) => {
       email: applicantEmail,
       phone: phone || '',
       source: 'worknai.com',
-      formType: 'job_ Enquiry',
+      formType: 'job_inquiry',
       jobDetails: {
         position: currentRole || '', // the form's "Position / Role" field arrives as currentRole
         experience,

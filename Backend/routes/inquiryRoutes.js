@@ -1,11 +1,11 @@
 import express from 'express';
-import { create Enquiry, getAllInquiries, update EnquiryStatus } from '../controllers/ EnquiryController.js';
+import { createInquiry, getAllInquiries, updateInquiryStatus } from '../controllers/inquiryController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', create Enquiry);
+router.post('/', createInquiry);
 router.get('/', protect, authorize('admin', 'manager'), getAllInquiries);
-router.put('/:id', protect, authorize('admin', 'manager'), update EnquiryStatus);
+router.put('/:id', protect, authorize('admin', 'manager'), updateInquiryStatus);
 
 export default router;
