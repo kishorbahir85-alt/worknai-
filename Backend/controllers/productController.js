@@ -68,7 +68,7 @@ export const getManageProducts = asyncHandler(async (req, res) => {
 });
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const { title, description, category, url, techStack, videoUrl, features, benefits, howItWorks, faqs, tagline,
+  const { title, description, category, url, techStack, videoUrl, features, benefits, howItWorks, faqs, tagline, status,
     logoUrlText, heroImageText, heroVideoText, galleryUrls, overviewImageText, benefitsImageText } = req.body;
   if (!title) { res.status(400); throw new Error('Title is required'); }
   const logoFile = req.files?.logo?.[0];

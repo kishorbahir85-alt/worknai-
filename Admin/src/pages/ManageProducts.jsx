@@ -54,6 +54,9 @@ const CATEGORY_GRADIENTS = {
   'consulting': 'from-cyan-500 via-blue-600 to-indigo-700 shadow-cyan-500/25 text-white',
   'education': 'from-blue-500 via-indigo-600 to-violet-600 shadow-blue-500/25 text-white',
   'food': 'from-orange-400 via-amber-500 to-red-500 shadow-orange-500/25 text-white',
+  'fitness': 'from-amber-500 via-red-500 to-rose-600 shadow-red-500/25 text-white',
+  'home services': 'from-blue-500 via-sky-500 to-indigo-600 shadow-sky-500/25 text-white',
+  'marketplace': 'from-emerald-500 via-teal-500 to-cyan-600 shadow-teal-500/25 text-white',
 };
 
 function getCategoryGradient(category = '') {
@@ -110,6 +113,9 @@ const CATEGORY_STYLES = {
   'crm': 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30',
   'travel': 'bg-sky-500/10 text-sky-300 border-sky-500/30',
   'health': 'bg-rose-500/10 text-rose-300 border-rose-500/30',
+  'fitness': 'bg-red-500/10 text-red-300 border-red-500/30',
+  'home services': 'bg-blue-500/10 text-blue-300 border-blue-500/30',
+  'marketplace': 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
   'e-commerce': 'bg-teal-500/10 text-teal-300 border-teal-500/30',
   'consulting': 'bg-blue-500/10 text-blue-300 border-blue-500/30',
   'social': 'bg-pink-500/10 text-pink-300 border-pink-500/30',
