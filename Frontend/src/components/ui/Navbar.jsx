@@ -628,40 +628,40 @@ export default function Navbar() {
         className="h-full"
       >
         {activeCategory === 'trending' && (
-          <div className="flex flex-col gap-3.5 sm:gap-4">
+          <div className="flex flex-col gap-2 sm:gap-2.5">
             {/* Header: Eyebrow, Title and View all link */}
             <div>
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400">
                   TRENDING TOPICS
                 </span>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5">
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white tracking-tight leading-snug">
                   Explore Real Insights from <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">AI, Robotics &amp; Tech</span>
                 </h3>
                 <Link
                   to="/trending-topics/overview"
                   onClick={closeResources}
-                  className="text-xs sm:text-sm font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1.5 shrink-0 group transition-colors"
+                  className="text-xs font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1 shrink-0 group transition-colors"
                 >
-                  View all topics <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  View all topics <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
                 Articles, courses, tutorials and case studies from our team and community.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
               {topicFilterPills.map((pill) => (
                 <button
                   key={pill.id}
                   type="button"
                   onClick={() => setResourceTopicFilter(pill.id)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  className={`px-3 py-0.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                     resourceTopicFilter === pill.id
                       ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
                       : 'bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] border border-white/5'
@@ -673,7 +673,7 @@ export default function Navbar() {
             </div>
 
             {/* 3x2 Grid of Topic Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
               {filteredTopicCards.map((card) => {
                 const CardIcon = card.icon;
                 return (
@@ -682,34 +682,34 @@ export default function Navbar() {
                     to={card.to}
                     role="menuitem"
                     onClick={closeResources}
-                    className="group relative rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/40 transition-all p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden"
+                    className="group relative rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/40 transition-all p-2.5 flex flex-col justify-between overflow-hidden"
                   >
                     <div>
                       {/* Image with Floating Icon */}
-                      <div className="relative h-28 sm:h-32 md:h-32 w-full rounded-lg overflow-hidden mb-2 bg-violet-950/40">
+                      <div className="relative h-22 sm:h-24 md:h-24 w-full rounded-lg overflow-hidden mb-1.5 bg-violet-950/40">
                         <img
                           src={card.image}
                           alt={card.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-                        <div className={`absolute bottom-2 left-2 w-6 h-6 rounded-md ${card.badgeBg} text-white flex items-center justify-center shadow-md`}>
+                        <div className={`absolute bottom-1.5 left-1.5 w-6 h-6 rounded-md ${card.badgeBg} text-white flex items-center justify-center shadow-md`}>
                           <CardIcon className="w-3.5 h-3.5" />
                         </div>
                       </div>
 
-                      <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-violet-200 transition-colors leading-snug line-clamp-1">
+                      <h4 className="text-xs sm:text-[13px] font-bold text-white group-hover:text-violet-200 transition-colors leading-snug line-clamp-1">
                         {card.title}
                       </h4>
-                      <p className="text-[11px] sm:text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-[10.5px] sm:text-[11px] text-slate-400 mt-0.5 line-clamp-1 leading-normal">
                         {card.desc}
                       </p>
                     </div>
 
                     {/* Bottom Footer */}
-                    <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <FileText className="w-3.5 h-3.5 text-slate-500" />
+                    <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                        <FileText className="w-3 h-3 text-slate-500" />
                         <span>{card.countLabel}</span>
                       </div>
                       <div className="w-5 h-5 rounded-full bg-violet-500/15 text-violet-300 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all">
