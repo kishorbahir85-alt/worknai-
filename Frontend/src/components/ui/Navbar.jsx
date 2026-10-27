@@ -628,40 +628,40 @@ export default function Navbar() {
         className="h-full"
       >
         {activeCategory === 'trending' && (
-          <div className="flex flex-col gap-2 sm:gap-2.5">
+          <div className="flex flex-col gap-3.5 sm:gap-4">
             {/* Header: Eyebrow, Title and View all link */}
             <div>
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
                   TRENDING TOPICS
                 </span>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5">
-                <h3 className="text-base sm:text-lg md:text-xl font-bold text-white tracking-tight leading-snug">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight leading-snug">
                   Explore Real Insights from <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">AI, Robotics &amp; Tech</span>
                 </h3>
                 <Link
                   to="/trending-topics/overview"
                   onClick={closeResources}
-                  className="text-xs font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1 shrink-0 group transition-colors"
+                  className="text-xs sm:text-sm font-semibold text-violet-400 hover:text-violet-300 inline-flex items-center gap-1.5 shrink-0 group transition-colors"
                 >
-                  View all topics <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  View all topics <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
                 Articles, courses, tutorials and case studies from our team and community.
               </p>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex items-center gap-1.5 my-1 overflow-x-auto pb-0.5 scrollbar-none">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
               {topicFilterPills.map((pill) => (
                 <button
                   key={pill.id}
                   type="button"
                   onClick={() => setResourceTopicFilter(pill.id)}
-                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${
+                  className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                     resourceTopicFilter === pill.id
                       ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
                       : 'bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] border border-white/5'
@@ -673,7 +673,7 @@ export default function Navbar() {
             </div>
 
             {/* 3x2 Grid of Topic Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-3.5">
               {filteredTopicCards.map((card) => {
                 const CardIcon = card.icon;
                 return (
@@ -682,34 +682,34 @@ export default function Navbar() {
                     to={card.to}
                     role="menuitem"
                     onClick={closeResources}
-                    className="group relative rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/40 transition-all p-2 sm:p-2.5 flex flex-col justify-between overflow-hidden"
+                    className="group relative rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/40 transition-all p-3 sm:p-3.5 flex flex-col justify-between overflow-hidden"
                   >
                     <div>
                       {/* Image with Floating Icon */}
-                      <div className="relative h-20 sm:h-22 md:h-24 w-full rounded-lg overflow-hidden mb-1.5 bg-violet-950/40">
+                      <div className="relative h-28 sm:h-32 md:h-32 w-full rounded-lg overflow-hidden mb-2 bg-violet-950/40">
                         <img
                           src={card.image}
                           alt={card.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-                        <div className={`absolute bottom-1.5 left-1.5 w-6 h-6 rounded-md ${card.badgeBg} text-white flex items-center justify-center shadow-md`}>
+                        <div className={`absolute bottom-2 left-2 w-6 h-6 rounded-md ${card.badgeBg} text-white flex items-center justify-center shadow-md`}>
                           <CardIcon className="w-3.5 h-3.5" />
                         </div>
                       </div>
 
-                      <h4 className="text-xs sm:text-[13px] font-bold text-white group-hover:text-violet-200 transition-colors leading-snug truncate">
+                      <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-violet-200 transition-colors leading-snug line-clamp-1">
                         {card.title}
                       </h4>
-                      <p className="text-[10.5px] text-slate-400 mt-0.5 line-clamp-1 leading-normal">
+                      <p className="text-[11px] sm:text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
                         {card.desc}
                       </p>
                     </div>
 
                     {/* Bottom Footer */}
-                    <div className="mt-1.5 pt-1.5 border-t border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
-                        <FileText className="w-3 h-3 text-slate-500" />
+                    <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                        <FileText className="w-3.5 h-3.5 text-slate-500" />
                         <span>{card.countLabel}</span>
                       </div>
                       <div className="w-5 h-5 rounded-full bg-violet-500/15 text-violet-300 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all">
@@ -991,14 +991,17 @@ export default function Navbar() {
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
               role="menu"
-              className={`site-menu-surface fixed left-2 sm:left-4 md:left-6 lg:left-8 top-16 sm:top-16 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] max-w-[1380px] h-auto border rounded-2xl sm:rounded-3xl shadow-2xl z-50 overflow-hidden grid grid-cols-1 lg:grid-cols-[190px_1fr_310px] ${
+              className={`site-menu-surface fixed left-4 sm:left-6 md:left-10 top-20 w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] md:w-[calc(100%-5rem)] max-w-[1360px] h-[80vh] border rounded-2xl shadow-2xl z-50 overflow-hidden grid grid-cols-1 lg:grid-cols-[220px_1fr_330px] ${
                 isDark
                   ? 'bg-[#080915] border-violet-500/25 shadow-violet-950/60'
                   : 'bg-white border-slate-200 shadow-slate-200/40'
               }`}
             >
               {/* Column 1: Left Navigation Links */}
-              <div className="p-3 border-r border-violet-500/10 flex flex-col gap-1 overflow-y-auto lg:overflow-visible">
+              <div className="py-5 px-4 border-r border-violet-500/10 flex flex-col gap-1.5 overflow-y-auto">
+                <div className="px-3 py-1.5 mb-1">
+                  <span className="text-xs uppercase tracking-widest text-violet-400 font-semibold">Resources</span>
+                </div>
                 {resourcesItems.map(({ key, to, label, icon: Icon }) => {
                   const isActive = activeCategory === key;
                   return (
@@ -1008,43 +1011,43 @@ export default function Navbar() {
                       role="menuitem"
                       onClick={closeResources}
                       onMouseEnter={() => setActiveCategory(key)}
-                      className={`w-full flex items-center justify-between gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
+                      className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group ${
                         isActive
                           ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 font-semibold'
                           : 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-violet-300'}`} />
+                      <span className="flex items-center gap-3">
+                        <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-violet-300'}`} />
                         {label}
                       </span>
-                      <ArrowRight className={`w-3 h-3 shrink-0 transition-transform ${isActive ? 'text-white translate-x-0.5' : 'text-slate-500 group-hover:text-white group-hover:translate-x-0.5'}`} />
+                      <ArrowRight className={`w-3.5 h-3.5 shrink-0 transition-transform ${isActive ? 'text-white translate-x-0.5' : 'text-slate-500 group-hover:text-white group-hover:translate-x-0.5'}`} />
                     </Link>
                   );
                 })}
               </div>
 
               {/* Column 2: Center Main Content */}
-              <div className="p-3 sm:p-3.5 md:p-4 border-r border-violet-500/10 overflow-y-auto lg:overflow-visible">
+              <div className="p-6 md:p-7 border-r border-violet-500/10 overflow-y-auto">
                 {slideContent}
               </div>
 
               {/* Column 3: Right Sidebar - Latest Resources */}
-              <div className="p-3 sm:p-3.5 md:p-4 flex flex-col gap-2 overflow-y-auto lg:overflow-visible">
-                <div className="flex items-center justify-between pb-1.5 border-b border-violet-500/10">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-white">
+              <div className="p-5 sm:p-6 flex flex-col gap-3 overflow-y-auto">
+                <div className="flex items-center justify-between pb-2 border-b border-violet-500/10">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white">
                     Latest Resources
                   </span>
                   <Link
                     to="/blog"
                     onClick={closeResources}
-                    className="text-[11px] text-violet-400 hover:text-violet-300 font-medium inline-flex items-center gap-1 group transition-colors"
+                    className="text-xs text-violet-400 hover:text-violet-300 font-medium inline-flex items-center gap-1 group transition-colors"
                   >
-                    View all articles <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 transition-transform" />
+                    View all articles <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 </div>
 
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-2.5">
                   {displayedBlogs.slice(0, 5).map((post, idx) => {
                     const thumb = getBlogThumbnail(post, idx);
                     const cat = getShortCategory(post.category);
@@ -1055,9 +1058,9 @@ export default function Navbar() {
                         to={`/blog/${post.slug}`}
                         role="menuitem"
                         onClick={closeResources}
-                        className="group p-1.5 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/25 transition-all flex items-center gap-2.5"
+                        className="group p-2.5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/25 transition-all flex items-center gap-3"
                       >
-                        <div className="w-[44px] h-[44px] rounded-lg overflow-hidden bg-violet-950/40 shrink-0 border border-white/10">
+                        <div className="w-[52px] h-[52px] rounded-lg overflow-hidden bg-violet-950/40 shrink-0 border border-white/10">
                           <img
                             src={thumb}
                             alt={post.title}
@@ -1065,20 +1068,20 @@ export default function Navbar() {
                           />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1 mb-0.5">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                              <span className="text-[8.5px] font-bold uppercase px-1 py-0.2 rounded bg-violet-500/20 text-violet-300 tracking-wider">
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 tracking-wider">
                                 {cat}
                               </span>
                               {dateStr && (
-                                <span className="text-[9.5px] text-slate-400 truncate">
+                                <span className="text-[10.5px] text-slate-400 truncate">
                                   {dateStr}
                                 </span>
                               )}
                             </div>
-                            <ArrowRight className="w-2.5 h-2.5 text-violet-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                            <ArrowRight className="w-3 h-3 text-violet-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                           </div>
-                          <h5 className="text-[11px] font-semibold text-white leading-tight line-clamp-1 group-hover:text-violet-200 transition-colors">
+                          <h5 className="text-xs sm:text-[13px] font-semibold text-white leading-snug line-clamp-2 group-hover:text-violet-200 transition-colors">
                             {post.title}
                           </h5>
                         </div>
