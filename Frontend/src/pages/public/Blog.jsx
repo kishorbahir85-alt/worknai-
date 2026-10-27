@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { FileText, ArrowRight, Mail } from 'lucide-react';
 import api from '../../utils/api';
 import { useTheme } from '../../context/ThemeContext';
@@ -23,6 +23,7 @@ export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTopic, setActiveTopic] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     api.get('/blog').then(r => setPosts(r.data.data)).catch(() => {}).finally(() => setLoading(false));
@@ -33,10 +34,26 @@ export default function Blog() {
     [posts]
   );
 
-  const visible = useMemo(
-    () => (activeTopic ? posts.filter(p => p.category === activeTopic) : posts),
-    [posts, activeTopic]
-  );
+  const queryTopic = searchParams.get('category') || searchParams.get('topic');
+
+  useEffect(() => {
+    if (queryTopic && topics.length > 0) {
+      const q = queryTopic.toLowerCase();
+      const match = topics.find(t => t.toLowerCase() === q || t.toLowerCase().includes(q) || q.includes(t.toLowerCase()));
+      if (match) {
+        setActiveTopic(match);
+      }
+    }
+  }, [queryTopic, topics]);
+
+  const visible = useMemo(() => {
+    if (!activeTopic) return posts;
+    const q = activeTopic.toLowerCase();
+    return posts.filter(p => {
+      const cat = (p.category || '').toLowerCase();
+      return cat === q || cat.includes(q) || q.includes(cat);
+    });
+  }, [posts, activeTopic]);
 
   const featured = visible[0];
   const rest = visible.slice(1);
