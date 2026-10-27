@@ -12,6 +12,23 @@ const difficultyStyle = {
   Advanced: 'text-rose-300 bg-rose-500/10 border-rose-500/30',
 };
 
+const TUTORIAL_FALLBACKS = {
+  'getting-started-with-the-worknai-rest-api': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80',
+  'building-a-high-performance-real-time-dashboard': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000&auto=format&fit=crop&q=80',
+  'fine-tuning-llm-embeddings-for-custom-knowledgebases': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1000&auto=format&fit=crop&q=80',
+};
+
+const getTutorialCover = (t, idx = 0) => {
+  if (t?.coverImage) return resolveUrl(t.coverImage);
+  if (t?.slug && TUTORIAL_FALLBACKS[t.slug]) return TUTORIAL_FALLBACKS[t.slug];
+  const defaults = [
+    'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1000&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80',
+  ];
+  return defaults[idx % defaults.length];
+};
+
 export default function Tutorials() {
   const [tutorials, setTutorials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,20 +55,19 @@ export default function Tutorials() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tutorials.map(t => (
+            {tutorials.map((t, idx) => (
               <Link
                 to={`/tutorials/${t.slug}`}
                 key={t._id}
-                className="glass rounded-2xl overflow-hidden flex flex-col hover:border-violet-400/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                className="group glass rounded-2xl overflow-hidden flex flex-col hover:border-violet-400/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
-                <div className="aspect-[16/9] bg-violet-900/30 overflow-hidden">
-                  {t.coverImage ? (
-                    <img src={resolveUrl(t.coverImage)} alt={t.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <BookOpen className="w-8 h-8 text-violet-400 opacity-50" />
-                    </div>
-                  )}
+                <div className="relative aspect-[16/9] bg-violet-950/40 overflow-hidden">
+                  <img
+                    src={getTutorialCover(t, idx)}
+                    alt={t.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080915]/60 via-transparent to-transparent pointer-events-none" />
                 </div>
                 <div className="p-6 flex flex-col gap-3 flex-1">
                   <div className="flex items-center gap-3 text-xs">

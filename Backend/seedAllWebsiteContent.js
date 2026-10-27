@@ -502,6 +502,7 @@ async function seed() {
       title: 'Getting Started with the WorknAi REST API',
       description: 'A comprehensive walkthrough on authenticating, querying product catalogs, and automating webhooks.',
       difficulty: 'Beginner',
+      coverImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1000&auto=format&fit=crop&q=80',
       tags: ['api', 'setup', 'authentication'],
       steps: [
         { title: 'Obtain API Credentials', description: 'Log in to your Admin portal and generate your API Secret Key.' },
@@ -514,6 +515,7 @@ async function seed() {
       title: 'Building a High-Performance Real-Time Dashboard',
       description: 'Learn how to integrate WebSockets with React and Chart.js for real-time telemetry streaming.',
       difficulty: 'Intermediate',
+      coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1000&auto=format&fit=crop&q=80',
       tags: ['react', 'websockets', 'dashboard'],
       steps: [
         { title: 'Setting Up Socket Client', description: 'Establish a resilient auto-reconnecting WebSocket connection.' },
@@ -526,6 +528,7 @@ async function seed() {
       title: 'Fine-Tuning LLM Embeddings for Custom Knowledgebases',
       description: 'Step-by-step tutorial on chunking proprietary PDFs, generating vector embeddings, and running semantic search.',
       difficulty: 'Advanced',
+      coverImage: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1000&auto=format&fit=crop&q=80',
       tags: ['ai', 'rag', 'embeddings', 'python'],
       steps: [
         { title: 'Document Ingestion & Chunking', description: 'Split documents into semantic recursive chunks.' },
