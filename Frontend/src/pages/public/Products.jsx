@@ -561,37 +561,6 @@ function ProductInfoPanel({ product, isDark, onStepSpotlight }) {
             </div>
           </div>
         )}
-
-        {/* 5. DIVIDER */}
-        <div className={`my-2.5 border-t ${isDark ? 'border-white/10' : 'border-slate-200'}`} />
-
-        {/* 6. TECHNOLOGY (Built With chips) */}
-        {product.techStack?.length > 0 && (
-          <div>
-            <h4
-              className={`text-[10px] font-bold tracking-wider uppercase mb-1.5 ${
-                isDark ? 'text-slate-400' : 'text-slate-500'
-              }`}
-            >
-              Built With
-            </h4>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {product.techStack.slice(0, 4).map((tech) => (
-                <span
-                  key={tech}
-                  className={`text-[10.5px] px-2 py-0.5 rounded-lg border font-medium inline-flex items-center gap-1 ${
-                    isDark
-                      ? 'bg-white/5 border-white/10 text-slate-300'
-                      : 'bg-slate-100 border-slate-200 text-slate-700'
-                  }`}
-                >
-                  <Code2 size={11} className="text-violet-400 shrink-0" />
-                  <span>{tech}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* 7. CTA AREA */}
