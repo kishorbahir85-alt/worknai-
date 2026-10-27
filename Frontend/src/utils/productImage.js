@@ -80,6 +80,8 @@ const KNOWN_VERIFIED_LOGOS = {
   'online go logistics': '/logos/onlinego_logistics_logo.png',
   'onlinego': '/logos/onlinego_bus_logo.png',
   'online go': '/logos/onlinego_bus_logo.png',
+  'aibus': '/logos/aibus_logo.png',
+  'ai bus': '/logos/aibus_logo.png',
   'healthyfood': '/logos/healthyfood_logo.png',
   'aitourism': '/logos/aitourism_logo.png',
   'lovenzea': '/logos/lovenzea_logo.png',
