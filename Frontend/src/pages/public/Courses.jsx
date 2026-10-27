@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Clock, Tag, ArrowRight, Calendar, ArrowUpRight } from 'lucide-react';
+import { BookOpen, Clock, Tag, ArrowRight, Calendar } from 'lucide-react';
 import api from '../../utils/api';
 
 const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-300 bg-amber-500/10', advanced: 'text-rose-300 bg-rose-500/10' };
@@ -28,17 +28,7 @@ export default function Courses() {
     <section className="section">
       <div className="container-x">
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
-            <span className="chip">Our Programs</span>
-            <a
-              href="http://localhost:5174/courses"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-violet-300 hover:text-white font-medium inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 transition-all shadow-sm"
-            >
-              Admin Panel <ArrowUpRight className="w-3.5 h-3.5 text-violet-400" />
-            </a>
-          </div>
+          <span className="chip mb-4 inline-block">Our Programs</span>
           <h1 className="display-h text-4xl md:text-5xl text-ink mb-4">Training Courses</h1>
           <p className="text-ink-dim max-w-xl mx-auto">Industry-ready career, leadership, communication, and AI automation programmes.</p>
         </div>
@@ -78,17 +68,6 @@ export default function Courses() {
           </div>
         )}
 
-        <div className="mt-12 text-center pt-8 border-t border-violet-500/10 flex items-center justify-center gap-2 text-sm text-ink-dim flex-wrap">
-          <span>Manage or add programmes from the</span>
-          <a
-            href="http://localhost:5174/courses"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-violet-400 hover:text-violet-300 font-medium inline-flex items-center gap-1 hover:underline"
-          >
-            Admin Panel <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
-        </div>
       </div>
     </section>
   );
