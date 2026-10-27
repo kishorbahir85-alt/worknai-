@@ -523,15 +523,14 @@ export default function Navbar() {
     ? (latestTrending.find((t) => t.isFeatured) || latestTrending[0])
     : null;
 
-  const displayedBlogs = (latestBlogs && latestBlogs.length > 0
-    ? latestBlogs.filter((b) => b.title && b.slug)
-    : fallbackBlogs
-  ).slice(0, 5);
+  const displayedBlogs = latestBlogs.filter((b) => b && b.title && b.slug);
 
-  const realAiCount = latestBlogs.filter((b) => /ai|artificial|intelligence|machine/i.test(b.category || '')).length || 3;
-  const realSoftwareCount = latestBlogs.filter((b) => /software|engineer|cloud|microservice|security/i.test(b.category || '')).length || 4;
-  const realRoboticsCount = latestBlogs.filter((b) => /robot/i.test(b.category || '')).length || 2;
-  const realIndustryCount = latestBlogs.filter((b) => /industry|logistic|market/i.test(b.category || '')).length || 2;
+  const realAiCount = latestBlogs.filter((b) => /ai|artificial|intelligence|machine/i.test(b.category || '')).length;
+  const realSoftwareCount = latestBlogs.filter((b) => /software|engineer|cloud|microservice|security/i.test(b.category || '')).length;
+  const realRoboticsCount = latestBlogs.filter((b) => /robot|logistic/i.test(b.category || '')).length;
+  const realCoursesCount = latestCourses.length;
+  const realJobsCount = latestJobs.length;
+  const realTrendingCount = latestTrending.length;
 
   const topicFilterPills = [
     { id: 'all', label: 'All' },
@@ -548,7 +547,7 @@ export default function Navbar() {
       filterKey: 'ai',
       title: 'AI & Machine Learning',
       desc: 'Practical guides, research insights and real-world applications from our team.',
-      countLabel: `${realAiCount} articles`,
+      countLabel: realAiCount > 0 ? `${realAiCount} ${realAiCount === 1 ? 'article' : 'articles'}` : null,
       to: '/blog',
       image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-indigo-600',
@@ -559,7 +558,7 @@ export default function Navbar() {
       filterKey: 'robotics',
       title: 'Robotics & Automation',
       desc: 'Latest advancements, projects and implementation insights.',
-      countLabel: `${realRoboticsCount} articles`,
+      countLabel: realRoboticsCount > 0 ? `${realRoboticsCount} ${realRoboticsCount === 1 ? 'article' : 'articles'}` : '4 systems',
       to: '/robotics',
       image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-sky-500',
@@ -570,7 +569,7 @@ export default function Navbar() {
       filterKey: 'software',
       title: 'Software Development',
       desc: 'Full-stack development, tools and best practices from our team.',
-      countLabel: `${realSoftwareCount} articles`,
+      countLabel: realSoftwareCount > 0 ? `${realSoftwareCount} ${realSoftwareCount === 1 ? 'article' : 'articles'}` : null,
       to: '/blog',
       image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-violet-600',
@@ -581,7 +580,7 @@ export default function Navbar() {
       filterKey: 'industry',
       title: 'Industry Insights',
       desc: 'Trends, market analysis and real-world use cases from the industry.',
-      countLabel: `${realIndustryCount} articles`,
+      countLabel: realTrendingCount > 0 ? `${realTrendingCount} case studies` : null,
       to: '/trending-topics/overview',
       image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-amber-500',
@@ -592,7 +591,7 @@ export default function Navbar() {
       filterKey: 'career',
       title: 'Courses & Learning',
       desc: 'Structured courses and learning materials to build your skills.',
-      countLabel: `${latestCourses.length || 7} courses`,
+      countLabel: realCoursesCount > 0 ? `${realCoursesCount} ${realCoursesCount === 1 ? 'course' : 'courses'}` : null,
       to: '/courses',
       image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-emerald-500',
@@ -603,7 +602,7 @@ export default function Navbar() {
       filterKey: 'career',
       title: 'Careers & Opportunities',
       desc: 'Career guidance, company updates and hiring insights.',
-      countLabel: `${latestJobs.length || 13} articles`,
+      countLabel: realJobsCount > 0 ? `${realJobsCount} ${realJobsCount === 1 ? 'opening' : 'openings'}` : null,
       to: '/career',
       image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80',
       badgeBg: 'bg-blue-500',
@@ -621,9 +620,9 @@ export default function Navbar() {
     <AnimatePresence mode="wait">
       <motion.div
         key={activeCategory || 'trending'}
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -16 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
+        exit={{ opacity: 0, x: 16 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className="h-full"
       >
@@ -634,7 +633,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400">
-                  TRENDING TOPICS
+                  TOPICS &amp; RESOURCES
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
@@ -663,7 +662,7 @@ export default function Navbar() {
                   onClick={() => setResourceTopicFilter(pill.id)}
                   className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                     resourceTopicFilter === pill.id
-                      ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
+                      ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 font-semibold'
                       : 'bg-white/[0.04] text-slate-300 hover:text-white hover:bg-white/[0.08] border border-white/5'
                   }`}
                 >
@@ -672,8 +671,8 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* 3x2 Grid of Topic Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Grid of Topic Cards: Responsive 1 col on mobile, 2 col on tablet/small laptop, 3 col on large desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
               {filteredTopicCards.map((card) => {
                 const CardIcon = card.icon;
                 return (
@@ -686,33 +685,37 @@ export default function Navbar() {
                   >
                     <div>
                       {/* Image with Floating Icon */}
-                      <div className="relative h-28 sm:h-30 w-full rounded-xl overflow-hidden mb-2.5 bg-violet-950/40">
+                      <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden mb-2.5 bg-violet-950/40 border border-white/5">
                         <img
                           src={card.image}
                           alt={card.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-                        <div className={`absolute bottom-2 left-2 w-7 h-7 rounded-lg ${card.badgeBg} text-white flex items-center justify-center shadow-md`}>
+                        <div className={`absolute bottom-2 left-2 w-7 h-7 rounded-lg ${card.badgeBg} text-white flex items-center justify-center shadow-lg shadow-black/40 ring-1 ring-white/20`}>
                           <CardIcon className="w-4 h-4" />
                         </div>
                       </div>
 
-                      <h4 className="text-sm font-bold text-white group-hover:text-violet-200 transition-colors">
+                      <h4 className="text-sm font-semibold text-white group-hover:text-violet-200 transition-colors line-clamp-1 leading-snug">
                         {card.title}
                       </h4>
-                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed min-h-[32px]">
                         {card.desc}
                       </p>
                     </div>
 
                     {/* Bottom Footer */}
                     <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
-                        <FileText className="w-3.5 h-3.5 text-slate-500" />
-                        <span>{card.countLabel}</span>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-violet-500/15 text-violet-300 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all">
+                      {card.countLabel ? (
+                        <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                          <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                          <span>{card.countLabel}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-violet-400 font-medium group-hover:underline">Explore</span>
+                      )}
+                      <div className="w-6 h-6 rounded-full bg-violet-500/15 text-violet-300 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all shrink-0">
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </div>
                     </div>
@@ -720,8 +723,8 @@ export default function Navbar() {
                 );
               })}
               {filteredTopicCards.length === 0 && (
-                <div className="col-span-3 py-10 text-center text-slate-400 text-xs">
-                  No resources found for this topic filter.
+                <div className="col-span-full py-10 text-center text-slate-400 text-xs">
+                  No resources found for this filter.
                 </div>
               )}
             </div>
@@ -986,19 +989,19 @@ export default function Navbar() {
         <AnimatePresence>
           {resourcesOpen && (
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
               role="menu"
-              className={`site-menu-surface fixed left-2 sm:left-4 md:left-8 lg:left-10 top-18 sm:top-20 w-[calc(100%-1rem)] sm:w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] max-w-[1400px] h-auto max-h-[88vh] border rounded-3xl shadow-2xl z-50 overflow-hidden grid grid-cols-1 lg:grid-cols-[210px_1fr_330px] ${
+              className={`site-menu-surface fixed left-1/2 -translate-x-1/2 top-[68px] sm:top-[74px] w-[calc(100%-1.5rem)] sm:w-[calc(100%-2.5rem)] md:w-[calc(100%-3.5rem)] lg:w-[calc(100%-4rem)] max-w-[1400px] max-h-[calc(100vh-5.5rem)] border rounded-3xl shadow-2xl z-50 flex flex-col lg:grid lg:grid-cols-[210px_minmax(0,1fr)_330px] xl:grid-cols-[220px_minmax(0,1fr)_350px] overflow-y-auto lg:overflow-hidden ${
                 isDark
-                  ? 'bg-[#080915] border-violet-500/25 shadow-violet-950/60'
+                  ? 'bg-[#080915] border-violet-500/25 shadow-violet-950/70'
                   : 'bg-white border-slate-200 shadow-slate-200/40'
               }`}
             >
-              {/* Column 1: Left Navigation Links */}
-              <div className="p-3 sm:p-4 border-r border-violet-500/10 overflow-y-auto flex flex-col gap-1.5">
+              {/* Column 1: Left Navigation Links (Responsive: horizontal pill bar on tablet/mobile, vertical sidebar on desktop) */}
+              <div className="p-3 sm:p-4 border-b lg:border-b-0 lg:border-r border-violet-500/10 shrink-0 flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100vh-6rem)] scrollbar-none">
                 {resourcesItems.map(({ key, to, label, icon: Icon }) => {
                   const isActive = activeCategory === key;
                   return (
@@ -1008,7 +1011,7 @@ export default function Navbar() {
                       role="menuitem"
                       onClick={closeResources}
                       onMouseEnter={() => setActiveCategory(key)}
-                      className={`w-full flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all group ${
+                      className={`flex items-center justify-between gap-3 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-medium transition-all group whitespace-nowrap shrink-0 lg:shrink lg:w-full ${
                         isActive
                           ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 font-semibold'
                           : 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
@@ -1018,20 +1021,20 @@ export default function Navbar() {
                         <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-violet-300'}`} />
                         {label}
                       </span>
-                      <ArrowRight className={`w-3.5 h-3.5 shrink-0 transition-transform ${isActive ? 'text-white translate-x-0.5' : 'text-slate-500 group-hover:text-white group-hover:translate-x-0.5'}`} />
+                      <ArrowRight className={`hidden lg:block w-3.5 h-3.5 shrink-0 transition-transform ${isActive ? 'text-white translate-x-0.5' : 'text-slate-500 group-hover:text-white group-hover:translate-x-0.5'}`} />
                     </Link>
                   );
                 })}
               </div>
 
-              {/* Column 2: Center Main Content */}
-              <div className="p-5 md:p-6 border-r border-violet-500/10 overflow-y-auto max-h-[88vh]">
+              {/* Column 2: Center Main Content (Dynamic slideContent) */}
+              <div className="p-4 sm:p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-violet-500/10 overflow-y-auto max-h-[58vh] lg:max-h-[calc(100vh-6rem)] scrollbar-thin">
                 {slideContent}
               </div>
 
-              {/* Column 3: Right Sidebar - Latest Resources */}
-              <div className="p-5 md:p-6 overflow-y-auto max-h-[88vh] flex flex-col gap-3.5">
-                <div className="flex items-center justify-between pb-2 border-b border-violet-500/10">
+              {/* Column 3: Right Sidebar - Latest Published Resources */}
+              <div className="p-4 sm:p-5 md:p-6 overflow-y-auto max-h-[44vh] lg:max-h-[calc(100vh-6rem)] flex flex-col gap-3.5 scrollbar-thin">
+                <div className="flex items-center justify-between pb-2 border-b border-violet-500/10 shrink-0">
                   <span className="text-xs font-bold uppercase tracking-wider text-white">
                     Latest Resources
                   </span>
@@ -1045,46 +1048,52 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex flex-col gap-2.5">
-                  {displayedBlogs.slice(0, 5).map((post, idx) => {
-                    const thumb = getBlogThumbnail(post, idx);
-                    const cat = getShortCategory(post.category);
-                    const dateStr = formatBlogDate(post.createdAt);
-                    return (
-                      <Link
-                        key={post.slug || post._id || idx}
-                        to={`/blog/${post.slug}`}
-                        role="menuitem"
-                        onClick={closeResources}
-                        className="group p-2 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/25 transition-all flex items-center gap-3"
-                      >
-                        <div className="w-[56px] h-[56px] rounded-xl overflow-hidden bg-violet-950/40 shrink-0 border border-white/10">
-                          <img
-                            src={thumb}
-                            alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1.5 mb-1">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                              <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 tracking-wider">
-                                {cat}
-                              </span>
-                              {dateStr && (
-                                <span className="text-[10px] text-slate-400 truncate">
-                                  {dateStr}
-                                </span>
-                              )}
-                            </div>
-                            <ArrowRight className="w-3 h-3 text-violet-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                  {displayedBlogs.length === 0 ? (
+                    <div className="py-8 text-center text-xs text-slate-400">
+                      No published articles available at this time.
+                    </div>
+                  ) : (
+                    displayedBlogs.slice(0, 5).map((post, idx) => {
+                      const thumb = getBlogThumbnail(post, idx);
+                      const cat = getShortCategory(post.category);
+                      const dateStr = formatBlogDate(post.createdAt);
+                      return (
+                        <Link
+                          key={post.slug || post._id || idx}
+                          to={`/blog/${post.slug}`}
+                          role="menuitem"
+                          onClick={closeResources}
+                          className="group p-2.5 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.06] hover:border-violet-500/25 transition-all flex items-center gap-3 shrink-0"
+                        >
+                          <div className="w-[52px] h-[52px] rounded-xl overflow-hidden bg-violet-950/40 shrink-0 border border-white/10">
+                            <img
+                              src={thumb}
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
                           </div>
-                          <h5 className="text-xs font-semibold text-white leading-snug line-clamp-2 group-hover:text-violet-200 transition-colors">
-                            {post.title}
-                          </h5>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1.5 mb-1">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 tracking-wider">
+                                  {cat}
+                                </span>
+                                {dateStr && (
+                                  <span className="text-[10px] text-slate-400 truncate">
+                                    {dateStr}
+                                  </span>
+                                )}
+                              </div>
+                              <ArrowRight className="w-3 h-3 text-violet-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                            </div>
+                            <h5 className="text-xs font-semibold text-white leading-snug line-clamp-2 group-hover:text-violet-200 transition-colors">
+                              {post.title}
+                            </h5>
+                          </div>
+                        </Link>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </motion.div>
