@@ -258,11 +258,11 @@ export default function About() {
           </p>
           <div className="flex flex-col gap-6 justify-center">
             <a
-              href="mailto:info@worknai.online"
+              href="mailto:info@worknai.in"
               className="flex items-center gap-3 bg-purple-600/20 border border-purple-500/30 rounded-2xl px-8 py-5 hover:bg-purple-600/30 transition"
             >
               <Mail className="text-purple-400" size={22} />
-              <span className="text-lg">info@worknai.online</span>
+              <span className="text-lg">info@worknai.in</span>
             </a>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border border-purple-500/30 bg-purple-600/20 p-6 text-left">

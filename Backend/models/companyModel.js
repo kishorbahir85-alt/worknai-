@@ -8,7 +8,7 @@ const companySchema = new mongoose.Schema(
     aboutStory: { type: String, default: '' },
     mission: { type: String, default: '' },
     vision: { type: String, default: '' },
-    email: { type: String, default: 'contact@worknai.online' },
+    email: { type: String, default: 'info@worknai.in' },
     phone: { type: String, default: '+91 84469 12345' },
     address: { type: String, default: 'Pune, Maharashtra, India' },
     socials: {

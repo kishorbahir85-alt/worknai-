@@ -173,8 +173,8 @@ export default function Footer() {
               </div>
               <div className="mt-4 flex items-center gap-2 text-slate-300 text-xs">
                 <Mail className="w-4 h-4 text-violet-400 shrink-0" />
-                <a href={`mailto:${info?.email || 'contact@worknai.online'}`} className="hover:text-white break-all font-medium">
-                  {info?.email || 'contact@worknai.online'}
+                <a href={`mailto:${info?.email || 'info@worknai.in'}`} className="hover:text-white break-all font-medium">
+                  {info?.email || 'info@worknai.in'}
                 </a>
               </div>
             </div>

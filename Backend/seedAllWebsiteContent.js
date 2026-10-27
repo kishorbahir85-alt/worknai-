@@ -656,7 +656,7 @@ async function seed() {
     aboutStory: 'WorknAi is a premier technology incubator and engineering laboratory headquartered in Pune. We build cutting-edge software products across logistics, enterprise CRM, fintech, and artificial intelligence while upskilling the next generation of top tech talent.',
     mission: 'To democratize access to advanced AI and logistics technology, accelerating digital transformation for businesses worldwide.',
     vision: 'To be the global benchmark in intelligent automation, autonomous software systems, and high-impact technology education.',
-    email: 'contact@worknai.online',
+    email: 'info@worknai.in',
     phone: '+91 84469 12345',
     address: 'WorknAi Tech Park, Senapati Bapat Road, Pune, Maharashtra, India 411016',
     socials: {

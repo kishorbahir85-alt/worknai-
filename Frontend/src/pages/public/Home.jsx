@@ -941,9 +941,9 @@ export default function Home() {
               },
               {
                 icon: Mail,
-                label: info?.email || 'info@worknai.com',
+                label: info?.email || 'info@worknai.in',
                 sub: 'Online Support',
-                href: `mailto:${info?.email || 'info@worknai.com'}`,
+                href: `mailto:${info?.email || 'info@worknai.in'}`,
               },
               {
                 icon: Globe,
