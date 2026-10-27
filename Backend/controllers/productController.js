@@ -79,6 +79,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   const benefitsImageFile = req.files?.benefitsImage?.[0];
   const product = await Product.create({
     title, slug: slugify(title), description, category, url,
+    status: status || 'live',
     logoUrl: logoUrlText?.trim() || logoFile?.path || '',
     gallery: [...toArray(galleryUrls), ...galleryFiles.map((f) => f.path)],
     videoUrl: videoUrl || '',
@@ -100,7 +101,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const updateProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) { res.status(404); throw new Error('Product not found'); }
-  const fields = ['title', 'description', 'category', 'url', 'isActive', 'videoUrl', 'tagline'];
+  const fields = ['title', 'description', 'category', 'url', 'isActive', 'videoUrl', 'tagline', 'status'];
   fields.forEach(f => { if (req.body[f] !== undefined) product[f] = req.body[f]; });
   if (req.body.techStack !== undefined) product.techStack = toArray(req.body.techStack);
   if (req.body.features !== undefined) product.features = toArray(req.body.features);
@@ -152,6 +153,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
   const newGallery = [...toArray(req.body.galleryUrls), ...galleryFiles.map((f) => f.path)];
   if (newGallery.length) {
     product.gallery = [...product.gallery, ...newGallery];
+  }
+
+  if (!product.postedBy && req.user?._id) {
+    product.postedBy = req.user._id;
   }
 
   await product.save();

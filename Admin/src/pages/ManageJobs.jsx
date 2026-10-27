@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import ConfirmModal from '../components/ConfirmModal';
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -11,6 +12,8 @@ export default function ManageJobs() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(empty);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -34,10 +37,21 @@ export default function ManageJobs() {
     setEditing(j._id); setShowForm(true); window.scrollTo(0, 0);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this job?')) return;
-    try { await api.delete(`/jobs/${id}`); toast.success('Deleted'); load(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+  const handleDelete = async (target) => {
+    const item = target || deleteTarget;
+    if (!item) return;
+    const id = typeof item === 'object' ? item._id : item;
+    setDeleting(true);
+    try {
+      await api.delete(`/jobs/${id}`);
+      toast.success('Deleted');
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const cancel = () => { setForm(empty); setEditing(null); setShowForm(false); };
@@ -122,7 +136,7 @@ export default function ManageJobs() {
                   <td className="py-3 px-4 text-slate-400">{j.salary || '—'}</td>
                   <td className="py-3 px-4 text-right flex gap-1 justify-end">
                     <button onClick={() => startEdit(j)} className="p-1.5 text-slate-500 hover:text-violet-400 hover:bg-violet-500/10 rounded-lg transition-colors"><Pencil size={14} /></button>
-                    <button onClick={() => handleDelete(j._id)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                    <button onClick={() => setDeleteTarget(j)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>
                   </td>
                 </tr>
               ))}
@@ -131,6 +145,17 @@ export default function ManageJobs() {
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Job"
+        message={`Are you sure you want to delete "${deleteTarget?.title || 'this job'}"? This action cannot be undone.`}
+        confirmText="Delete Job"
+        cancelText="Cancel"
+        onConfirm={() => handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+      />
     </section>
   );
 }

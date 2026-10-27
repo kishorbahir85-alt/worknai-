@@ -127,7 +127,7 @@ jobs:
           port: 22
           timeout: 60s
           command_timeout: 20m
-          envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,SMTP_HOST,SMTP_PORT,SMTP_FROM,GOOGLE_CLIENT_ID,CRM_API_KEY
+          envs: DOCKER_USERNAME,MONGODB_URI,JWT_SECRET,SMTP_USER,SMTP_PASS,SMTP_HOST,SMTP_PORT,SMTP_FROM,GOOGLE_CLIENT_ID,CRM_API_KEY,CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET
           script: |
             set -e
             mkdir -p /var/www/worknai_v2
@@ -154,6 +154,9 @@ jobs:
                   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
                   CRM_API_URL: https://billpay.business/api/leads/capture
                   CRM_API_KEY: ${CRM_API_KEY}
+                  CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+                  CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+                  CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
                 restart: always
                 networks:
                   - worknai_v2_network
@@ -213,3 +216,6 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           CRM_API_KEY: ${{ secrets.CRM_API_KEY }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}

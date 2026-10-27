@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import ManageUsers from './pages/ManageUsers';
 import ManageCourses from './pages/ManageCourses';
 import ManageProducts from './pages/ManageProducts';
+import ManageMarketplace from './pages/ManageMarketplace';
 import ManageBlog from './pages/ManageBlog';
 import ManageTutorials from './pages/ManageTutorials';
 import ManagePartners from './pages/ManagePartners';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="users" element={<ManageUsers />} />
         <Route path="courses" element={<ManageCourses />} />
         <Route path="products" element={<ManageProducts />} />
+        <Route path="marketplace" element={<ManageMarketplace />} />
         <Route path="blog" element={<ManageBlog />} />
         <Route path="tutorials" element={<ManageTutorials />} />
         <Route path="partners" element={<ManagePartners />} />

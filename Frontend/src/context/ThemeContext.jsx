@@ -15,8 +15,8 @@ export function ThemeProvider({ children }) {
 
   useLayoutEffect(() => {
     const root = document.documentElement;
-    root.classList.remove('theme-dark', 'theme-light');
-    root.classList.add(`theme-${theme}`);
+    root.classList.remove('theme-dark', 'theme-light', 'dark', 'light');
+    root.classList.add(`theme-${theme}`, theme);
     root.dataset.theme = theme;
     root.style.colorScheme = theme;
     window.localStorage.setItem(STORAGE_KEY, theme);

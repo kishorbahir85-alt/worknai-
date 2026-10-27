@@ -7,8 +7,13 @@ import ManageUsers from './pages/ManageUsers';
 import ManageCourses from './pages/ManageCourses';
 import ManageJobs from './pages/ManageJobs';
 import ManageProducts from './pages/ManageProducts';
+import ManageMarketplace from './pages/ManageMarketplace';
+import ManageAIMarketPage from './pages/ManageAIMarketPage';
 import ManageBlog from './pages/ManageBlog';
 import ManageTutorials from './pages/ManageTutorials';
+import ManageServices from './pages/ManageServices';
+import ManageTemplates from './pages/ManageTemplates';
+import ManageTrending from './pages/ManageTrending';
 import ManagePartners from './pages/ManagePartners';
 import ManageCompany from './pages/ManageCompany';
 import Inquiries from './pages/Inquiries';
@@ -20,7 +25,7 @@ const Protected = ({ children }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950">
       <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
@@ -41,9 +46,14 @@ export default function App() {
         <Route path="users" element={<ManageUsers />} />
         <Route path="courses" element={<ManageCourses />} />
         <Route path="jobs" element={<ManageJobs />} />
+        <Route path="marketplace" element={<ManageMarketplace />} />
+        <Route path="ai-market-cms" element={<ManageAIMarketPage />} />
         <Route path="products" element={<ManageProducts />} />
         <Route path="blog" element={<ManageBlog />} />
         <Route path="tutorials" element={<ManageTutorials />} />
+        <Route path="services" element={<ManageServices />} />
+        <Route path="templates" element={<ManageTemplates />} />
+        <Route path="trending" element={<ManageTrending />} />
         <Route path="partners" element={<ManagePartners />} />
         <Route path="company" element={<ManageCompany />} />
         <Route path="inquiries" element={<Inquiries />} />

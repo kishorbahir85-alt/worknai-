@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import ConfirmModal from '../components/ConfirmModal';
 import { Trash2, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -10,6 +11,8 @@ export default function ManageUsers() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'hr' });
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -31,14 +34,20 @@ export default function ManageUsers() {
     }
   };
 
-  const handleDelete = async (id, name) => {
-    if (!confirm(`Delete user "${name}"?`)) return;
+  const handleDelete = async (target) => {
+    const item = target || deleteTarget;
+    if (!item) return;
+    const id = typeof item === 'object' ? item._id : item;
+    setDeleting(true);
     try {
       await api.delete(`/users/${id}`);
       toast.success('User deleted');
       setUsers(u => u.filter(x => x._id !== id));
+      setDeleteTarget(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -110,7 +119,7 @@ export default function ManageUsers() {
                   </td>
                   <td className="py-3 px-4 text-slate-500 text-xs">{new Date(u.createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-4 text-right">
-                    <button onClick={() => handleDelete(u._id, u.name)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                    <button onClick={() => setDeleteTarget(u)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
                       <Trash2 size={14} />
                     </button>
                   </td>
@@ -121,6 +130,17 @@ export default function ManageUsers() {
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete User"
+        message={`Are you sure you want to delete user "${deleteTarget?.name || 'this user'}"? This action cannot be undone.`}
+        confirmText="Delete User"
+        cancelText="Cancel"
+        onConfirm={() => handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+      />
     </section>
   );
 }

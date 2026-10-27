@@ -91,7 +91,10 @@ export const updateApplicationStatus = asyncHandler(async (req, res) => {
 
   if (enrollment.enrollmentType !== 'offline') { res.status(400); throw new Error('Application status is only for offline courses'); }
 
-  // admin / manager / hr — all allowed (authorize middleware already guards the route)
+  // Non-admin users can only update enrollments for courses they manage
+  if (req.user.role !== 'admin' && enrollment.course.postedBy.toString() !== req.user._id.toString()) {
+    res.status(403); throw new Error('Not authorized to update this enrollment');
+  }
 
   enrollment.applicationStatus = applicationStatus;
   if (statusNote !== undefined) enrollment.statusNote = statusNote;

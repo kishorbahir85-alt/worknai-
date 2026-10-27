@@ -1,0 +1,22 @@
+import express from 'express';
+import {
+  getServices,
+  getManageServices,
+  getServiceBySlug,
+  createService,
+  updateService,
+  deleteService,
+} from '../controllers/serviceController.js';
+import { protect, authorize } from '../middleware/authMiddleware.js';
+
+const router = express.Router();
+
+router.get('/', getServices);
+router.get('/manage', protect, authorize('admin', 'manager'), getManageServices);
+router.get('/:slug', getServiceBySlug);
+
+router.post('/', protect, authorize('admin', 'manager'), createService);
+router.put('/:id', protect, authorize('admin', 'manager'), updateService);
+router.delete('/:id', protect, authorize('admin', 'manager'), deleteService);
+
+export default router;

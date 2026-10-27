@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Clock, Tag, ArrowRight, Calendar } from 'lucide-react';
+import { BookOpen, Clock, Tag, ArrowRight, Calendar, ArrowUpRight } from 'lucide-react';
 import api from '../../utils/api';
 
 const levelColor = { beginner: 'text-emerald-400 bg-emerald-500/10', intermediate: 'text-amber-300 bg-amber-500/10', advanced: 'text-rose-300 bg-rose-500/10' };
@@ -28,9 +28,19 @@ export default function Courses() {
     <section className="section">
       <div className="container-x">
         <div className="text-center mb-12">
-          <span className="chip mb-4">Our Programs</span>
+          <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
+            <span className="chip">Our Programs</span>
+            <a
+              href="http://localhost:5174/courses"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-violet-300 hover:text-white font-medium inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-violet-400/30 bg-violet-500/10 hover:bg-violet-500/20 transition-all shadow-sm"
+            >
+              Admin Panel <ArrowUpRight className="w-3.5 h-3.5 text-violet-400" />
+            </a>
+          </div>
           <h1 className="display-h text-4xl md:text-5xl text-ink mb-4">Training Courses</h1>
-          <p className="text-ink-dim max-w-xl mx-auto">Industry-ready courses in MERN, Python, .NET, PHP and more — online & offline in Pune.</p>
+          <p className="text-ink-dim max-w-xl mx-auto">Industry-ready career, leadership, communication, and AI automation programmes.</p>
         </div>
 
         {loading ? (
@@ -58,8 +68,7 @@ export default function Courses() {
                   )}
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${levelColor[c.level]}`}>{c.level}</span>
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-line2">
-                  <span className="text-lg font-semibold text-white">{c.showPrice === false ? <span className="text-amber-400 text-sm font-medium">Paid</span> : c.price ? `₹${c.price.toLocaleString()}` : <span className="text-emerald-400 text-sm font-medium">Free</span>}</span>
+                <div className="flex items-center justify-end pt-3 border-t border-line2">
                   <Link to={`/courses/${c.slug}`} className="btn-primary text-sm px-4 py-2">
                     View Course <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -68,6 +77,18 @@ export default function Courses() {
             ))}
           </div>
         )}
+
+        <div className="mt-12 text-center pt-8 border-t border-violet-500/10 flex items-center justify-center gap-2 text-sm text-ink-dim flex-wrap">
+          <span>Manage or add programmes from the</span>
+          <a
+            href="http://localhost:5174/courses"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-violet-400 hover:text-violet-300 font-medium inline-flex items-center gap-1 hover:underline"
+          >
+            Admin Panel <ArrowUpRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </div>
     </section>
   );

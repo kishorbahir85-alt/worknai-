@@ -17,7 +17,13 @@ import inquiryRoutes from './routes/inquiryRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import tutorialRoutes from './routes/tutorialRoutes.js';
 import companyRoutes from './routes/companyRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
+import partnerRoutes from './routes/partnerRoutes.js';
+import trendingRoutes from './routes/trendingRoutes.js';
+import templateRoutes from './routes/templateRoutes.js';
+import marketRoutes from './routes/marketRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import fileRoutes from './routes/fileRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,7 +69,22 @@ app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/tutorials', tutorialRoutes);
 app.use('/api/company', companyRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/services', serviceRoutes);
+app.use('/api/partners', partnerRoutes);
+app.use('/api/trending', trendingRoutes);
+app.use('/api/templates', templateRoutes);
+app.use('/api/emarket', marketRoutes);
+// Public product logos & gallery
+app.use('/logos', express.static(path.join(__dirname, 'uploads/logos')));
+app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads/logos')));
+app.use('/uploads/gallery', express.static(path.join(__dirname, 'uploads/gallery')));
+app.use('/uploads/emarket', express.static(path.join(__dirname, 'uploads/emarket')));
+app.use('/emarket', express.static(path.join(__dirname, '../Frontend/public/emarket')));
+app.use('/emarket', express.static(path.join(__dirname, 'uploads/emarket')));
+
+
+// Private applicant documents — requires Admin/Manager/HR authentication
+app.use('/uploads', fileRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'WorknAi backend is running' });

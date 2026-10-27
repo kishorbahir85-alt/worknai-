@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Linkedin, Twitter, Github, Mail, MapPin, ArrowUpRight, Building2 } from 'lucide-react';
+import { Instagram, Linkedin, Youtube, Facebook, Mail, Building2 } from 'lucide-react';
 import api from '../../utils/api';
 import worknaiLogo from '../../assets/worknai_logo.png';
 
@@ -11,177 +11,180 @@ export default function Footer() {
     api.get('/company').then((r) => setInfo(r.data.data)).catch(() => {});
   }, []);
 
+  const socials = info?.socials || info?.social || {};
+
   return (
-    <footer className="site-footer relative overflow-hidden bg-[#030208] border-t-2 border-violet-500/40">
-      <div className="glow-orb w-[600px] h-[300px] bg-violet-600 top-0 left-1/2 -translate-x-1/2 opacity-20" />
+    <footer className="site-footer w-full relative overflow-hidden bg-[#030208] border-t-2 border-violet-500/40">
+      <div className="glow-orb w-[800px] h-[200px] bg-violet-600 top-0 left-1/2 -translate-x-1/2 opacity-15 pointer-events-none" />
 
-      <div className="footer-inner container-x relative px-4 sm:px-6 py-12 md:py-16">
+      <div className="footer-inner w-full relative px-4 sm:px-8 md:px-12 lg:px-16 py-8 md:py-10">
 
-        {/* Main grid */}
-        <div className="footer-main flex flex-col lg:flex-row justify-between gap-10 md:gap-12">
+        {/* Main layout */}
+        <div className="footer-main flex flex-col xl:flex-row justify-between gap-8 xl:gap-12 w-full">
 
           {/* Col 1 — Brand */}
-          <div className="footer-brand lg:max-w-[240px] shrink-0">
-            <img src={worknaiLogo} alt="WorknAi" className="footer-logo h-28 w-auto object-contain mb-3" />
-            <p className="footer-desc text-sm text-ink-dim leading-relaxed mb-3 max-w-xs">
-              {info?.name || 'WorknAi Technologies India Pvt Ltd'} — IT training, software R&D and digital solutions from Pune.
+          <div className="footer-brand xl:max-w-[280px] shrink-0">
+            <img src={worknaiLogo} alt="WorknAi" className="footer-logo h-10 sm:h-12 w-auto object-contain mb-3 filter drop-shadow-[0_2px_12px_rgba(139,92,246,0.3)]" />
+            <p className="footer-desc text-xs text-slate-400 leading-relaxed mb-4 max-w-sm">
+              {info?.name || 'WorknAi Technologies India Pvt Ltd'} — IT training, software R&amp;D and digital solutions from Pune.
             </p>
 
             {/* Company badges */}
-            <div className="footer-badges flex flex-wrap gap-2 mb-5">
+            <div className="footer-badges flex flex-wrap gap-2 mb-4">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Active Company
               </span>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium bg-violet-500/10 border border-violet-500/20 text-violet-300">
-                <Building2 className="w-3 h-3" /> Est. Oct 2025
+                <Building2 className="w-3.5 h-3.5" /> Est. Oct 2025
               </span>
             </div>
 
             {/* Social icons */}
-            <div className="footer-social flex flex-wrap gap-2">
+            <div className="footer-social flex flex-wrap gap-2" aria-label="WorknAi Social Profiles">
               {[
-                { href: info?.social?.instagram || 'https://www.instagram.com/worknai_institute_center/', Icon: Instagram },
-                { href: info?.social?.linkedin  || 'https://in.linkedin.com/in/worknai-technology-8830973b6', Icon: Linkedin },
-                { href: info?.social?.twitter,   Icon: Twitter },
-                { href: info?.social?.github,    Icon: Github  },
-              ].filter(s => s.href).map(({ href, Icon }) => (
-                <a key={href} href={href} target="_blank" rel="noreferrer"
-                  className="w-9 h-9 rounded-full border border-line2 flex items-center justify-center text-ink-dim hover:text-white hover:border-violet-400/60 transition-all">
+                { label: 'Instagram', href: socials.instagram || 'https://www.instagram.com/worknai_institute_center/', Icon: Instagram },
+                { label: 'LinkedIn',  href: socials.linkedin  || 'https://in.linkedin.com/in/worknai-technology-8830973b6', Icon: Linkedin },
+                { label: 'YouTube',   href: socials.youtube   || 'https://www.youtube.com/@Worknai-w5m', Icon: Youtube },
+                { label: 'Facebook',  href: socials.facebook  || 'https://www.facebook.com/profile.php?id=61595453355907',  Icon: Facebook },
+              ].filter(s => s.href).map(({ label, href, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit WorknAi on ${label}`}
+                  title={`WorknAi on ${label}`}
+                  className="w-8 h-8 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center text-slate-400 hover:text-white hover:border-violet-400/60 hover:bg-violet-500/10 transition-all focus:outline-none focus:ring-2 focus:ring-violet-400/50"
+                >
                   <Icon className="w-4 h-4" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Links group */}
-          <div className="footer-links flex flex-wrap gap-10 md:gap-12 lg:gap-14">
+          {/* Right Links & Reach Us columns across full width */}
+          <div className="flex-1 flex flex-col gap-8">
+            
+            {/* 5 Navigation Columns spreading across the width */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 lg:gap-8 w-full">
+              {/* Explore */}
+              <div className="footer-link-col">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Explore</h4>
+                <ul className="space-y-2 text-xs">
+                  {[
+                    { to: '/courses',  label: 'Courses'  },
+                    { to: '/products', label: 'Products' },
+                    { to: '/career',   label: 'Careers'  },
+                    { to: '/partners', label: 'Partners' },
+                    { to: '/about',    label: 'About'    },
+                  ].map(({ to, label }) => (
+                    <li key={to}>
+                      <Link to={to} className="text-slate-400 hover:text-white transition-colors">{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            {/* Col 2 — Explore */}
-            <div className="footer-link-col">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Explore</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { to: '/courses',  label: 'Courses'  },
-                  { to: '/products', label: 'Products' },
-                  { to: '/career',   label: 'Careers'  },
-                  { to: '/partners', label: 'Partners' },
-                  { to: '/about',    label: 'About'    },
-                ].map(({ to, label }) => (
-                  <li key={to}>
-                    <Link to={to} className="text-ink-dim hover:text-white transition-colors">{label}</Link>
-                  </li>
-                ))}
-              </ul>
+              {/* Learn */}
+              <div className="footer-link-col">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Learn</h4>
+                <ul className="space-y-2 text-xs">
+                  <li><Link to="/courses?mode=online"  className="text-slate-400 hover:text-white transition-colors">Online Courses</Link></li>
+                  <li><Link to="/courses?mode=offline" className="text-slate-400 hover:text-white transition-colors">Offline Courses</Link></li>
+                  <li><Link to="/courses"              className="text-slate-400 hover:text-white transition-colors">Internships</Link></li>
+                  <li><Link to="/contact"              className="text-slate-400 hover:text-white transition-colors">Contact Us</Link></li>
+                </ul>
+              </div>
+
+              {/* Development */}
+              <div className="footer-link-col">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Development</h4>
+                <ul className="space-y-2 text-xs">
+                  {[
+                    { to: '/services/web3',       label: 'Web 3.0'    },
+                    { to: '/services/ai-ml',      label: 'AI / ML'    },
+                    { to: '/robotics',            label: 'Robotics'   },
+                    { to: '/services/coding',     label: 'Coding'     },
+                    { to: '/services/mobile-app', label: 'Mobile App' },
+                    { to: '/services/software',   label: 'Software'   },
+                  ].map(({ to, label }) => (
+                    <li key={to}>
+                      <Link to={to} className="text-slate-400 hover:text-violet-300 transition-colors">{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Solutions */}
+              <div className="footer-link-col">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Solutions</h4>
+                <ul className="space-y-2 text-xs">
+                  {[
+                    { to: '/services/fintech',    label: 'FinTech'            },
+                    { to: '/services/e-learning', label: 'E-Learning'         },
+                    { to: '/services/e-commerce', label: 'E-Commerce'         },
+                    { to: '/services/e-health',   label: 'E-Health'           },
+                    { to: '/services/realty',     label: 'Realty Management'  },
+                    { to: '/services/vehicle',    label: 'Vehicle Management' },
+                  ].map(({ to, label }) => (
+                    <li key={to}>
+                      <Link to={to} className="text-slate-400 hover:text-violet-300 transition-colors">{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Resource Outsourcing */}
+              <div className="footer-link-col">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Resource Outsourcing</h4>
+                <ul className="space-y-2 text-xs">
+                  {[
+                    { to: '/services/virtual-staff', label: 'Virtual Staff'      },
+                    { to: '/services/offshore',      label: 'Offshore Employee'  },
+                    { to: '/services/eor',           label: 'EOR Services'       },
+                    { to: '/services/it-infra',      label: 'IT Infrastructure'  },
+                    { to: '/services/workspaces',    label: 'Workspaces'         },
+                  ].map(({ to, label }) => (
+                    <li key={to}>
+                      <Link to={to} className="text-slate-400 hover:text-violet-300 transition-colors">{label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            {/* Col 3 — Learn */}
-            <div className="footer-link-col">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Learn</h4>
-              <ul className="space-y-3 text-sm">
-                <li><Link to="/courses?mode=online"  className="text-ink-dim hover:text-white transition-colors">Online Courses</Link></li>
-                <li><Link to="/courses?mode=offline" className="text-ink-dim hover:text-white transition-colors">Offline Courses</Link></li>
-                <li><Link to="/courses"              className="text-ink-dim hover:text-white transition-colors">Internships</Link></li>
-                <li><Link to="/contact"              className="text-ink-dim hover:text-white transition-colors">Contact Us</Link></li>
-              </ul>
-            </div>
-
-            {/* Col — Development */}
-            <div className="footer-link-col">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Development</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { to: '/services/web3',       label: 'Web 3.0'    },
-                  { to: '/services/ai-ml',      label: 'AI / ML'    },
-                  { to: '/services/coding',     label: 'Coding'     },
-                  { to: '/services/mobile-app', label: 'Mobile App' },
-                  { to: '/services/software',   label: 'Software'   },
-                ].map(({ to, label }) => (
-                  <li key={to}>
-                    <Link to={to} className="text-ink-dim hover:text-violet-300 transition-colors">{label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col — Solutions */}
-            <div className="footer-link-col">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Solutions</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { to: '/services/fintech',    label: 'FinTech'            },
-                  { to: '/services/e-learning', label: 'E-Learning'         },
-                  { to: '/services/e-commerce', label: 'E-Commerce'         },
-                  { to: '/services/e-health',   label: 'E-Health'           },
-                  { to: '/services/realty',     label: 'Realty Management'  },
-                  { to: '/services/vehicle',    label: 'Vehicle Management' },
-                ].map(({ to, label }) => (
-                  <li key={to}>
-                    <Link to={to} className="text-ink-dim hover:text-violet-300 transition-colors">{label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col — Resource Outsourcing */}
-            <div className="footer-link-col">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Resource Outsourcing</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { to: '/services/virtual-staff', label: 'Virtual Staff'      },
-                  { to: '/services/offshore',      label: 'Offshore Employee'  },
-                  { to: '/services/eor',           label: 'EOR Services'       },
-                  { to: '/services/it-infra',      label: 'IT Infrastructure'  },
-                  { to: '/services/workspaces',    label: 'Workspaces'         },
-                ].map(({ to, label }) => (
-                  <li key={to}>
-                    <Link to={to} className="text-ink-dim hover:text-violet-300 transition-colors">{label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Col 4 — Reach Us */}
-            <div className="footer-link-col footer-reach">
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-5">Reach Us</h4>
-              <div className="grid gap-4 text-sm md:grid-cols-3">
-                <div className="space-y-2 text-xs leading-relaxed text-white/75">
-                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Registered Office</p>
+            {/* Reach Us Section Spanning Across */}
+            <div className="footer-reach border-t border-white/10 pt-6">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3">Reach Us</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+                <div className="space-y-1 text-slate-300 leading-relaxed">
+                  <p className="font-bold text-white uppercase tracking-wider text-[11px]">Registered Office</p>
                   <p>Unit 101, Oxford Towers<br />139/88, Old Airport Road<br />Bangalore North, Karnataka – 560008</p>
                 </div>
-                <div className="space-y-2 text-xs leading-relaxed text-white/75">
-                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Corporate Office</p>
+                <div className="space-y-1 text-slate-300 leading-relaxed">
+                  <p className="font-bold text-white uppercase tracking-wider text-[11px]">Corporate Office</p>
                   <p>Business Park<br />Sr. No. 199, Behind Jotiba Mandir<br />Jotiba Nagar, Talawade<br />Pune – 411062</p>
                 </div>
-                <div className="space-y-2 text-xs leading-relaxed text-white/75">
-                  <p className="font-semibold text-white uppercase tracking-[0.18em]">Research &amp; Development</p>
-                  <p>Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Fitness18, Nigdi, Pimpri-Chinchwad, Maharashtra 411033</p>
+                <div className="space-y-1 text-slate-300 leading-relaxed">
+                  <p className="font-bold text-white uppercase tracking-wider text-[11px]">R &amp; D Center</p>
+                  <p>Waheguru Guru Nanak Mansarovar Ashram, Shree, Akurdi Railway Station Rd, Nigdi, Pune 411033</p>
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-3 text-white/75">
-                <Mail className="w-4 h-4 text-violet-400" />
-                <a href={`mailto:${info?.email || 'info@worknai.in'}`} className="hover:text-white break-all text-sm">
-                  {info?.email || 'info@worknai.in'}
+              <div className="mt-4 flex items-center gap-2 text-slate-300 text-xs">
+                <Mail className="w-4 h-4 text-violet-400 shrink-0" />
+                <a href={`mailto:${info?.email || 'contact@worknai.online'}`} className="hover:text-white break-all font-medium">
+                  {info?.email || 'contact@worknai.online'}
                 </a>
               </div>
-              {info?.workingHours && (
-                <p className="mt-4 text-ink-faint text-xs">{info.workingHours}</p>
-              )}
             </div>
 
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="footer-bottom border-t border-line2 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-faint">
+        <div className="footer-bottom border-t border-white/10 mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 w-full">
           <p>© {new Date().getFullYear()} {info?.name || 'WorknAi Technologies India Pvt Ltd'}. All rights reserved.</p>
-          <div className="flex items-center gap-4 flex-wrap justify-center sm:justify-end">
-            <Link to="/hr/login" className="hover:text-sky-300 transition-colors flex items-center gap-1">
-              HR Login <ArrowUpRight className="w-3 h-3" />
-            </Link>
-           
-            <span className="font-mono">v1.0.0 · built with ❤ in Pune</span>
-          </div>
         </div>
 
       </div>

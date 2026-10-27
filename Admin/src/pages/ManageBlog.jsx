@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import ConfirmModal from '../components/ConfirmModal';
 import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -16,6 +17,8 @@ export default function ManageBlog() {
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -65,10 +68,21 @@ export default function ManageBlog() {
     setEditing(p._id); setShowForm(true); window.scrollTo(0, 0);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this blog post?')) return;
-    try { await api.delete(`/blog/${id}`); toast.success('Deleted'); load(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Error'); }
+  const handleDelete = async (target) => {
+    const item = target || deleteTarget;
+    if (!item) return;
+    const id = typeof item === 'object' ? item._id : item;
+    setDeleting(true);
+    try {
+      await api.delete(`/blog/${id}`);
+      toast.success('Deleted');
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Error');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const cancel = () => {
@@ -168,7 +182,7 @@ export default function ManageBlog() {
                   </td>
                   <td className="py-3 px-4 text-right flex gap-1 justify-end">
                     <button onClick={() => startEdit(p)} className="p-1.5 text-slate-500 hover:text-violet-400 hover:bg-violet-500/10 rounded-lg transition-colors"><Pencil size={14} /></button>
-                    <button onClick={() => handleDelete(p._id)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>
+                    <button onClick={() => setDeleteTarget(p)} className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"><Trash2 size={14} /></button>
                   </td>
                 </tr>
               ))}
@@ -177,6 +191,17 @@ export default function ManageBlog() {
           </table>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Blog Post"
+        message={`Are you sure you want to delete "${deleteTarget?.title || 'this post'}"? This action cannot be undone.`}
+        confirmText="Delete Post"
+        cancelText="Cancel"
+        onConfirm={() => handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+      />
     </section>
   );
 }

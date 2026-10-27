@@ -20,8 +20,9 @@ const productSchema = mongoose.Schema(
     howItWorks:  [{ title: String, description: String }],
     faqs:        [{ question: String, answer: String }],
     tagline:     { type: String, default: '' },
+    status:      { type: String, enum: ['live', 'in-development', 'completed'], default: 'live' },
     isActive:    { type: Boolean, default: true },
-    postedBy:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    postedBy:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   },
   { timestamps: true }
 );

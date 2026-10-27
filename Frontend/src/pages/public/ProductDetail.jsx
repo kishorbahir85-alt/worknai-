@@ -9,7 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
-import { categoryImage, resolveUrl } from '../../utils/productImage';
+import { categoryImage, resolveUrl, productLogo, getCategoryGradient, ensureAbsoluteUrl } from '../../utils/productImage';
 
 function getEmbedUrl(videoUrl) {
   if (!videoUrl) return null;
@@ -330,19 +330,25 @@ export default function ProductDetail() {
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}
               className="flex flex-wrap items-center gap-3 mb-6"
             >
-              <div className="w-16 h-16 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500/30 to-violet-700/30 border border-violet-400/30 backdrop-blur-md flex items-center justify-center overflow-hidden shadow-[0_10px_40px_-10px_rgba(122,59,255,0.6)]">
-                {product.logoUrl ? (
-                  <img src={resolveUrl(product.logoUrl)} alt={product.title} className="w-full h-full object-contain p-2" />
+              <div className="w-16 h-16 shrink-0 aspect-square rounded-2xl flex items-center justify-center overflow-hidden">
+                {productLogo(product) ? (
+                  <img src={productLogo(product)} alt={product.title} className="w-full h-full max-w-full max-h-full object-contain drop-shadow-md" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                 ) : (
-                  <Code2 size={24} className="text-violet-300" />
+                  <div className={`w-full h-full rounded-2xl bg-gradient-to-br ${getCategoryGradient(product?.category)} flex items-center justify-center text-white font-bold text-xl uppercase tracking-wider`}>
+                    {product.title?.slice(0, 2) || 'PR'}
+                  </div>
                 )}
               </div>
               {product.category && <span className="chip backdrop-blur-md">{product.category}</span>}
-              {product.url && (
+              {product.status === 'in-development' ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-amber-500/15 border border-amber-400/30 backdrop-blur-md text-amber-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> In Development
+                </span>
+              ) : product.url ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide bg-emerald-500/15 border border-emerald-400/30 backdrop-blur-md text-emerald-300">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                 </span>
-              )}
+              ) : null}
             </motion.div>
 
             {/* Title + tagline */}
@@ -366,10 +372,19 @@ export default function ProductDetail() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.36 }}
               className="flex flex-wrap gap-3 mt-9"
             >
-              {product.url && (
-                <a href={product.url} target="_blank" rel="noreferrer" className="btn-primary shadow-[0_16px_40px_-12px_rgba(122,59,255,0.8)] hover:-translate-y-0.5 transition-transform">
+              {product.status !== 'in-development' && product.url ? (
+                <a
+                  href={ensureAbsoluteUrl(product.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary shadow-[0_16px_40px_-12px_rgba(122,59,255,0.8)] hover:-translate-y-0.5 transition-transform"
+                >
                   Visit Product <ExternalLink size={15} />
                 </a>
+              ) : (
+                <span className="px-5 py-2.5 rounded-xl border border-dashed border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs sm:text-sm font-semibold inline-flex items-center gap-2 select-none">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" /> Platform In Development
+                </span>
               )}
               {(embedUrl || product.videoUrl) ? (
                 <a href="#demo" className="product-hero-ghost-btn hover:-translate-y-0.5 transition-transform">

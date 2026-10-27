@@ -159,6 +159,37 @@ export const servicesData = {
     ],
   },
 
+  'robotics': {
+    title: 'Robotics & Automation',
+    category: 'Development',
+    subtitle: 'Next-generation autonomous robotics, ROS 2 integration, LiDAR navigation, and industrial cobot automation.',
+    hero: img('1485827404703-89b55fcc595e'),
+    features: [
+      { title: 'Autonomous Mobile Robots (AMRs)', desc: 'We build and deploy LiDAR-driven AMRs with real-time SLAM, dynamic path re-planning, and multi-rover fleet management for warehouses and manufacturing facilities.', image: img('1581091226825-a6a2a5aee158') },
+      { title: 'Robotic Manipulators & Cobots', desc: 'Custom 6-DOF robotic arm trajectory control, MoveIt 2 motion planning, and collaborative safety logic for high-precision pick-and-place and automated assembly.', image: img('1485827404703-89b55fcc595e') },
+      { title: 'Edge AI Vision & Sensor Fusion', desc: 'Real-time object recognition, depth estimation, and quality inspection using OpenCV and TensorRT running directly on embedded NVIDIA Jetson platforms.', image: img('1531297484001-80022131f5a1') },
+    ],
+    industries: [
+      { title: 'Smart Manufacturing', desc: 'Automated assembly cells, vision-guided cobots, and real-time defect sorting lines.' },
+      { title: 'Warehousing & Logistics', desc: 'Autonomous pallet tuggers, sortation rovers, and self-docking fleet chargers.' },
+      { title: 'Healthcare & Cleanrooms', desc: 'Autonomous medical supply runners and UV sterilization robotics.' },
+      { title: 'Agriculture & Drones', desc: 'Autonomous crop monitoring rovers, weed detection, and precision spraying.' },
+      { title: 'Inspection & Security', desc: 'Perimeter surveillance rovers, thermal defect scanning, and pipeline inspection.' },
+      { title: 'Education & R&D', desc: 'ROS 2 training platforms, robotics development kits, and student research labs.' },
+    ],
+    challenges: [
+      { title: 'Dynamic Obstacle Avoidance', desc: 'We use sub-10ms LiDAR point-cloud processing and predictive velocity tracking to safely avoid human workers.' },
+      { title: 'Hardware Reliability', desc: 'We engineer industrial-grade chassis, brushless servo drives, and redundant SIL-3 safety circuitry.' },
+      { title: 'System Interoperability', desc: 'We connect robotics controllers with standard PLC, SCADA, OPC-UA, and ERP backend networks.' },
+    ],
+    faqs: [
+      { q: 'What frameworks do you build robots with?', a: 'We specialize in ROS 2 (Humble / Iron), MoveIt 2, Gazebo simulation, Micro-ROS for STM32/ESP32, and NVIDIA Jetson edge AI.' },
+      { q: 'Can you retrofit our existing machines with robotics?', a: 'Yes — we provide custom sensor mounts, motor drivers, and PLC integration to automate legacy factory machines.' },
+      { q: 'Do you offer robotics training and kits?', a: 'Yes — we deliver comprehensive hands-on robotics workshops and hardware development kits for students and engineers.' },
+      { q: 'How do you test robots before deployment?', a: 'We create physics-accurate digital twins in Gazebo and NVIDIA Isaac Sim for extensive hardware-in-the-loop validation.' },
+    ],
+  },
+
   /* ==================== SOLUTIONS ==================== */
 
   'fintech': {
@@ -509,6 +540,7 @@ export const servicesByCategory = {
   Development: [
     { slug: 'web3',      label: 'Web 3.0' },
     { slug: 'ai-ml',     label: 'AI / ML' },
+    { slug: 'robotics',   label: 'Robotics' },
     { slug: 'coding',    label: 'Coding' },
     { slug: 'mobile-app',label: 'Mobile App' },
     { slug: 'software',  label: 'Software' },

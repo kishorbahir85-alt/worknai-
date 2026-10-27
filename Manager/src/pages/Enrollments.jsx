@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
+import toast from 'react-hot-toast';
 import {
   BookOpen, Users, IndianRupee, Check, Loader2,
   ChevronDown, ChevronUp, Phone, GraduationCap, MapPin,
@@ -51,7 +52,7 @@ function OfflineApplicationRow({ enrollment, onStatusUpdate }) {
       await api.put(`/enrollments/${enrollment._id}/status`, { applicationStatus: status, statusNote: note });
       onStatusUpdate(enrollment._id, status, note);
     } catch (err) {
-      alert(err?.response?.data?.message || 'Failed to update');
+      toast.error(err?.response?.data?.message || 'Failed to update');
     } finally {
       setSaving(false);
     }
@@ -162,10 +163,10 @@ function EnrollmentRow({ enrollment, onUpdate }) {
     try {
       const res = await api.put(`/enrollments/${enrollment._id}/payment`, { paymentStatus: 'paid' });
       const code = res.data.data.accessCode;
-      alert(code ? `Payment confirmed! Access Code: ${code}` : 'Payment confirmed!');
+      toast.success(code ? `Payment confirmed! Access Code: ${code}` : 'Payment confirmed!', { duration: 6000 });
       onUpdate(enrollment._id, 'paid', code);
     } catch (err) {
-      alert(err?.response?.data?.message || 'Failed');
+      toast.error(err?.response?.data?.message || 'Failed');
     } finally {
       setSaving(false);
     }

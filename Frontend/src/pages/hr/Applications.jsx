@@ -18,6 +18,28 @@ const statusStyle = {
 
 const BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5001';
 
+// Authenticated file download — sends Bearer token, prevents unauthenticated URL access
+async function downloadFile(relativeUrl, filename) {
+  try {
+    const token = localStorage.getItem('worknai_token');
+    const res = await fetch(`${BASE}${relativeUrl}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error('Download failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename || 'document';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch {
+    toast.error('Could not download file. Please try again.');
+  }
+}
+
 function ApplicantRow({ app, onUpdate }) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -112,26 +134,24 @@ function ApplicantRow({ app, onUpdate }) {
           {/* Resume + Cover Letter PDF */}
           <div className="sm:col-span-2 flex flex-wrap gap-3">
             {app.resumeUrl ? (
-              <a
-                href={`${BASE}${app.resumeUrl}`}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => downloadFile(app.resumeUrl, `resume_${app.applicantName}.pdf`)}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-600/20 border border-sky-500/30 text-sky-400 hover:bg-sky-600/30 text-sm transition-colors"
               >
                 <Download size={14} /> Download Resume
-              </a>
+              </button>
             ) : (
               <p className="text-slate-500 text-sm italic">No resume uploaded</p>
             )}
             {app.coverLetterUrl && (
-              <a
-                href={`${BASE}${app.coverLetterUrl}`}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => downloadFile(app.coverLetterUrl, `coverletter_${app.applicantName}.pdf`)}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600/20 border border-violet-500/30 text-violet-400 hover:bg-violet-600/30 text-sm transition-colors"
               >
                 <Download size={14} /> Download Cover Letter
-              </a>
+              </button>
             )}
           </div>
 

@@ -19,6 +19,8 @@ import About from './pages/public/About';
 import Contact from './pages/public/Contact';
 import NotFound from './pages/public/NotFound';
 import ServicePage from './pages/public/ServicePage';
+import Robotics from './pages/public/Robotics';
+import Research from './pages/public/Research';
 import JoinUs from './pages/public/JoinUs';
 import TrendingOverview from './pages/public/trending/Overview';
 import TrendingOurApproach from './pages/public/trending/OurApproach';
@@ -31,6 +33,9 @@ import Tutorials from './pages/public/Tutorials';
 import TutorialDetail from './pages/public/TutorialDetail';
 import Templates from './pages/public/Templates';
 import HelpCenter from './pages/public/HelpCenter';
+import EMarket from './pages/public/EMarket';
+import EMarketCategory from './pages/public/EMarketCategory';
+import EMarketProductDetail from './pages/public/EMarketProductDetail';
 
 // HR pages
 import HRLogin from './pages/hr/Login';
@@ -70,10 +75,16 @@ export default function App() {
           <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/career" element={<Career />} />
           <Route path="/career/:slug" element={<JobDetail />} />
+          <Route path="/jobs" element={<Navigate to="/career" replace />} />
+          <Route path="/jobs/:slug" element={<JobDetail />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/services/:slug" element={<ServicePage />} />
+          <Route path="/robotics" element={<Robotics />} />
+          <Route path="/robotic" element={<Navigate to="/robotics" replace />} />
+          <Route path="/research" element={<Research />} />
+          <Route path="/robotics/research" element={<Navigate to="/research" replace />} />
           <Route path="/join-us" element={<JoinUs />} />
           <Route path="/trending-topics/overview" element={<TrendingOverview />} />
           <Route path="/trending-topics/our-approach" element={<TrendingOurApproach />} />
@@ -86,6 +97,11 @@ export default function App() {
           <Route path="/tutorials/:slug" element={<TutorialDetail />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/help" element={<HelpCenter />} />
+
+          {/* ============ E-MARKET ============ */}
+          <Route path="/emarket" element={<EMarket />} />
+          <Route path="/emarket/:category" element={<EMarketCategory />} />
+          <Route path="/emarket/product/:slug" element={<EMarketProductDetail />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>

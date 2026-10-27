@@ -266,7 +266,6 @@ export default function ChatWidget() {
       c.shortDescription || truncate(c.description),
       `• Duration: ${c.duration || 'Flexible'}`,
       `• Mode: ${c.mode || 'offline'} · Level: ${c.level || 'beginner'}`,
-      `• Fees: ${formatPrice(c)}`,
     ].filter(Boolean).join('\n');
     push(botMsg(lines, {
       links: [{ label: `View ${c.title}`, to: `/courses/${c.slug}` }],
@@ -496,9 +495,9 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'Close chat' : 'Chat with WorknAi'}
-        className="fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg shadow-violet-500/40 flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-5 right-5 z-[70] w-10 h-10 rounded-full bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-md shadow-violet-900/30 flex items-center justify-center hover:scale-105 transition-all opacity-85 hover:opacity-100"
       >
-        {open ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        {open ? <X className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
       </button>
 
       <AnimatePresence>

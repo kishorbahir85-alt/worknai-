@@ -25,11 +25,21 @@ const applicationStorage = multer.diskStorage({
   },
 });
 
+const ALLOWED_RESUME_EXTS = ['.pdf', '.doc', '.docx'];
+const ALLOWED_RESUME_MIMES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+
 const fileFilter = (req, file, cb) => {
-  const allowed = ['.pdf', '.doc', '.docx'];
   const ext = path.extname(file.originalname).toLowerCase();
-  if (allowed.includes(ext)) cb(null, true);
-  else cb(new Error('Only PDF, DOC, DOCX files are allowed'));
+  const mime = file.mimetype.toLowerCase();
+  if (ALLOWED_RESUME_EXTS.includes(ext) && ALLOWED_RESUME_MIMES.includes(mime)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only PDF, DOC, DOCX files are allowed'));
+  }
 };
 
 export const uploadResume = multer({

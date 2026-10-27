@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowRight, Sparkles, GraduationCap, Rocket, Briefcase, Users,
   Code2, Brain, Cloud, Palette, ArrowUpRight, Star, Zap,
   Globe, Smartphone, Database, Layers, Plug, TrendingUp,
-  Monitor, MapPin, Mail, ShieldCheck, BookOpen, Calendar,
+  Monitor, MapPin, Mail, ShieldCheck, BookOpen, Calendar, Building2,
 } from 'lucide-react';
 import SectionHeader from '../../components/ui/SectionHeader';
 import api from '../../utils/api';
 import { formatPrice } from '../../utils/utils';
 import { useTheme } from '../../context/ThemeContext';
+import { productLogo, getCategoryGradient } from '../../utils/productImage';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -70,11 +71,115 @@ const getFavicon = (url) => {
   }
 };
 
-const MARQUEE_NAMES = [
-  'GoAirClass', 'Punarmilan', 'Namastey India', 'OnlineGo',
-  'Learning Hub', 'Car Rentals', 'Tour Hub',
-];
-const MARQUEE_ROW = [...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES, ...MARQUEE_NAMES];
+function HomeProductLogoMarquee({ products, isDark }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const validProducts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    return products.filter((p) => Boolean(productLogo(p) || (p.url && getFavicon(p.url)) || p.title));
+  }, [products]);
+
+  if (validProducts.length === 0) return null;
+
+  // Duplicate 4 times to ensure seamless infinite looping
+  const marqueeItems = [...validProducts, ...validProducts, ...validProducts, ...validProducts];
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative home-marquee-wrapper w-full overflow-hidden py-4 sm:py-6 select-none"
+    >
+      <style>{`
+        @keyframes homeLogoScroll {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+        .home-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: homeLogoScroll 36s linear infinite;
+          will-change: transform;
+        }
+        .home-marquee-wrapper:hover .home-marquee-track,
+        .home-marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
+      {/* Left Edge Fade Mask */}
+      <div
+        className={`pointer-events-none absolute left-0 inset-y-0 w-16 sm:w-28 md:w-44 z-20 bg-gradient-to-r ${
+          isDark ? 'from-[#06030f] via-[#06030f]/90 to-transparent' : 'from-[#fafaf9] via-[#fafaf9]/90 to-transparent'
+        }`}
+      />
+
+      {/* Right Edge Fade Mask */}
+      <div
+        className={`pointer-events-none absolute right-0 inset-y-0 w-16 sm:w-28 md:w-44 z-20 bg-gradient-to-l ${
+          isDark ? 'from-[#06030f] via-[#06030f]/90 to-transparent' : 'from-[#fafaf9] via-[#fafaf9]/90 to-transparent'
+        }`}
+      />
+
+      {/* Continuous Marquee Track */}
+      <div
+        style={{ animationPlayState: isHovered ? 'paused' : 'running' }}
+        className="home-marquee-track gap-4 sm:gap-6 items-center px-4"
+      >
+        {marqueeItems.map((p, idx) => {
+          const logo = productLogo(p) || (p.url && getFavicon(p.url));
+
+          return (
+            <Link
+              key={`${p._id || idx}-${idx}`}
+              to={`/products/${p.slug || ''}`}
+              title={p.title}
+              className={`group/logo relative shrink-0 flex items-center gap-3 px-3 py-2 sm:py-2.5 rounded-2xl transition-all duration-300 ${
+                isDark
+                  ? 'hover:bg-white/[0.04] hover:scale-105'
+                  : 'hover:bg-slate-100/80 hover:scale-105'
+              }`}
+            >
+              {/* Clean Logo without border */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 aspect-square rounded-xl flex items-center justify-center overflow-hidden">
+                {logo ? (
+                  <img
+                    src={logo}
+                    alt={p.title}
+                    className="w-full h-full max-w-full max-h-full aspect-square object-contain pointer-events-none transition-transform duration-300 group-hover/logo:scale-110"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-xl bg-violet-600/80 flex items-center justify-center text-white font-bold text-xs uppercase tracking-wider">
+                    {p.title?.slice(0, 2) || 'PR'}
+                  </div>
+                )}
+              </div>
+
+              {/* Title & Category Label */}
+              <div className="text-left pr-1 min-w-0">
+                <div className={`text-xs sm:text-sm font-bold truncate max-w-[130px] sm:max-w-[160px] ${isDark ? 'text-white group-hover/logo:text-violet-300' : 'text-slate-900 group-hover/logo:text-violet-700'}`}>
+                  {p.title}
+                </div>
+                {p.category && (
+                  <div className={`text-[10px] font-medium truncate max-w-[130px] sm:max-w-[160px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {p.category}
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const darkHeroVideo = 'https://res.cloudinary.com/dqmg9yp6r/video/upload/only-us/hero.mp4';
 const lightHeroVideo = '/hero.mp4';
 
@@ -83,6 +188,7 @@ export default function Home() {
   const [info, setInfo] = useState(null);
   const [courses, setCourses] = useState([]);
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [jobs, setJobs] = useState([]);
 
   const heroCopy = isDark
@@ -109,9 +215,48 @@ export default function Home() {
       api.get('/company').then((r) => setInfo(r.data.data)),
       api.get('/courses?featured=true').then((r) => setCourses(r.data.data.slice(0, 3))),
       api.get('/products?featured=true').then((r) => setProducts(r.data.data.slice(0, 4))),
+      api.get('/products').then((r) => setAllProducts(r.data.data || [])),
       api.get('/jobs?featured=true').then((r) => setJobs(r.data.data.slice(0, 3))),
     ]).catch(() => {});
   }, []);
+
+  const popularProducts = useMemo(() => {
+    const sourceList = allProducts.length ? allProducts : products;
+    if (!sourceList.length) return [];
+
+    // Exact requested popular apps in order:
+    // 1. pg info
+    // 2. AiTourism
+    // 3. Online Go
+    // 4. OnlineGoLogistics
+    const matchers = [
+      (p) => /pg\s*info/i.test(p.title) || /pginfo/i.test(p.url || ''),
+      (p) => /aitourism/i.test(p.title) || /aitourism/i.test(p.url || ''),
+      (p) => (/online\s*go/i.test(p.title) || /onlinego\.in/i.test(p.url || '')) && !/logistics/i.test(p.title) && !/logistics/i.test(p.url || ''),
+      (p) => /logistics/i.test(p.title) || /onlinegologistics/i.test(p.url || ''),
+    ];
+
+    const picked = [];
+    const usedIds = new Set();
+
+    matchers.forEach((m) => {
+      const match = sourceList.find((p) => !usedIds.has(p._id) && m(p));
+      if (match) {
+        picked.push(match);
+        usedIds.add(match._id);
+      }
+    });
+
+    for (const p of sourceList) {
+      if (picked.length >= 4) break;
+      if (!usedIds.has(p._id)) {
+        picked.push(p);
+        usedIds.add(p._id);
+      }
+    }
+
+    return picked;
+  }, [allProducts, products]);
 
   return (
     <div className={isDark ? '' : 'reference-home'}>
@@ -354,35 +499,11 @@ export default function Home() {
       </section>
 
 
-      {/* ============= MARQUEE ============= */}
-      <div className="marquee-section">
-        {/* Row 1 — scrolls RIGHT — violet text */}
-        <div className="marquee-wrap">
-          <div className="marquee-track marquee-right marquee-row-1">
-            {MARQUEE_ROW.map((name, i) => (
-              <span key={i} className="marquee-item">
-                {name}
-                <span className="marquee-sep">✦</span>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* thin divider between rows */}
-        <div className="marquee-divider" />
-
-        {/* Row 2 — scrolls LEFT — lavender text */}
-        <div className="marquee-wrap">
-          <div className="marquee-track marquee-left marquee-row-2">
-            {MARQUEE_ROW.map((name, i) => (
-              <span key={i} className="marquee-item">
-                {name}
-                <span className="marquee-sep">◇</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* ============= PRODUCT LOGOS MARQUEE ============= */}
+      <HomeProductLogoMarquee
+        products={allProducts.length > 0 ? allProducts : products}
+        isDark={isDark}
+      />
 
 
       {/* ============= SERVICES ============= */}
@@ -484,25 +605,10 @@ export default function Home() {
                       {c.title}
                     </h3>
                     <p className="text-sm text-ink-dim mb-6 line-clamp-2">{c.shortDescription}</p>
-                    <div className="flex items-end justify-between">
-                      <div>
-                        {c.showPrice === false ? (
-                          <span className="text-2xl font-display font-bold text-violet-gradient">Paid</span>
-                        ) : c.discountPrice ? (
-                          <>
-                            <span className="text-2xl font-display font-bold text-violet-gradient">
-                              {formatPrice(c.discountPrice)}
-                            </span>
-                            <span className="text-xs text-ink-faint line-through ml-2">
-                              {formatPrice(c.price)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-2xl font-display font-bold text-violet-gradient">
-                            {formatPrice(c.price)}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-line2">
+                      <span className="text-sm font-medium text-violet-300 group-hover:text-white transition-colors">
+                        View Course
+                      </span>
                       <ArrowUpRight className="w-5 h-5 text-ink-faint group-hover:text-violet-300 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
                     </div>
                   </div>
@@ -525,7 +631,7 @@ export default function Home() {
           />
 
           <div className="grid md:grid-cols-2 gap-6">
-            {products.map((p, i) => (
+            {popularProducts.map((p, i) => (
               <motion.div
                 key={p._id}
                 initial={{ opacity: 0, y: 30 }}
@@ -536,17 +642,19 @@ export default function Home() {
               >
                 <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl group-hover:bg-violet-500/30 transition-colors" />
                 <div className="relative flex flex-col sm:flex-row gap-4 md:gap-6">
-                  <div className="w-20 h-20 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500/30 to-violet-700/30 border border-violet-400/30 flex items-center justify-center overflow-hidden">
-                    {p.url && getFavicon(p.url) ? (
-                      <img
-                        src={getFavicon(p.url)}
-                        alt={p.title}
-                        className="w-10 h-10 object-contain"
-                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                      />
-                    ) : (
-                      <Code2 className="w-8 h-8 text-violet-400 opacity-60" />
-                    )}
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 aspect-square rounded-[18px] sm:rounded-[22px] p-[3px] bg-gradient-to-br ${getCategoryGradient(p.category)} border border-white/25 shadow-lg flex items-center justify-center overflow-hidden`}>
+                    <div className="w-full h-full rounded-[15px] sm:rounded-[19px] bg-slate-950/30 backdrop-blur-[2px] flex items-center justify-center p-2 overflow-hidden">
+                      {productLogo(p) || (p.url && getFavicon(p.url)) ? (
+                        <img
+                          src={productLogo(p) || getFavicon(p.url)}
+                          alt={p.title}
+                          className="w-full h-full max-w-full max-h-full object-contain drop-shadow-md"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-white font-bold text-lg sm:text-xl uppercase tracking-wider">{p.title?.slice(0, 2) || 'PR'}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -673,43 +781,147 @@ export default function Home() {
 
 
       {/* ============= WORK WITH US ============= */}
-      <section className="work-with-us-section relative py-20 px-4 overflow-hidden">
-        <img
-          src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1600"
-          alt="Work with us"
-          className="media-clean-img absolute inset-0 w-full h-full object-cover object-center opacity-30"
+      <section className={`relative py-20 md:py-28 px-4 overflow-hidden transition-colors duration-300 ${
+        isDark ? 'bg-[#06030f]' : 'bg-[#f8fafc] border-y border-slate-200/80'
+      }`}>
+        {/* Ambient Gradient Glow Orbs */}
+        <div className={`absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] rounded-full blur-[120px] pointer-events-none ${
+          isDark
+            ? 'bg-gradient-to-tr from-violet-600/20 via-purple-600/10 to-transparent'
+            : 'bg-gradient-to-tr from-violet-400/15 via-indigo-300/15 to-transparent'
+        }`} />
+        <div className={`absolute -bottom-20 right-10 w-[500px] h-[300px] rounded-full blur-[100px] pointer-events-none ${
+          isDark ? 'bg-indigo-600/15' : 'bg-violet-300/20'
+        }`} />
+
+        {/* Subtle Tech Grid Texture overlay */}
+        <div 
+          className={`absolute inset-0 pointer-events-none ${isDark ? 'opacity-[0.03]' : 'opacity-[0.06]'}`}
+          style={{ backgroundImage: `radial-gradient(${isDark ? '#ffffff' : '#6366f1'} 1px, transparent 1px)`, backgroundSize: '32px 32px' }}
         />
-        <div className="media-clean-overlay absolute inset-0 bg-[#06030f]/70" />
-        <div className="container-x relative">
-          <div className="work-with-us-heading mb-12">
-            <p className="text-xs uppercase tracking-widest text-violet-400 font-semibold mb-3">Join With Us</p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-3">Work with us</h2>
-            <div className="w-12 h-1 bg-gradient-to-r from-violet-500 to-violet-300 rounded-full" />
+
+        <div className="container-x relative z-10">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+            <div className="max-w-2xl">
+              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest mb-4 backdrop-blur-md border ${
+                isDark
+                  ? 'bg-violet-500/10 border-violet-500/25 text-violet-300'
+                  : 'bg-violet-100/80 border-violet-300/60 text-violet-800'
+              }`}>
+                <Sparkles className={`w-3.5 h-3.5 ${isDark ? 'text-violet-400' : 'text-violet-600'}`} />
+                <span>Join With Us</span>
+              </div>
+              <h2 className={`font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                Work with us.{' '}
+                <span className={`bg-clip-text text-transparent ${
+                  isDark
+                    ? 'bg-gradient-to-r from-violet-400 via-purple-300 to-indigo-300'
+                    : 'bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600'
+                }`}>
+                  Scale what matters.
+                </span>
+              </h2>
+              <p className={`${isDark ? 'text-slate-400' : 'text-slate-600'} text-sm sm:text-base mt-3 leading-relaxed`}>
+                From our Pune R&amp;D lab to enterprise deployments, we engineer modern tech, train future engineers, and ship intelligent digital products.
+              </p>
+            </div>
+
+            <div className="shrink-0 flex items-center gap-3">
+              <Link
+                to="/career"
+                className="btn-primary text-xs sm:text-sm px-5 py-2.5 inline-flex items-center gap-2 shadow-lg shadow-violet-600/25"
+              >
+                <span>View Open Positions</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
-          <div className="work-stats-grid grid grid-cols-3 gap-x-12 gap-y-0">
+          {/* Bento-style Metric Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { n: '01', stat: '5+',   label: 'Years Experience' },
-              { n: '02', stat: '200+', label: 'Students Trained' },
-              { n: '03', stat: '2',    label: 'Development Centers' },
-              { n: '04', stat: '15+',  label: 'Products Built' },
-              { n: '05', stat: '50+',  label: 'Happy Clients' },
-              { n: '06', stat: '5+',   label: 'Countries Served' },
-              { n: '07', stat: '10+',  label: 'Tech Stacks' },
-              { n: '08', stat: '100+', label: 'Developments' },
-              { n: '09', stat: '10+',  label: 'SaaS Products' },
-            ].map(({ n, stat, label }, i) => (
-              <div
+              { n: '01', stat: '5+',   label: 'Years Experience',      sub: 'Consistent software & AI delivery', icon: TrendingUp,     color: 'from-violet-500 to-indigo-500' },
+              { n: '02', stat: '200+', label: 'Students Trained',      sub: 'Industry-ready engineers placed',   icon: GraduationCap,  color: 'from-blue-500 to-cyan-500' },
+              { n: '03', stat: '2',    label: 'Development Centers',   sub: 'Pune R&D & Bangalore hub',          icon: Building2,      color: 'from-emerald-500 to-teal-500' },
+              { n: '04', stat: '15+',  label: 'Products Built',        sub: 'Live scalable platforms shipped',   icon: Rocket,         color: 'from-fuchsia-500 to-pink-500' },
+              { n: '05', stat: '50+',  label: 'Happy Clients',         sub: 'Trusting enterprise businesses',    icon: Users,          color: 'from-amber-500 to-orange-500' },
+              { n: '06', stat: '5+',   label: 'Countries Served',      sub: 'Global software outreach',          icon: Globe,          color: 'from-sky-500 to-blue-600' },
+              { n: '07', stat: '10+',  label: 'Tech Stacks',           sub: 'React, Node, Python, Cloud & AI',   icon: Layers,         color: 'from-purple-500 to-violet-600' },
+              { n: '08', stat: '100+', label: 'Developments',          sub: 'Modules, tools & APIs shipped',     icon: Code2,          color: 'from-rose-500 to-red-500' },
+              { n: '09', stat: '10+',  label: 'SaaS Products',         sub: 'Proprietary production systems',    icon: Zap,            color: 'from-yellow-400 to-amber-500' },
+            ].map(({ n, stat, label, sub, icon: Icon, color }, i) => (
+              <motion.div
                 key={n}
-                className="work-stat-item flex items-center gap-5 border-b border-violet-400/40 py-7 group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className={`group relative rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 overflow-hidden border ${
+                  isDark
+                    ? 'bg-gradient-to-b from-white/[0.05] to-white/[0.02] border-white/10 hover:border-violet-500/40 hover:shadow-2xl hover:shadow-violet-950/50'
+                    : 'bg-white border-slate-200/90 shadow-sm hover:border-violet-400 hover:shadow-xl hover:shadow-violet-500/10'
+                }`}
               >
-                <span className="work-stat-number text-lg font-bold text-violet-400 font-display w-8 shrink-0">{n}</span>
-                <div className="work-stat-divider w-px h-12 bg-violet-400/60 shrink-0" />
-                <div className="work-stat-copy">
-                  <p className="work-stat-value text-3xl font-bold text-white font-display leading-none mb-1 group-hover:text-violet-300 transition-colors">{stat}</p>
-                  <p className="work-stat-label text-sm font-medium text-white/70">{label}</p>
+                {/* Ambient Card Hover Glow */}
+                <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full blur-2xl transition-colors pointer-events-none ${
+                  isDark
+                    ? 'bg-violet-500/10 group-hover:bg-violet-500/25'
+                    : 'bg-violet-500/5 group-hover:bg-violet-500/15'
+                }`} />
+
+                {/* Top Row: Icon + Badge Index */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} p-0.5 shadow-md flex items-center justify-center`}>
+                    <div className={`w-full h-full rounded-[10px] backdrop-blur-xs flex items-center justify-center ${
+                      isDark ? 'bg-slate-950/60 text-white' : 'bg-white/95 text-slate-800 shadow-xs'
+                    }`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <span className={`font-mono text-xs font-semibold transition-colors ${
+                    isDark
+                      ? 'text-slate-500 group-hover:text-violet-400'
+                      : 'text-slate-400 group-hover:text-violet-600'
+                  }`}>
+                    #{n}
+                  </span>
                 </div>
-              </div>
+
+                {/* Stat Number */}
+                <div className="mb-1">
+                  <span className={`font-display text-4xl sm:text-5xl font-extrabold tracking-tight transition-all ${
+                    isDark
+                      ? 'text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-violet-200 group-hover:to-violet-400'
+                      : 'text-slate-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-violet-700 group-hover:via-indigo-700 group-hover:to-purple-700'
+                  }`}>
+                    {stat}
+                  </span>
+                </div>
+
+                {/* Label & Description */}
+                <h3 className={`font-display text-base font-bold transition-colors ${
+                  isDark
+                    ? 'text-slate-200 group-hover:text-white'
+                    : 'text-slate-800 group-hover:text-violet-900'
+                }`}>
+                  {label}
+                </h3>
+                <p className={`text-xs mt-1 line-clamp-1 ${
+                  isDark ? 'text-slate-400' : 'text-slate-500'
+                }`}>
+                  {sub}
+                </p>
+
+                {/* Sleek bottom accent line */}
+                <div className={`absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent to-transparent transition-all duration-500 ${
+                  isDark
+                    ? 'via-violet-500/0 group-hover:via-violet-500/60'
+                    : 'via-violet-500/0 group-hover:via-violet-600'
+                }`} />
+              </motion.div>
             ))}
           </div>
         </div>

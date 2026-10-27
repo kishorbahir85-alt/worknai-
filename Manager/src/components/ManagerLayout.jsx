@@ -1,23 +1,24 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
-  LayoutDashboard, BookOpen, Package, Handshake,
+  LayoutDashboard, BookOpen, Package, ShoppingBag, Handshake,
   Building2, MessageSquare, UserCircle, LogOut, Users, GraduationCap,
   Newspaper, ListChecks
 } from 'lucide-react';
 
 const navItems = [
-  { to: '/dashboard',   label: 'Dashboard',   icon: LayoutDashboard },
-  { to: '/users',       label: 'HR Accounts', icon: Users },
-  { to: '/courses',     label: 'Courses',     icon: BookOpen },
-  { to: '/enrollments', label: 'Enrollments', icon: GraduationCap },
-  { to: '/products',    label: 'Products',    icon: Package },
-  { to: '/blog',        label: 'Blog',        icon: Newspaper },
-  { to: '/tutorials',   label: 'Tutorials',   icon: ListChecks },
-  { to: '/partners',    label: 'Partners',    icon: Handshake },
-  { to: '/company',     label: 'Company',     icon: Building2 },
-  { to: '/inquiries',   label: 'Inquiries',   icon: MessageSquare },
-  { to: '/profile',     label: 'Profile',     icon: UserCircle },
+  { to: '/dashboard',   label: 'Dashboard',         icon: LayoutDashboard },
+  { to: '/users',       label: 'HR Accounts',       icon: Users },
+  { to: '/courses',     label: 'Courses',           icon: BookOpen },
+  { to: '/enrollments', label: 'Enrollments',       icon: GraduationCap },
+  { to: '/products',    label: 'WorknAi Software',  icon: Package },
+  { to: '/marketplace', label: 'Hardware E-Market', icon: ShoppingBag },
+  { to: '/blog',        label: 'Blog',              icon: Newspaper },
+  { to: '/tutorials',   label: 'Tutorials',         icon: ListChecks },
+  { to: '/partners',    label: 'Partners',          icon: Handshake },
+  { to: '/company',     label: 'Company',           icon: Building2 },
+  { to: '/inquiries',   label: 'Inquiries',         icon: MessageSquare },
+  { to: '/profile',     label: 'Profile',           icon: UserCircle },
 ];
 
 export default function ManagerLayout() {
